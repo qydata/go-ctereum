@@ -18,7 +18,10 @@ package vm
 
 import (
 	"errors"
+	"fmt"
+	"github.com/ethereum/go-ctereum/accounts/abi"
 	"math/big"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -202,11 +205,60 @@ func (evm *EVM) Interpreter() Interpreter {
 	return evm.interpreter
 }
 
+// AuthControllerAuthData is an auto generated low-level Go binding around an user-defined struct.
+type AuthControllerAuthData struct {
+	Caddress  common.Address
+	Sender    common.Address
+	Signature []byte
+	IsAuth    bool
+}
+
+func isAuth(addr common.Address, evm *EVM) (bool, error) {
+	methodId := evm.chainConfig.ImplContractAddressQuery()
+	contractAuthAddr := common.HexToAddress(evm.chainConfig.ImplContractAddress())
+	authControllerABI := evm.chainConfig.ImplContractAddressABI()
+	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
+	data, _ := parsed.Pack(methodId, addr)
+	gas := evm.chainConfig.IsImplContractAddressGas()
+	isAuthResult, _, _ := evm.StaticCall(AccountRef(contractAuthAddr), contractAuthAddr, data, uint64(gas))
+	if isAuthResult == nil {
+		return false, nil
+	}
+
+	ret, err := parsed.Unpack(methodId, isAuthResult)
+	fmt.Println("isAuthResult", ret)
+	if err != nil {
+		return false, err
+	}
+	out0 := *abi.ConvertType(ret[0],
+		new(AuthControllerAuthData)).(*AuthControllerAuthData)
+
+	return out0.IsAuth, nil
+}
+
 // Call executes the contract associated with the addr with the given input as
 // parameters. It also handles any necessary value transfer required and takes
 // the necessary steps to create accounts and reverses the state in case of an
 // execution error or failed value transfer.
 func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
+
+	if evm.ChainConfig().IsImplAuth(evm.Context.BlockNumber) {
+		// 首先判断实名
+		if value.Cmp(big.NewInt(0)) > 0 {
+			//	判断实名
+			//var contractAuthAddr *common.Address
+			isAuth, err := isAuth(addr, evm)
+			if err != nil {
+				return nil, gas, err
+			}
+			if isAuth == false {
+				//return nil, err
+				return nil, gas, ErrNotAuth
+			}
+
+		}
+	}
+
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
 		return nil, gas, nil
 	}

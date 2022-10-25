@@ -49,6 +49,8 @@ const (
 	// more expensive to propagate; larger transactions also take more resources
 	// to validate whether they fit into the pool or not.
 	txMaxSize = 4 * txSlotSize // 128KB
+
+	authBlock = 10
 )
 
 var (
@@ -559,10 +561,16 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	if pool.currentState.GetBalance(from).Cmp(tx.Cost()) < 0 {
 		return ErrInsufficientFunds
 	}
-	//0.105 ETH
-	fee, _ := new(big.Int).SetString("105000000000000000", 10)
-	if tx.Cost().Cmp(fee) < 0 {
-		return ErrFundsLessThan
+
+	// TODO  这里根据区块高度来进行处理逻辑,
+	// 这里可能数据节点同步的时候, 会绕过这里的逻辑, 暂时先这样, 这个是猜测的想想
+	if !pool.chainconfig.IsImplAuth(pool.chain.CurrentBlock().Number()) {
+		// 这里判断可能会跳过, 这里判断改为在调用evm exec 前判断
+		//0.105 ETH
+		fee, _ := new(big.Int).SetString("105000000000000000", 10)
+		if tx.Cost().Cmp(fee) < 0 {
+			return ErrFundsLessThan
+		}
 	}
 
 	// Ensure the transaction has more gas than the basic tx fee.

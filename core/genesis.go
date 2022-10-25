@@ -350,7 +350,7 @@ func DefaultGenesisBlock() *Genesis {
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(1),
 		Alloc:      decodePrealloc(mainnetAllocData),
-		Coinbase:   common.HexToAddress("0x0xcebcbf16494edbad87d7feab0260ade82c571e5d"),
+		Coinbase:   common.HexToAddress("0xcebcbf16494edbad87d7feab0260ade82c571e5d"),
 	}
 }
 

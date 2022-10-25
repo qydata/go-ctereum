@@ -138,12 +138,14 @@ func (c *BoundContract) Call(opts *CallOpts, results *[]interface{}, method stri
 		code   []byte
 		output []byte
 	)
+
 	if opts.Pending {
 		pb, ok := c.caller.(PendingContractCaller)
 		if !ok {
 			return ErrNoPendingState
 		}
 		output, err = pb.PendingCallContract(ctx, msg)
+
 		if err == nil && len(output) == 0 {
 			// Make sure we have a contract to operate on, and bail out otherwise.
 			if code, err = pb.PendingCodeAt(ctx, c.address); err != nil {
@@ -154,6 +156,7 @@ func (c *BoundContract) Call(opts *CallOpts, results *[]interface{}, method stri
 		}
 	} else {
 		output, err = c.caller.CallContract(ctx, msg, opts.BlockNumber)
+
 		if err != nil {
 			return err
 		}
@@ -172,7 +175,9 @@ func (c *BoundContract) Call(opts *CallOpts, results *[]interface{}, method stri
 		*results = res
 		return err
 	}
+
 	res := *results
+
 	return c.abi.UnpackIntoInterface(res[0], method, output)
 }
 

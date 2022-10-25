@@ -18,14 +18,13 @@ package core
 
 import (
 	"fmt"
-	"math"
-	"math/big"
-
 	"github.com/ethereum/go-ctereum/common"
 	cmath "github.com/ethereum/go-ctereum/common/math"
 	"github.com/ethereum/go-ctereum/core/types"
 	"github.com/ethereum/go-ctereum/core/vm"
 	"github.com/ethereum/go-ctereum/params"
+	"math"
+	"math/big"
 )
 
 /*
@@ -187,6 +186,7 @@ func (st *StateTransition) to() common.Address {
 }
 
 func (st *StateTransition) buyGas() error {
+
 	mgval := new(big.Int).Mul(new(big.Int).SetUint64(st.msg.Gas()), st.gasPrice)
 	if have, want := st.state.GetBalance(st.msg.From()), mgval; have.Cmp(want) < 0 {
 		return fmt.Errorf("%w: address %v have %v want %v", ErrInsufficientFunds, st.msg.From().Hex(), have, want)
@@ -275,6 +275,24 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		return nil, fmt.Errorf("%w: address %v", ErrInsufficientFundsForTransfer, msg.From().Hex())
 	}
 
+	//fmt.Println("msg.GasPrice():", msg.GasPrice().Int64())
+	//if msg.To() != nil {
+	//	fmt.Println("msg.GasPrice():", msg.To().Hex())
+	//	fmt.Println("msg.GasPrice():", st.to().Hex())
+	//}
+	// 判断手续费
+	if st.evm.ChainConfig().IsImplAuth(st.evm.Context.BlockNumber) {
+		if msg.GasPrice().Cmp(big.NewInt(st.evm.ChainConfig().ImplGasPrice())) < 0 {
+			return &ExecutionResult{
+				UsedGas:    st.gasUsed(),
+				Err:        ErrFundsGasPriceLessThan,
+				ReturnData: nil,
+			}, nil
+		}
+	}
+	// 判断实名   草田分大于0,并且 不是创建合约交易
+	// 在call中判断实名, 这里无法判断合约的内部交易
+
 	// Set up the initial access list.
 	if rules := st.evm.ChainConfig().Rules(st.evm.Context.BlockNumber); rules.IsBerlin {
 		st.state.PrepareAccessList(msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
@@ -290,6 +308,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
 		ret, st.gas, vmerr = st.evm.Call(sender, st.to(), st.data, st.gas, st.value)
 	}
+
 	if !eip3529 {
 		// Before EIP-3529: refunds were capped to gasUsed / 2
 		st.refundGas(params.RefundQuotient)

@@ -26,6 +26,7 @@ var (
 	ErrOutOfGas                 = errors.New("out of gas")
 	ErrCodeStoreOutOfGas        = errors.New("contract creation code storage out of gas")
 	ErrDepth                    = errors.New("max call depth exceeded")
+	ErrNotAuth                  = errors.New("A party address is not authenticated")
 	ErrInsufficientBalance      = errors.New("insufficient balance for transfer")
 	ErrContractAddressCollision = errors.New("contract address collision")
 	ErrExecutionReverted        = errors.New("execution reverted")

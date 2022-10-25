@@ -592,7 +592,7 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	// No block rewards in PoA, so the state remains as is and uncles are dropped
-	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+	//header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	//header.UncleHash = types.CalcUncleHash(nil)
 }
 

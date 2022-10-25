@@ -64,8 +64,14 @@ func (s *PublicEthereumAPI) GasPrice(ctx context.Context) (*hexutil.Big, error) 
 	//price, err := s.b.SuggestPrice(ctx)
 	//return (*hexutil.Big)(price), err
 	//这里设置为建议的手续费  0.105 ETH
-	price := big.NewInt(5000100000000)
-	return (*hexutil.Big)(price), nil
+	if s.b.ChainConfig().IsImplAuth(s.b.CurrentBlock().Number()) {
+		price := big.NewInt(s.b.ChainConfig().ImplGasPrice())
+		return (*hexutil.Big)(price), nil
+	} else {
+		price := big.NewInt(5000100000000)
+		return (*hexutil.Big)(price), nil
+	}
+
 }
 
 // Syncing returns false in case the node is currently not syncing with the network. It can be up to date or has not
