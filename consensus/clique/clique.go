@@ -587,7 +587,11 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 	rewardAddress := snap.Recents[number-1]
 	log.Info("区块奖励签名地址打印Address:", rewardAddress.Hex())
 	if 1 != number {
-		state.AddBalance(rewardAddress, reward)
+		if chain.Config().IsImplAuth(header.Number) {
+			// No do something...
+		} else {
+			state.AddBalance(rewardAddress, reward)
+		}
 	}
 
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
