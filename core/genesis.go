@@ -346,9 +346,11 @@ func DefaultGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.MainnetChainConfig,
 		Nonce:      0,
+		Timestamp:  1622016327,
 		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000cebcbf16494edbad87d7feab0260ade82c571e5d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(1),
+		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Alloc:      decodePrealloc(mainnetAllocData),
 		Coinbase:   common.HexToAddress("0xcebcbf16494edbad87d7feab0260ade82c571e5d"),
 	}
