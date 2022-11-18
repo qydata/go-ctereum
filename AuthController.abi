@@ -38,15 +38,41 @@
               "type": "bytes"
             },
             {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
               "internalType": "bool",
               "name": "isAuth",
               "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
             }
           ],
           "indexed": false,
           "internalType": "struct AuthController.AuthData",
           "name": "",
           "type": "tuple"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "caddress",
+          "type": "address"
         }
       ],
       "name": "Authentication",
@@ -130,9 +156,29 @@
               "type": "bytes"
             },
             {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
               "internalType": "bool",
               "name": "isAuth",
               "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
             }
           ],
           "internalType": "struct AuthController.AuthData",
@@ -170,9 +216,29 @@
               "type": "bytes"
             },
             {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
               "internalType": "bool",
               "name": "isAuth",
               "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
             }
           ],
           "internalType": "struct AuthController.AuthData[]",
@@ -218,9 +284,29 @@
               "type": "bytes"
             },
             {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
               "internalType": "bool",
               "name": "isAuth",
               "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
             }
           ],
           "internalType": "struct AuthController.AuthData",

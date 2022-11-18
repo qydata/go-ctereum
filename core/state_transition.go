@@ -22,6 +22,7 @@ import (
 	cmath "github.com/ethereum/go-ctereum/common/math"
 	"github.com/ethereum/go-ctereum/core/types"
 	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/ethereum/go-ctereum/log"
 	"github.com/ethereum/go-ctereum/params"
 	"math"
 	"math/big"
@@ -268,6 +269,18 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	if st.gas < gas {
 		return nil, fmt.Errorf("%w: have %d, want %d", ErrIntrinsicGas, st.gas, gas)
 	}
+
+	// 判断手续费
+	if st.evm.ChainConfig().IsImplAuth(st.evm.Context.BlockNumber) {
+		if msg.GasPrice().Int64() > 0 {
+			if !st.evm.ChainConfig().IsGasPriceReqired(msg.GasPrice()) {
+				log.Info("IsGasPriceReqired=======:", msg.GasPrice().Int64())
+				return nil, fmt.Errorf("%w: have %d, want %d", ErrFundsGasPriceMoreThan, msg.GasPrice(), st.evm.ChainConfig().ImplGasPrice())
+			}
+		}
+
+	}
+
 	st.gas -= gas
 
 	// Check clause 6
@@ -280,16 +293,7 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	//	fmt.Println("msg.GasPrice():", msg.To().Hex())
 	//	fmt.Println("msg.GasPrice():", st.to().Hex())
 	//}
-	// 判断手续费
-	if st.evm.ChainConfig().IsImplAuth(st.evm.Context.BlockNumber) {
-		if msg.GasPrice().Cmp(big.NewInt(st.evm.ChainConfig().ImplGasPrice())) < 0 {
-			return &ExecutionResult{
-				UsedGas:    st.gasUsed(),
-				Err:        ErrFundsGasPriceLessThan,
-				ReturnData: nil,
-			}, nil
-		}
-	}
+
 	// 判断实名   草田分大于0,并且 不是创建合约交易
 	// 在call中判断实名, 这里无法判断合约的内部交易
 

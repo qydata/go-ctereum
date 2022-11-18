@@ -22,7 +22,7 @@ package core
 
 // nolint: misspell
 const mainnetAllocData = "\xe3\xe2\x94\x1eV^\u0392\xf2\x89\x8fZ\xe4u,\xd9dX\xfa\x84I\x85\x12\x8c\x03;.<\x9f\u0400<\xe8\x00\x00\x00"
-const ropstenAllocData = ""
+const ropstenAllocData = "\xe3\xe2\x94\x1eV^\u0392\xf2\x89\x8fZ\xe4u,\xd9dX\xfa\x84I\x85\x12\x8c\x03;.<\x9f\u0400<\xe8\x00\x00\x00"
 const rinkebyAllocData = ""
 const goerliAllocData = ""
 const baikalAllocData = ""

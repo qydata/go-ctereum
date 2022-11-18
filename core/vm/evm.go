@@ -18,7 +18,6 @@ package vm
 
 import (
 	"errors"
-	"fmt"
 	"github.com/ethereum/go-ctereum/accounts/abi"
 	"math/big"
 	"strings"
@@ -207,10 +206,14 @@ func (evm *EVM) Interpreter() Interpreter {
 
 // AuthControllerAuthData is an auto generated low-level Go binding around an user-defined struct.
 type AuthControllerAuthData struct {
-	Caddress  common.Address
-	Sender    common.Address
-	Signature []byte
-	IsAuth    bool
+	Caddress   common.Address
+	Sender     common.Address
+	Signature  []byte
+	AuthTime   *big.Int
+	AuthExpiry *big.Int
+	IsAuth     bool
+	AuthLevel  *big.Int
+	ExpandData string
 }
 
 func isAuth(addr common.Address, evm *EVM) (bool, error) {
@@ -220,13 +223,19 @@ func isAuth(addr common.Address, evm *EVM) (bool, error) {
 	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
 	data, _ := parsed.Pack(methodId, addr)
 	gas := evm.chainConfig.IsImplContractAddressGas()
-	isAuthResult, _, _ := evm.StaticCall(AccountRef(contractAuthAddr), contractAuthAddr, data, uint64(gas))
+	contract := NewContract(AccountRef(contractAuthAddr), AccountRef(contractAuthAddr), new(big.Int), uint64(gas))
+	contract.SetCallCode(&contractAuthAddr, evm.StateDB.GetCodeHash(contractAuthAddr), evm.StateDB.GetCode(contractAuthAddr))
+	isAuthResult, _ := run(evm, contract, data, true)
+	//isAuthResult, leftOverGas, err1 := evm.StaticCall(AccountRef(contractAuthAddr), contractAuthAddr, data, uint64(5000000000000000))
+	//fmt.Println("leftOverGas", leftOverGas)
+	//fmt.Println("err1", err1)
+	//fmt.Println("isAuthResultO", common.Bytes2Hex(isAuthResult))
 	if isAuthResult == nil {
 		return false, nil
 	}
 
 	ret, err := parsed.Unpack(methodId, isAuthResult)
-	fmt.Println("isAuthResult", ret)
+	//fmt.Println("isAuthResult", ret)
 	if err != nil {
 		return false, err
 	}
