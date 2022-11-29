@@ -37,18 +37,22 @@ contract AuthController is EIP712Upgradeable, Ownable {
 
     struct AuthData {
         address caddress; // 认证地址
-        address sender; // 发起认证操作地址
+        address sender; // 实名绑定机构地址
         bytes signature; // 签名数据
         uint256 authTime;
         uint256 authExpiry;
         bool isAuth; // 认证状态
-        uint256 authLevel; // 认证状态
+        uint256 authLevel; // 认证级别
         string expandData;
     }
     // 订单管理
     mapping(uint256 => bool) public orders;
-    // 认证信息管理
-    mapping(address => AuthData) auths;
+    // 认证信息管理    认证地址->关联机构地址-> 认证信息详情
+    mapping(address => mapping(address => AuthData)) public parentauths;
+    // 数组, 方便计算总体的实名状况
+    mapping(address => address[]) public parentauthsa;
+    // 经过计算的认证地址的实际的认证状态. 关联的是最后的过期时间
+    mapping(address => uint256) public auths;
     // 事件
     // 认证信息事件
     event Authentication(AuthData, address indexed caddress);
@@ -63,7 +67,7 @@ contract AuthController is EIP712Upgradeable, Ownable {
         _;
     }
 
-    constructor() public {
+    constructor() {
         // EIP712对name和版本初始化
         __EIP712_init_unchained("Authentication", "1");
     }
@@ -102,8 +106,24 @@ contract AuthController is EIP712Upgradeable, Ownable {
             validate(auth.caddress, hash, auth.signature);
         }
 
+        // 判断防止数组被多次push
+        if (parentauths[auth.caddress][auth.sender].caddress == address(0)) {
+            parentauthsa[auth.caddress].push(auth.sender);
+        }
         // 数据存储
-        auths[auth.caddress] = auth;
+        parentauths[auth.caddress][auth.sender] = auth;
+        auths[auth.caddress] = 0;
+        // 遍历, 将最大的过期时间赋值给认证地址
+        for (uint256 i = 0; i < parentauthsa[auth.caddress].length; i++) {
+            AuthData memory tempAuth =
+                parentauths[auth.caddress][parentauthsa[auth.caddress][i]];
+            if (tempAuth.isAuth == true) {
+                if (tempAuth.authExpiry > auths[auth.caddress]) {
+                    auths[auth.caddress] = tempAuth.authExpiry;
+                }
+            }
+        }
+
         // 修改订单状态
         orders[orderId] = true;
         // 提交事件
@@ -121,23 +141,15 @@ contract AuthController is EIP712Upgradeable, Ownable {
     实名查询
      如果是合约地址, 则直接是已经实名状态
      */
-    function authsSingle(address addr)
-        external
-        view
-        returns (AuthData memory auth)
-    {
+    function authsSingle(address addr) external view returns (bool isAuth) {
         if (addr.isContract()) {
-            auth = auths[address(0)];
-            auth.sender = addr;
-            auth.isAuth = true;
+            isAuth = true;
         } else {
-            auth = auths[addr];
-            if (
-                auth.sender == address(0) || block.timestamp > auth.authExpiry
-            ) {
-                auth = auths[addr];
-                auth.sender = addr;
-                auth.isAuth = false;
+            uint256 authExpiry = auths[addr];
+            if (authExpiry == 0 || block.timestamp > authExpiry) {
+                isAuth = false;
+            } else {
+                isAuth = true;
             }
         }
     }

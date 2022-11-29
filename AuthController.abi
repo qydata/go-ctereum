@@ -260,6 +260,25 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "auths",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "addr",
           "type": "address"
         }
@@ -267,51 +286,9 @@
       "name": "authsSingle",
       "outputs": [
         {
-          "components": [
-            {
-              "internalType": "address",
-              "name": "caddress",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes",
-              "name": "signature",
-              "type": "bytes"
-            },
-            {
-              "internalType": "uint256",
-              "name": "authTime",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "authExpiry",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "isAuth",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "authLevel",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "expandData",
-              "type": "string"
-            }
-          ],
-          "internalType": "struct AuthController.AuthData",
-          "name": "auth",
-          "type": "tuple"
+          "internalType": "bool",
+          "name": "isAuth",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -352,6 +329,89 @@
     {
       "inputs": [],
       "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "parentauths",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "caddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "authTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "authExpiry",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isAuth",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "authLevel",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "expandData",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "parentauthsa",
       "outputs": [
         {
           "internalType": "address",

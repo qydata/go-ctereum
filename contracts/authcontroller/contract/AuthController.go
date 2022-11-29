@@ -39,7 +39,7 @@ type AuthControllerAuthData struct {
 }
 
 // AuthControllerABI is the input ABI used to generate the binding from.
-const AuthControllerABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"AddedToWhiteList\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"indexed\":false,\"internalType\":\"structAuthController.AuthData\",\"name\":\"\",\"type\":\"tuple\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"}],\"name\":\"Authentication\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"RemovedFromWhiteList\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"AUTH_TYPEHASH\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_addresses\",\"type\":\"address[]\"}],\"name\":\"addToWhitelist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"internalType\":\"structAuthController.AuthData\",\"name\":\"auth\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"orderId\",\"type\":\"uint256\"}],\"name\":\"authentication\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"internalType\":\"structAuthController.AuthData[]\",\"name\":\"auths\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256[]\",\"name\":\"orderIds\",\"type\":\"uint256[]\"}],\"name\":\"authenticationBetch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"authsSingle\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"internalType\":\"structAuthController.AuthData\",\"name\":\"auth\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWhitelist\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"list\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"orders\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_addresses\",\"type\":\"address[]\"}],\"name\":\"removeFromWhitelist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"whitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const AuthControllerABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"AddedToWhiteList\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"indexed\":false,\"internalType\":\"structAuthController.AuthData\",\"name\":\"\",\"type\":\"tuple\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"}],\"name\":\"Authentication\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"RemovedFromWhiteList\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"AUTH_TYPEHASH\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_addresses\",\"type\":\"address[]\"}],\"name\":\"addToWhitelist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"internalType\":\"structAuthController.AuthData\",\"name\":\"auth\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"orderId\",\"type\":\"uint256\"}],\"name\":\"authentication\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"internalType\":\"structAuthController.AuthData[]\",\"name\":\"auths\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256[]\",\"name\":\"orderIds\",\"type\":\"uint256[]\"}],\"name\":\"authenticationBetch\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"auths\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"authsSingle\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWhitelist\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"list\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"orders\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"parentauths\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"caddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"authTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"authExpiry\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isAuth\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"authLevel\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"expandData\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"parentauthsa\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_addresses\",\"type\":\"address[]\"}],\"name\":\"removeFromWhitelist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"whitelisted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // AuthController is an auto generated Go binding around an Ethereum contract.
 type AuthController struct {
@@ -214,18 +214,49 @@ func (_AuthController *AuthControllerCallerSession) AUTHTYPEHASH() ([32]byte, er
 	return _AuthController.Contract.AUTHTYPEHASH(&_AuthController.CallOpts)
 }
 
+// Auths is a free data retrieval call binding the contract method 0x64e72dbd.
+//
+// Solidity: function auths(address ) view returns(uint256)
+func (_AuthController *AuthControllerCaller) Auths(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _AuthController.contract.Call(opts, &out, "auths", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// Auths is a free data retrieval call binding the contract method 0x64e72dbd.
+//
+// Solidity: function auths(address ) view returns(uint256)
+func (_AuthController *AuthControllerSession) Auths(arg0 common.Address) (*big.Int, error) {
+	return _AuthController.Contract.Auths(&_AuthController.CallOpts, arg0)
+}
+
+// Auths is a free data retrieval call binding the contract method 0x64e72dbd.
+//
+// Solidity: function auths(address ) view returns(uint256)
+func (_AuthController *AuthControllerCallerSession) Auths(arg0 common.Address) (*big.Int, error) {
+	return _AuthController.Contract.Auths(&_AuthController.CallOpts, arg0)
+}
+
 // AuthsSingle is a free data retrieval call binding the contract method 0x5caf8667.
 //
-// Solidity: function authsSingle(address addr) view returns((address,address,bytes,uint256,uint256,bool,uint256,string) auth)
-func (_AuthController *AuthControllerCaller) AuthsSingle(opts *bind.CallOpts, addr common.Address) (AuthControllerAuthData, error) {
+// Solidity: function authsSingle(address addr) view returns(bool isAuth)
+func (_AuthController *AuthControllerCaller) AuthsSingle(opts *bind.CallOpts, addr common.Address) (bool, error) {
 	var out []interface{}
 	err := _AuthController.contract.Call(opts, &out, "authsSingle", addr)
 
 	if err != nil {
-		return *new(AuthControllerAuthData), err
+		return *new(bool), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(AuthControllerAuthData)).(*AuthControllerAuthData)
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
 
@@ -233,15 +264,15 @@ func (_AuthController *AuthControllerCaller) AuthsSingle(opts *bind.CallOpts, ad
 
 // AuthsSingle is a free data retrieval call binding the contract method 0x5caf8667.
 //
-// Solidity: function authsSingle(address addr) view returns((address,address,bytes,uint256,uint256,bool,uint256,string) auth)
-func (_AuthController *AuthControllerSession) AuthsSingle(addr common.Address) (AuthControllerAuthData, error) {
+// Solidity: function authsSingle(address addr) view returns(bool isAuth)
+func (_AuthController *AuthControllerSession) AuthsSingle(addr common.Address) (bool, error) {
 	return _AuthController.Contract.AuthsSingle(&_AuthController.CallOpts, addr)
 }
 
 // AuthsSingle is a free data retrieval call binding the contract method 0x5caf8667.
 //
-// Solidity: function authsSingle(address addr) view returns((address,address,bytes,uint256,uint256,bool,uint256,string) auth)
-func (_AuthController *AuthControllerCallerSession) AuthsSingle(addr common.Address) (AuthControllerAuthData, error) {
+// Solidity: function authsSingle(address addr) view returns(bool isAuth)
+func (_AuthController *AuthControllerCallerSession) AuthsSingle(addr common.Address) (bool, error) {
 	return _AuthController.Contract.AuthsSingle(&_AuthController.CallOpts, addr)
 }
 
@@ -336,6 +367,112 @@ func (_AuthController *AuthControllerSession) Owner() (common.Address, error) {
 // Solidity: function owner() view returns(address)
 func (_AuthController *AuthControllerCallerSession) Owner() (common.Address, error) {
 	return _AuthController.Contract.Owner(&_AuthController.CallOpts)
+}
+
+// Parentauths is a free data retrieval call binding the contract method 0x59030c74.
+//
+// Solidity: function parentauths(address , address ) view returns(address caddress, address sender, bytes signature, uint256 authTime, uint256 authExpiry, bool isAuth, uint256 authLevel, string expandData)
+func (_AuthController *AuthControllerCaller) Parentauths(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (struct {
+	Caddress   common.Address
+	Sender     common.Address
+	Signature  []byte
+	AuthTime   *big.Int
+	AuthExpiry *big.Int
+	IsAuth     bool
+	AuthLevel  *big.Int
+	ExpandData string
+}, error) {
+	var out []interface{}
+	err := _AuthController.contract.Call(opts, &out, "parentauths", arg0, arg1)
+
+	outstruct := new(struct {
+		Caddress   common.Address
+		Sender     common.Address
+		Signature  []byte
+		AuthTime   *big.Int
+		AuthExpiry *big.Int
+		IsAuth     bool
+		AuthLevel  *big.Int
+		ExpandData string
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.Caddress = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+	outstruct.Sender = *abi.ConvertType(out[1], new(common.Address)).(*common.Address)
+	outstruct.Signature = *abi.ConvertType(out[2], new([]byte)).(*[]byte)
+	outstruct.AuthTime = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+	outstruct.AuthExpiry = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
+	outstruct.IsAuth = *abi.ConvertType(out[5], new(bool)).(*bool)
+	outstruct.AuthLevel = *abi.ConvertType(out[6], new(*big.Int)).(**big.Int)
+	outstruct.ExpandData = *abi.ConvertType(out[7], new(string)).(*string)
+
+	return *outstruct, err
+
+}
+
+// Parentauths is a free data retrieval call binding the contract method 0x59030c74.
+//
+// Solidity: function parentauths(address , address ) view returns(address caddress, address sender, bytes signature, uint256 authTime, uint256 authExpiry, bool isAuth, uint256 authLevel, string expandData)
+func (_AuthController *AuthControllerSession) Parentauths(arg0 common.Address, arg1 common.Address) (struct {
+	Caddress   common.Address
+	Sender     common.Address
+	Signature  []byte
+	AuthTime   *big.Int
+	AuthExpiry *big.Int
+	IsAuth     bool
+	AuthLevel  *big.Int
+	ExpandData string
+}, error) {
+	return _AuthController.Contract.Parentauths(&_AuthController.CallOpts, arg0, arg1)
+}
+
+// Parentauths is a free data retrieval call binding the contract method 0x59030c74.
+//
+// Solidity: function parentauths(address , address ) view returns(address caddress, address sender, bytes signature, uint256 authTime, uint256 authExpiry, bool isAuth, uint256 authLevel, string expandData)
+func (_AuthController *AuthControllerCallerSession) Parentauths(arg0 common.Address, arg1 common.Address) (struct {
+	Caddress   common.Address
+	Sender     common.Address
+	Signature  []byte
+	AuthTime   *big.Int
+	AuthExpiry *big.Int
+	IsAuth     bool
+	AuthLevel  *big.Int
+	ExpandData string
+}, error) {
+	return _AuthController.Contract.Parentauths(&_AuthController.CallOpts, arg0, arg1)
+}
+
+// Parentauthsa is a free data retrieval call binding the contract method 0x62f6c8b5.
+//
+// Solidity: function parentauthsa(address , uint256 ) view returns(address)
+func (_AuthController *AuthControllerCaller) Parentauthsa(opts *bind.CallOpts, arg0 common.Address, arg1 *big.Int) (common.Address, error) {
+	var out []interface{}
+	err := _AuthController.contract.Call(opts, &out, "parentauthsa", arg0, arg1)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Parentauthsa is a free data retrieval call binding the contract method 0x62f6c8b5.
+//
+// Solidity: function parentauthsa(address , uint256 ) view returns(address)
+func (_AuthController *AuthControllerSession) Parentauthsa(arg0 common.Address, arg1 *big.Int) (common.Address, error) {
+	return _AuthController.Contract.Parentauthsa(&_AuthController.CallOpts, arg0, arg1)
+}
+
+// Parentauthsa is a free data retrieval call binding the contract method 0x62f6c8b5.
+//
+// Solidity: function parentauthsa(address , uint256 ) view returns(address)
+func (_AuthController *AuthControllerCallerSession) Parentauthsa(arg0 common.Address, arg1 *big.Int) (common.Address, error) {
+	return _AuthController.Contract.Parentauthsa(&_AuthController.CallOpts, arg0, arg1)
 }
 
 // Whitelisted is a free data retrieval call binding the contract method 0xd936547e.

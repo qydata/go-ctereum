@@ -41,6 +41,6 @@ func (auth *CheckpointAuth) Contract() *contract.AuthController {
 	return auth.contract
 }
 
-func (auth *CheckpointAuth) AuthsSingle(opts *bind.CallOpts, addr common.Address) (contract.AuthControllerAuthData, error) {
+func (auth *CheckpointAuth) AuthsSingle(opts *bind.CallOpts, addr common.Address) (bool, error) {
 	return auth.contract.AuthsSingle(opts, addr)
 }

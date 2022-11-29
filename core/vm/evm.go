@@ -239,10 +239,10 @@ func isAuth(addr common.Address, evm *EVM) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	out0 := *abi.ConvertType(ret[0],
-		new(AuthControllerAuthData)).(*AuthControllerAuthData)
+	isAuth := *abi.ConvertType(ret[0],
+		new(bool)).(*bool)
 
-	return out0.IsAuth, nil
+	return isAuth, nil
 }
 
 // Call executes the contract associated with the addr with the given input as
