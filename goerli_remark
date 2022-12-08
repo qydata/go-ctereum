@@ -1,0 +1,22 @@
+
+
+  eth.getBalance( "c7818dE72D9c888eA0d0a56eb907f9c4Dbf027d0" )
+  eth.getBalance(  "dFf2f4aeBCABcb90f4cEF444c542130610e3C840" )
+  eth.getBalance(  "448d25406E7b031bC6beD2076DD6eedd9Ee87c49" )
+  eth.getBalance(  "0xeDac0f5E9077280E67b7157878938148C1721b9B" )
+
+
+personal.importRawKey("2e0834786285daccd064ca17f1654f67b4aef298acbb82cef9ec422fb4975622", "zdsafq")
+personal.unlockAccount("0x123463a4b065722e99115d6c222f267d9cabb524", "zdsafq", 0)
+miner.setEtherbase("0x123463a4b065722e99115d6c222f267d9cabb524")
+miner.start()
+miner.stop()
+
+debug.ver
+debug.verbosity(5)
+debug.verbosity(4)
+debug.verbosity(2)
+eth.getBlock(0)
+eth.getBlock(25)
+eth.getBlock(20)
+eth.getBlockByHash("0x976b65a4214b75156e0b3fbf17311b92ffadb728bb28f914935fb332c7f3a7f4")

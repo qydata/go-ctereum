@@ -23,7 +23,7 @@ import (
 
 	"github.com/ethereum/go-ctereum/common"
 	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/eth/downloader"
+	"github.com/ethereum/go-ctereum/les/downloader"
 	"github.com/ethereum/go-ctereum/light"
 	"github.com/ethereum/go-ctereum/log"
 	"github.com/ethereum/go-ctereum/params"

@@ -18,6 +18,7 @@ package les
 
 import (
 	"context"
+	"math/rand"
 	"sort"
 	"time"
 
@@ -125,7 +126,7 @@ const (
 // RetrieveTxStatus retrieves the transaction status from the LES network.
 // There is no guarantee in the LES protocol that the mined transaction will
 // be retrieved back for sure because of different reasons(the transaction
-// is unindexed, the malicous server doesn't reply it deliberately, etc).
+// is unindexed, the malicious server doesn't reply it deliberately, etc).
 // Therefore, unretrieved transactions(UNKNOWN) will receive a certain number
 // of retries, thus giving a weak guarantee.
 func (odr *LesOdr) RetrieveTxStatus(ctx context.Context, req *light.TxStatusRequest) error {
@@ -156,7 +157,7 @@ func (odr *LesOdr) RetrieveTxStatus(ctx context.Context, req *light.TxStatusRequ
 		var (
 			// Deep copy the request, so that the partial result won't be mixed.
 			req     = &TxStatusRequest{Hashes: req.Hashes}
-			id      = genReqID()
+			id      = rand.Uint64()
 			distreq = &distReq{
 				getCost: func(dp distPeer) uint64 { return req.GetCost(dp.(*serverPeer)) },
 				canSend: func(dp distPeer) bool { return canSend[dp.(*serverPeer).id] },
@@ -200,7 +201,7 @@ func (odr *LesOdr) RetrieveTxStatus(ctx context.Context, req *light.TxStatusRequ
 func (odr *LesOdr) Retrieve(ctx context.Context, req light.OdrRequest) (err error) {
 	lreq := LesRequest(req)
 
-	reqID := genReqID()
+	reqID := rand.Uint64()
 	rq := &distReq{
 		getCost: func(dp distPeer) uint64 {
 			return lreq.GetCost(dp.(*serverPeer))

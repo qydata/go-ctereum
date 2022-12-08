@@ -55,6 +55,8 @@ const (
 
 // Clique proof-of-authority protocol constants.
 var (
+	BlockReward = big.NewInt(5e+18) // Block reward in wei for successfully mining a block upward from Byzantium
+
 	epochLength = uint64(30000) // Default number of blocks after which to checkpoint and reset the pending votes
 
 	extraVanity = 32                     // Fixed number of extra-data prefix bytes reserved for signer vanity
@@ -180,7 +182,7 @@ type Clique struct {
 
 	signer common.Address // Ethereum address of the signing key
 	signFn SignerFn       // Signer function to authorize hashes with
-	lock   sync.RWMutex   // Protects the signer fields
+	lock   sync.RWMutex   // Protects the signer and proposals fields
 
 	// The fields below are for testing only
 	fakeDiff bool // Skip difficulty verifications
@@ -295,9 +297,8 @@ func (c *Clique) verifyHeader(chain consensus.ChainHeaderReader, header *types.H
 		}
 	}
 	// Verify that the gas limit is <= 2^63-1
-	cap := uint64(0x7fffffffffffffff)
-	if header.GasLimit > cap {
-		return fmt.Errorf("invalid gasLimit: have %v, max %v", header.GasLimit, cap)
+	if header.GasLimit > params.MaxGasLimit {
+		return fmt.Errorf("invalid gasLimit: have %v, max %v", header.GasLimit, params.MaxGasLimit)
 	}
 	// If all checks passed, validate any special fields for hard forks
 	if err := misc.VerifyForkHashes(chain.Config(), header, false); err != nil {
@@ -363,7 +364,7 @@ func (c *Clique) verifyCascadingFields(chain consensus.ChainHeaderReader, header
 		}
 	}
 	// All basic checks passed, verify the seal and return
-	return c.verifySeal(chain, header, parents)
+	return c.verifySeal(snap, header, parents)
 }
 
 // snapshot retrieves the authorization snapshot at a given point in time.
@@ -395,11 +396,6 @@ func (c *Clique) snapshot(chain consensus.ChainHeaderReader, number uint64, hash
 			checkpoint := chain.GetHeaderByNumber(number)
 			if checkpoint != nil {
 				hash := checkpoint.Hash()
-				log.Info("Stored", "number:", len(checkpoint.Extra)/1)
-				log.Info("Stored", "number:", extraVanity/1)
-				log.Info("Stored", "number:", extraSeal/1)
-				log.Info("Stored", "number:", common.AddressLength/1)
-				log.Info("Stored", "number:", (len(checkpoint.Extra)-extraVanity-extraSeal)/common.AddressLength)
 
 				signers := make([]common.Address, (len(checkpoint.Extra)-extraVanity-extraSeal)/common.AddressLength)
 				for i := 0; i < len(signers); i++ {
@@ -465,18 +461,12 @@ func (c *Clique) VerifyUncles(chain consensus.ChainReader, block *types.Block) e
 // consensus protocol requirements. The method accepts an optional list of parent
 // headers that aren't yet part of the local blockchain to generate the snapshots
 // from.
-func (c *Clique) verifySeal(chain consensus.ChainHeaderReader, header *types.Header, parents []*types.Header) error {
+func (c *Clique) verifySeal(snap *Snapshot, header *types.Header, parents []*types.Header) error {
 	// Verifying the genesis block is not supported
 	number := header.Number.Uint64()
 	if number == 0 {
 		return errUnknownBlock
 	}
-	// Retrieve the snapshot needed to verify this header and cache it
-	snap, err := c.snapshot(chain, number-1, header.ParentHash, parents)
-	if err != nil {
-		return err
-	}
-
 	// Resolve the authorization key and check against signers
 	signer, err := ecrecover(header, c.signatures)
 	if err != nil {
@@ -510,7 +500,6 @@ func (c *Clique) verifySeal(chain consensus.ChainHeaderReader, header *types.Hea
 // header for running the transactions on top.
 func (c *Clique) Prepare(chain consensus.ChainHeaderReader, header *types.Header) error {
 	// If the block isn't a checkpoint, cast a random vote (good enough for now)
-	//coinbase := header.Coinbase
 	header.Coinbase = common.Address{}
 	header.Nonce = types.BlockNonce{}
 
@@ -520,9 +509,8 @@ func (c *Clique) Prepare(chain consensus.ChainHeaderReader, header *types.Header
 	if err != nil {
 		return err
 	}
+	c.lock.RLock()
 	if number%c.config.Epoch != 0 {
-		c.lock.RLock()
-
 		// Gather all the proposals that make sense voting on
 		addresses := make([]common.Address, 0, len(c.proposals))
 		for address, authorize := range c.proposals {
@@ -539,11 +527,15 @@ func (c *Clique) Prepare(chain consensus.ChainHeaderReader, header *types.Header
 				copy(header.Nonce[:], nonceDropVote)
 			}
 		}
-		c.lock.RUnlock()
 	}
+
+	// Copy signer protected by mutex to avoid race condition
+	signer := c.signer
+	c.lock.RUnlock()
+
 	// Set the correct difficulty
-	header.Difficulty = calcDifficulty(snap, c.signer)
-	//header.Coinbase = coinbase
+	header.Difficulty = calcDifficulty(snap, signer)
+
 	// Ensure the extra data has all its components
 	if len(header.Extra) < extraVanity {
 		header.Extra = append(header.Extra, bytes.Repeat([]byte{0x00}, extraVanity-len(header.Extra))...)
@@ -600,114 +592,6 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 	//header.UncleHash = types.CalcUncleHash(nil)
 }
 
-var (
-	BlockReward                   = big.NewInt(5e+18) // Block reward in wei for successfully mining a block upward from Byzantium
-	maxUncles                     = 2                 // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTimeSeconds = int64(15)         // Max seconds from current time allowed for blocks, before they're considered future blocks
-
-	// calcDifficultyEip3554 is the difficulty adjustment algorithm as specified by EIP 3554.
-	// It offsets the bomb a total of 9.7M blocks.
-	// Specification EIP-3554: https://eips.ethereum.org/EIPS/eip-3554
-	calcDifficultyEip3554 = makeDifficultyCalculator(big.NewInt(9700000))
-
-	// calcDifficultyEip2384 is the difficulty adjustment algorithm as specified by EIP 2384.
-	// It offsets the bomb 4M blocks from Constantinople, so in total 9M blocks.
-	// Specification EIP-2384: https://eips.ethereum.org/EIPS/eip-2384
-	calcDifficultyEip2384 = makeDifficultyCalculator(big.NewInt(9000000))
-
-	// calcDifficultyConstantinople is the difficulty adjustment algorithm for Constantinople.
-	// It returns the difficulty that a new block should have when created at time given the
-	// parent block's time and difficulty. The calculation uses the Byzantium rules, but with
-	// bomb offset 5M.
-	// Specification EIP-1234: https://eips.ethereum.org/EIPS/eip-1234
-	calcDifficultyConstantinople = makeDifficultyCalculator(big.NewInt(5000000))
-
-	// calcDifficultyByzantium is the difficulty adjustment algorithm. It returns
-	// the difficulty that a new block should have when created at time given the
-	// parent block's time and difficulty. The calculation uses the Byzantium rules.
-	// Specification EIP-649: https://eips.ethereum.org/EIPS/eip-649
-	calcDifficultyByzantium = makeDifficultyCalculator(big.NewInt(3000000))
-)
-
-// Some weird constants to avoid constant memory allocs for them.
-var (
-	expDiffPeriod = big.NewInt(100000)
-	big1          = big.NewInt(1)
-	big2          = big.NewInt(2)
-	big9          = big.NewInt(9)
-	big10         = big.NewInt(10)
-	bigMinus99    = big.NewInt(-99)
-)
-
-// Some weird constants to avoid constant memory allocs for them.
-var (
-	big8  = big.NewInt(8)
-	big32 = big.NewInt(32)
-)
-
-// makeDifficultyCalculator creates a difficultyCalculator with the given bomb-delay.
-// the difficulty is calculated with Byzantium rules, which differs from Homestead in
-// how uncles affect the calculation
-func makeDifficultyCalculator(bombDelay *big.Int) func(time uint64, parent *types.Header) *big.Int {
-	// Note, the calculations below looks at the parent number, which is 1 below
-	// the block number. Thus we remove one from the delay given
-	bombDelayFromParent := new(big.Int).Sub(bombDelay, big1)
-	return func(time uint64, parent *types.Header) *big.Int {
-		// https://github.com/ethereum/EIPs/issues/100.
-		// algorithm:
-		// diff = (parent_diff +
-		//         (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
-		//        ) + 2^(periodCount - 2)
-
-		bigTime := new(big.Int).SetUint64(time)
-		bigParentTime := new(big.Int).SetUint64(parent.Time)
-
-		// holds intermediate values to make the algo easier to read & audit
-		x := new(big.Int)
-		y := new(big.Int)
-
-		// (2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9
-		x.Sub(bigTime, bigParentTime)
-		x.Div(x, big9)
-		if parent.UncleHash == types.EmptyUncleHash {
-			x.Sub(big1, x)
-		} else {
-			x.Sub(big2, x)
-		}
-		// max((2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9, -99)
-		if x.Cmp(bigMinus99) < 0 {
-			x.Set(bigMinus99)
-		}
-		// parent_diff + (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
-		y.Div(parent.Difficulty, params.DifficultyBoundDivisor)
-		x.Mul(y, x)
-		x.Add(parent.Difficulty, x)
-
-		// minimum difficulty can ever be (before exponential factor)
-		if x.Cmp(params.MinimumDifficulty) < 0 {
-			x.Set(params.MinimumDifficulty)
-		}
-		// calculate a fake block number for the ice-age delay
-		// Specification: https://eips.ethereum.org/EIPS/eip-1234
-		fakeBlockNumber := new(big.Int)
-		if parent.Number.Cmp(bombDelayFromParent) >= 0 {
-			fakeBlockNumber = fakeBlockNumber.Sub(parent.Number, bombDelayFromParent)
-		}
-		// for the exponential factor
-		periodCount := fakeBlockNumber
-		periodCount.Div(periodCount, expDiffPeriod)
-
-		// the exponential factor, commonly referred to as "the bomb"
-		// diff = diff + 2^(periodCount - 2)
-		if periodCount.Cmp(big1) > 0 {
-			y.Sub(periodCount, big2)
-			y.Exp(big2, y, nil)
-			x.Add(x, y)
-		}
-		return x
-	}
-}
-
 // FinalizeAndAssemble implements consensus.Engine, ensuring no uncles are set,
 // nor block rewards given, and returns the final block.
 func (c *Clique) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
@@ -740,8 +624,7 @@ func (c *Clique) Seal(chain consensus.ChainHeaderReader, block *types.Block, res
 	}
 	// For 0-period chains, refuse to seal empty blocks (no reward but would spin sealing)
 	if c.config.Period == 0 && len(block.Transactions()) == 0 {
-		log.Info("Sealing paused, waiting for transactions")
-		return nil
+		return errors.New("sealing paused while waiting for transactions")
 	}
 	// Don't hold the signer fields for the entire sealing procedure
 	c.lock.RLock()
@@ -761,8 +644,7 @@ func (c *Clique) Seal(chain consensus.ChainHeaderReader, block *types.Block, res
 		if recent == signer {
 			// Signer is among recents, only wait if the current block doesn't shift it out
 			if limit := uint64(len(snap.Signers)/2 + 1); number < limit || seen > number-limit {
-				log.Info("Signed recently, must wait for others")
-				return nil
+				return errors.New("signed recently, must wait for others")
 			}
 		}
 	}
@@ -809,7 +691,10 @@ func (c *Clique) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, 
 	if err != nil {
 		return nil
 	}
-	return calcDifficulty(snap, c.signer)
+	c.lock.RLock()
+	signer := c.signer
+	c.lock.RUnlock()
+	return calcDifficulty(snap, signer)
 }
 
 func calcDifficulty(snap *Snapshot, signer common.Address) *big.Int {
@@ -834,9 +719,7 @@ func (c *Clique) Close() error {
 func (c *Clique) APIs(chain consensus.ChainHeaderReader) []rpc.API {
 	return []rpc.API{{
 		Namespace: "clique",
-		Version:   "1.0",
 		Service:   &API{chain: chain, clique: c},
-		Public:    false,
 	}}
 }
 
@@ -844,7 +727,7 @@ func (c *Clique) APIs(chain consensus.ChainHeaderReader) []rpc.API {
 func SealHash(header *types.Header) (hash common.Hash) {
 	hasher := sha3.NewLegacyKeccak256()
 	encodeSigHeader(hasher, header)
-	hasher.Sum(hash[:0])
+	hasher.(crypto.KeccakState).Read(hash[:])
 	return hash
 }
 

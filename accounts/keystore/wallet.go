@@ -17,9 +17,9 @@
 package keystore
 
 import (
+	ethereum "github.com/ethereum/go-ctereum"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum"
 	"github.com/ethereum/go-ctereum/accounts"
 	"github.com/ethereum/go-ctereum/core/types"
 	"github.com/ethereum/go-ctereum/crypto"

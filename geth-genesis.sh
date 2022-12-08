@@ -1,0 +1,1 @@
+go run ./cmd/geth init  /mnt/d/Shqy/server/projects/2022/chain/ct-network-config/execution/genesis.json

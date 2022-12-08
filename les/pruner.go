@@ -1,4 +1,4 @@
-// Copyright 2019 The go-ctereum Authors
+// Copyright 2020 The go-ctereum Authors
 // This file is part of the go-ctereum library.
 //
 // The go-ctereum library is free software: you can redistribute it and/or modify
@@ -62,6 +62,7 @@ func (p *pruner) loop() {
 
 	// cleanTicker is the ticker used to trigger a history clean 2 times a day.
 	var cleanTicker = time.NewTicker(12 * time.Hour)
+	defer cleanTicker.Stop()
 
 	// pruning finds the sections that have been processed by all indexers
 	// and deletes all historical chain data.

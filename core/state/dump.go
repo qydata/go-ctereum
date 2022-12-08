@@ -23,6 +23,7 @@ import (
 
 	"github.com/ethereum/go-ctereum/common"
 	"github.com/ethereum/go-ctereum/common/hexutil"
+	"github.com/ethereum/go-ctereum/core/types"
 	"github.com/ethereum/go-ctereum/log"
 	"github.com/ethereum/go-ctereum/rlp"
 	"github.com/ethereum/go-ctereum/trie"
@@ -140,7 +141,7 @@ func (s *StateDB) DumpToCollector(c DumpCollector, conf *DumpConfig) (nextKey []
 
 	it := trie.NewIterator(s.trie.NodeIterator(conf.Start))
 	for it.Next() {
-		var data Account
+		var data types.StateAccount
 		if err := rlp.DecodeBytes(it.Value, &data); err != nil {
 			panic(err)
 		}

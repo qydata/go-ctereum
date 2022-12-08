@@ -19,14 +19,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/ethereum/go-ctereum/cmd/evm/internal/compiler"
-
-	"gopkg.in/urfave/cli.v1"
 )
 
-var compileCommand = cli.Command{
+var compileCommand = &cli.Command{
 	Action:    compileCmd,
 	Name:      "compile",
 	Usage:     "compiles easm source to evm binary",
@@ -34,14 +32,14 @@ var compileCommand = cli.Command{
 }
 
 func compileCmd(ctx *cli.Context) error {
-	debug := ctx.GlobalBool(DebugFlag.Name)
+	debug := ctx.Bool(DebugFlag.Name)
 
 	if len(ctx.Args().First()) == 0 {
 		return errors.New("filename required")
 	}
 
 	fn := ctx.Args().First()
-	src, err := ioutil.ReadFile(fn)
+	src, err := os.ReadFile(fn)
 	if err != nil {
 		return err
 	}

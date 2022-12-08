@@ -36,10 +36,9 @@ import (
 	"github.com/ethereum/go-ctereum/log"
 	"github.com/ethereum/go-ctereum/params"
 	"github.com/ethereum/go-ctereum/rpc"
-	"gopkg.in/urfave/cli.v1"
 )
 
-var commandDeploy = cli.Command{
+var commandDeploy = &cli.Command{
 	Name:  "deploy",
 	Usage: "Deploy a new checkpoint oracle contract",
 	Flags: []cli.Flag{
@@ -49,10 +48,10 @@ var commandDeploy = cli.Command{
 		signersFlag,
 		thresholdFlag,
 	},
-	Action: utils.MigrateFlags(deploy),
+	Action: deploy,
 }
 
-var commandSign = cli.Command{
+var commandSign = &cli.Command{
 	Name:  "sign",
 	Usage: "Sign the checkpoint with the specified key",
 	Flags: []cli.Flag{
@@ -63,10 +62,10 @@ var commandSign = cli.Command{
 		hashFlag,
 		oracleFlag,
 	},
-	Action: utils.MigrateFlags(sign),
+	Action: sign,
 }
 
-var commandPublish = cli.Command{
+var commandPublish = &cli.Command{
 	Name:  "publish",
 	Usage: "Publish a checkpoint into the oracle",
 	Flags: []cli.Flag{
@@ -76,7 +75,7 @@ var commandPublish = cli.Command{
 		indexFlag,
 		signaturesFlag,
 	},
-	Action: utils.MigrateFlags(publish),
+	Action: publish,
 }
 
 // deploy deploys the checkpoint registrar contract.
@@ -132,7 +131,7 @@ func sign(ctx *cli.Context) error {
 		node   *rpc.Client
 		oracle *checkpointoracle.CheckpointOracle
 	)
-	if !ctx.GlobalIsSet(nodeURLFlag.Name) {
+	if !ctx.IsSet(nodeURLFlag.Name) {
 		// Offline mode signing
 		offline = true
 		if !ctx.IsSet(hashFlag.Name) {
@@ -151,7 +150,7 @@ func sign(ctx *cli.Context) error {
 		address = common.HexToAddress(ctx.String(oracleFlag.Name))
 	} else {
 		// Interactive mode signing, retrieve the data from the remote node
-		node = newRPCClient(ctx.GlobalString(nodeURLFlag.Name))
+		node = newRPCClient(ctx.String(nodeURLFlag.Name))
 
 		checkpoint := getCheckpoint(ctx, node)
 		chash, cindex, address = checkpoint.Hash(), checkpoint.SectionIndex, getContractAddr(node)
@@ -265,7 +264,7 @@ func publish(ctx *cli.Context) error {
 	}
 	// Retrieve the checkpoint we want to sign to sort the signatures
 	var (
-		client       = newRPCClient(ctx.GlobalString(nodeURLFlag.Name))
+		client       = newRPCClient(ctx.String(nodeURLFlag.Name))
 		addr, oracle = newContract(client)
 		checkpoint   = getCheckpoint(ctx, client)
 		sighash      = sighash(checkpoint.SectionIndex, addr, checkpoint.Hash())

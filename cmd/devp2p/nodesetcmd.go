@@ -29,25 +29,24 @@ import (
 	"github.com/ethereum/go-ctereum/p2p/enr"
 	"github.com/ethereum/go-ctereum/params"
 	"github.com/ethereum/go-ctereum/rlp"
-	"gopkg.in/urfave/cli.v1"
 )
 
 var (
-	nodesetCommand = cli.Command{
+	nodesetCommand = &cli.Command{
 		Name:  "nodeset",
 		Usage: "Node set tools",
-		Subcommands: []cli.Command{
+		Subcommands: []*cli.Command{
 			nodesetInfoCommand,
 			nodesetFilterCommand,
 		},
 	}
-	nodesetInfoCommand = cli.Command{
+	nodesetInfoCommand = &cli.Command{
 		Name:      "info",
 		Usage:     "Shows statistics about a node set",
 		Action:    nodesetInfo,
 		ArgsUsage: "<nodes.json>",
 	}
-	nodesetFilterCommand = cli.Command{
+	nodesetFilterCommand = &cli.Command{
 		Name:      "filter",
 		Usage:     "Filters a node set",
 		Action:    nodesetFilter,
@@ -235,6 +234,8 @@ func ethFilter(args []string) (nodeFilter, error) {
 		filter = forkid.NewStaticFilter(params.GoerliChainConfig, params.GoerliGenesisHash)
 	case "ropsten":
 		filter = forkid.NewStaticFilter(params.RopstenChainConfig, params.RopstenGenesisHash)
+	case "sepolia":
+		filter = forkid.NewStaticFilter(params.SepoliaChainConfig, params.SepoliaGenesisHash)
 	default:
 		return nil, fmt.Errorf("unknown network %q", args[0])
 	}

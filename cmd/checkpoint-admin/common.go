@@ -17,6 +17,7 @@
 package main
 
 import (
+	"github.com/urfave/cli/v2"
 	"strconv"
 
 	"github.com/ethereum/go-ctereum/accounts"
@@ -28,12 +29,11 @@ import (
 	"github.com/ethereum/go-ctereum/ethclient"
 	"github.com/ethereum/go-ctereum/params"
 	"github.com/ethereum/go-ctereum/rpc"
-	"gopkg.in/urfave/cli.v1"
 )
 
 // newClient creates a client with specified remote URL.
 func newClient(ctx *cli.Context) *ethclient.Client {
-	client, err := ethclient.Dial(ctx.GlobalString(nodeURLFlag.Name))
+	client, err := ethclient.Dial(ctx.String(nodeURLFlag.Name))
 	if err != nil {
 		utils.Fatalf("Failed to connect to Ethereum node: %v", err)
 	}
@@ -64,9 +64,9 @@ func getContractAddr(client *rpc.Client) common.Address {
 func getCheckpoint(ctx *cli.Context, client *rpc.Client) *params.TrustedCheckpoint {
 	var checkpoint *params.TrustedCheckpoint
 
-	if ctx.GlobalIsSet(indexFlag.Name) {
+	if ctx.IsSet(indexFlag.Name) {
 		var result [3]string
-		index := uint64(ctx.GlobalInt64(indexFlag.Name))
+		index := uint64(ctx.Int64(indexFlag.Name))
 		if err := client.Call(&result, "les_getCheckpoint", index); err != nil {
 			utils.Fatalf("Failed to get local checkpoint %v, please ensure the les API is exposed", err)
 		}

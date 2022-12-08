@@ -59,7 +59,6 @@ func (ui *CommandlineUI) readString() string {
 }
 
 func (ui *CommandlineUI) OnInputRequired(info UserInputRequest) (UserInputResponse, error) {
-
 	fmt.Printf("## %s\n\n%s\n", info.Title, info.Prompt)
 	defer fmt.Println("-----------------------")
 	if info.IsPassword {
@@ -113,10 +112,15 @@ func (ui *CommandlineUI) ApproveTx(request *SignTxRequest) (SignTxResponse, erro
 	} else {
 		fmt.Printf("to:    <contact creation>\n")
 	}
-	fmt.Printf("from:     %v\n", request.Transaction.From.String())
-	fmt.Printf("value:    %v wei\n", weival)
-	fmt.Printf("gas:      %v (%v)\n", request.Transaction.Gas, uint64(request.Transaction.Gas))
-	fmt.Printf("gasprice: %v wei\n", request.Transaction.GasPrice.ToInt())
+	fmt.Printf("from:               %v\n", request.Transaction.From.String())
+	fmt.Printf("value:              %v wei\n", weival)
+	fmt.Printf("gas:                %v (%v)\n", request.Transaction.Gas, uint64(request.Transaction.Gas))
+	if request.Transaction.MaxFeePerGas != nil {
+		fmt.Printf("maxFeePerGas:          %v wei\n", request.Transaction.MaxFeePerGas.ToInt())
+		fmt.Printf("maxPriorityFeePerGas:  %v wei\n", request.Transaction.MaxPriorityFeePerGas.ToInt())
+	} else {
+		fmt.Printf("gasprice: %v wei\n", request.Transaction.GasPrice.ToInt())
+	}
 	fmt.Printf("nonce:    %v (%v)\n", request.Transaction.Nonce, uint64(request.Transaction.Nonce))
 	if chainId := request.Transaction.ChainID; chainId != nil {
 		fmt.Printf("chainid:  %v\n", chainId)
@@ -142,7 +146,6 @@ func (ui *CommandlineUI) ApproveTx(request *SignTxRequest) (SignTxResponse, erro
 			fmt.Printf("  * %s : %s\n", m.Typ, m.Message)
 		}
 		fmt.Println()
-
 	}
 	fmt.Printf("\n")
 	showMetadata(request.Meta)
@@ -204,7 +207,6 @@ func (ui *CommandlineUI) ApproveListing(request *ListRequest) (ListResponse, err
 
 // ApproveNewAccount prompt the user for confirmation to create new Account, and reveal to caller
 func (ui *CommandlineUI) ApproveNewAccount(request *NewAccountRequest) (NewAccountResponse, error) {
-
 	ui.mu.Lock()
 	defer ui.mu.Unlock()
 
@@ -240,7 +242,6 @@ func (ui *CommandlineUI) OnApprovedTx(tx ethapi.SignTransactionResult) {
 }
 
 func (ui *CommandlineUI) OnSignerStartup(info StartupInfo) {
-
 	fmt.Printf("------- Signer info -------\n")
 	for k, v := range info.Info {
 		fmt.Printf("* %v : %v\n", k, v)

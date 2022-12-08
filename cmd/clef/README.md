@@ -570,8 +570,8 @@ Results in the following invocation on the UI:
   "params": [
     {
       "transaction": {
-        "from": "0x694267f14675d7e1b9494fd8d72fefe1755710fa",
-        "to": "0x07a565b7ed7d7a678680a4c162885bedbb695fe0",
+        "from": "0x0x694267f14675d7e1b9494fd8d72fefe1755710fa",
+        "to": "0x0x07a565b7ed7d7a678680a4c162885bedbb695fe0",
         "gas": "0x333",
         "gasPrice": "0x1",
         "value": "0x0",
@@ -615,8 +615,8 @@ curl -i -H "Content-Type: application/json" -X POST --data '{"jsonrpc":"2.0","me
   "params": [
     {
       "transaction": {
-        "from": "0x694267f14675d7e1b9494fd8d72fefe1755710fa",
-        "to": "0x07a565b7ed7d7a678680a4c162885bedbb695fe0",
+        "from": "0x0x694267f14675d7e1b9494fd8d72fefe1755710fa",
+        "to": "0x0x07a565b7ed7d7a678680a4c162885bedbb695fe0",
         "gas": "0x333",
         "gasPrice": "0x1",
         "value": "0x0",

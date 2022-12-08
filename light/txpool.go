@@ -71,7 +71,7 @@ type TxPool struct {
 	eip2718  bool // Fork indicator whether we are in the eip2718 stage.
 }
 
-// TxRelayBackend provides an interface to the mechanism that forwards transacions
+// TxRelayBackend provides an interface to the mechanism that forwards transactions
 // to the ETH network. The implementations of the functions should be non-blocking.
 //
 // Send instructs backend to forward new transactions
@@ -398,7 +398,7 @@ func (pool *TxPool) add(ctx context.Context, tx *types.Transaction) error {
 	hash := tx.Hash()
 
 	if pool.pending[hash] != nil {
-		return fmt.Errorf("Known transaction (%x)", hash[:4])
+		return fmt.Errorf("known transaction (%x)", hash[:4])
 	}
 	err := pool.validateTx(ctx, tx)
 	if err != nil {
@@ -503,6 +503,25 @@ func (pool *TxPool) Content() (map[common.Address]types.Transactions, map[common
 	// There are no queued transactions in a light pool, just return an empty map
 	queued := make(map[common.Address]types.Transactions)
 	return pending, queued
+}
+
+// ContentFrom retrieves the data content of the transaction pool, returning the
+// pending as well as queued transactions of this address, grouped by nonce.
+func (pool *TxPool) ContentFrom(addr common.Address) (types.Transactions, types.Transactions) {
+	pool.mu.RLock()
+	defer pool.mu.RUnlock()
+
+	// Retrieve the pending transactions and sort by nonce
+	var pending types.Transactions
+	for _, tx := range pool.pending {
+		account, _ := types.Sender(pool.signer, tx)
+		if account != addr {
+			continue
+		}
+		pending = append(pending, tx)
+	}
+	// There are no queued transactions in a light pool, just return an empty map
+	return pending, types.Transactions{}
 }
 
 // RemoveTransactions removes all given transactions from the pool.
