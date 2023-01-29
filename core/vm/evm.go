@@ -18,16 +18,16 @@ package vm
 
 import (
 	"errors"
-	"github.com/ethereum/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/accounts/abi"
 	"math/big"
 	"strings"
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/params"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // emptyCodeHash is used by create to ensure deployment is disallowed to already

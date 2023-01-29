@@ -19,10 +19,10 @@ package keystore
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum"
-	"github.com/ethereum/go-ctereum/accounts"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/crypto"
 )
 
 // keystoreWallet implements the accounts.Wallet interface for the original

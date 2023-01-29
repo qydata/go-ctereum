@@ -29,13 +29,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ctereum/rpc"
 	"github.com/gorilla/websocket"
 	"github.com/julienschmidt/httprouter"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/simulations/adapters"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // DefaultClient is the default simulation API client which expects the API

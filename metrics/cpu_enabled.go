@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
 
+//go:build !ios
 // +build !ios
 
 package metrics
 
 import (
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 	"github.com/shirou/gopsutil/cpu"
 )
 

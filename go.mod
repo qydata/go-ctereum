@@ -1,4 +1,4 @@
-module github.com/ethereum/go-ctereum
+module github.com/qydata/go-ctereum
 
 go 1.15
 

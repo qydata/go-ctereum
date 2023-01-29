@@ -25,13 +25,13 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/accounts/abi"
-	"github.com/ethereum/go-ctereum/accounts/abi/bind"
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/common/compiler"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/internal/flags"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/common/compiler"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

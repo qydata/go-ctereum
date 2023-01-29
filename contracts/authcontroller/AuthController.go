@@ -20,9 +20,9 @@ package authcontroller
 //go:generate abigen --sol contract/oracle.sol --pkg contract --out contract/oracle.go
 
 import (
-	"github.com/ethereum/go-ctereum/accounts/abi/bind"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/contracts/authcontroller/contract"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/contracts/authcontroller/contract"
 )
 
 type CheckpointAuth struct {

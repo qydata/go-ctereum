@@ -18,12 +18,12 @@ package core
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ctereum/common"
-	cmath "github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	cmath "github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/params"
 	"math"
 	"math/big"
 )

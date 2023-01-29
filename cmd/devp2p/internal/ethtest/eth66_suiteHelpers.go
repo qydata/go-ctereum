@@ -21,11 +21,11 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/eth/protocols/eth"
-	"github.com/ethereum/go-ctereum/internal/utesting"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/eth/protocols/eth"
+	"github.com/qydata/go-ctereum/internal/utesting"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/rlp"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -17,9 +17,9 @@
 package eth
 
 import (
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/eth/protocols/snap"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/eth/protocols/snap"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 // snapHandler implements the snap.Backend interface to handle the various network

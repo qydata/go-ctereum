@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/node"
+	"github.com/qydata/go-ctereum/node"
 	"gopkg.in/urfave/cli.v1"
 )
 

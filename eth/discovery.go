@@ -17,10 +17,10 @@
 package eth
 
 import (
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/forkid"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/forkid"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 // ethEntry is the "eth" ENR entry which advertises eth protocol

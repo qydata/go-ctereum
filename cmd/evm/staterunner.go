@@ -23,10 +23,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/tests"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/tests"
 
 	"gopkg.in/urfave/cli.v1"
 )

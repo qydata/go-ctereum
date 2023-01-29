@@ -2,8 +2,8 @@ package authcontroller
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ctereum/accounts/abi"
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/common"
 	"strings"
 	"testing"
 )

@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common/hexutil"
 )
 
 // Tests that data bitset encoding and decoding works and is bijective.

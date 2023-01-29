@@ -21,7 +21,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 var ErrNoReply = errors.New("no reply for given request")

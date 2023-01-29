@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/common/mclock"
 )
 
 // Subscription represents a stream of events. The carrier of the events is typically a

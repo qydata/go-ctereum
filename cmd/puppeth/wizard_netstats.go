@@ -23,9 +23,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/log"
 	"github.com/olekukonko/tablewriter"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // networkStats verifies the status of network components and generates a protip

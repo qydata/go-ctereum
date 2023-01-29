@@ -26,15 +26,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/console/prompt"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/eth"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/internal/jsre"
-	"github.com/ethereum/go-ctereum/miner"
-	"github.com/ethereum/go-ctereum/node"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/ethash"
+	"github.com/qydata/go-ctereum/console/prompt"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/eth"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/internal/jsre"
+	"github.com/qydata/go-ctereum/miner"
+	"github.com/qydata/go-ctereum/node"
 )
 
 const (

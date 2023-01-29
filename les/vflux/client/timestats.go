@@ -21,8 +21,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/ethereum/go-ctereum/les/utils"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/les/utils"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 const (

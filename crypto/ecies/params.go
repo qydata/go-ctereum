@@ -42,7 +42,7 @@ import (
 	"fmt"
 	"hash"
 
-	ethcrypto "github.com/ethereum/go-ctereum/crypto"
+	ethcrypto "github.com/qydata/go-ctereum/crypto"
 )
 
 var (

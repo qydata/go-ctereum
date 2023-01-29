@@ -17,7 +17,7 @@
 package vm
 
 import (
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/params"
 )
 
 type (

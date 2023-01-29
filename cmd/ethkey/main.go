@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/internal/flags"
 	"gopkg.in/urfave/cli.v1"
 )
 

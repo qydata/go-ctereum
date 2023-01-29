@@ -20,10 +20,10 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/params"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/params"
 )
 
 type dummyContractRef struct {

@@ -23,7 +23,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 func TestState(t *testing.T) {

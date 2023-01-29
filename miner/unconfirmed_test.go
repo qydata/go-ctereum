@@ -19,7 +19,7 @@ package miner
 import (
 	"testing"
 
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 // noopChainRetriever is an implementation of headerRetriever that always

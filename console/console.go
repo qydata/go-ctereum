@@ -29,13 +29,13 @@ import (
 	"syscall"
 
 	"github.com/dop251/goja"
-	"github.com/ethereum/go-ctereum/console/prompt"
-	"github.com/ethereum/go-ctereum/internal/jsre"
-	"github.com/ethereum/go-ctereum/internal/jsre/deps"
-	"github.com/ethereum/go-ctereum/internal/web3ext"
-	"github.com/ethereum/go-ctereum/rpc"
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
+	"github.com/qydata/go-ctereum/console/prompt"
+	"github.com/qydata/go-ctereum/internal/jsre"
+	"github.com/qydata/go-ctereum/internal/jsre/deps"
+	"github.com/qydata/go-ctereum/internal/web3ext"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 var (

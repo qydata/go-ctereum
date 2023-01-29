@@ -26,7 +26,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/common/math"
 )
 
 type testEncoder struct {

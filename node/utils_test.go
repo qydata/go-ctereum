@@ -20,8 +20,8 @@
 package node
 
 import (
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // NoopLifecycle is a trivial implementation of the Service interface.

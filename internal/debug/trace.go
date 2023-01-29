@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
 
-//+build go1.5
+//go:build go1.5
+// +build go1.5
 
 package debug
 
@@ -23,7 +24,7 @@ import (
 	"os"
 	"runtime/trace"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // StartGoTrace turns on tracing, writing to the given file.

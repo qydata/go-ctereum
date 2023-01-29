@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/ethereum/go-ctereum/cmd/evm/internal/compiler"
+	"github.com/qydata/go-ctereum/cmd/evm/internal/compiler"
 
 	"gopkg.in/urfave/cli.v1"
 )

@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/ethereum/go-ctereum/cmd/devp2p/internal/ethtest"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/internal/utesting"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/rlpx"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/cmd/devp2p/internal/ethtest"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/internal/utesting"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/rlpx"
+	"github.com/qydata/go-ctereum/rlp"
 	"gopkg.in/urfave/cli.v1"
 )
 

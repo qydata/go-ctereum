@@ -20,9 +20,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ethereum/go-ctereum"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // PublicDownloaderAPI provides an API which gives information about the current synchronisation status.

@@ -31,7 +31,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // Command line flags to configure the interpreters.

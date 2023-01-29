@@ -21,8 +21,8 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/metrics"
 )
 
 // The fields below define the low level database schema prefixing.

@@ -2,9 +2,9 @@ package authcontroller
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/contracts/authcontroller/contract"
-	"github.com/ethereum/go-ctereum/ethclient"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/contracts/authcontroller/contract"
+	"github.com/qydata/go-ctereum/ethclient"
 	"math/big"
 	"testing"
 )

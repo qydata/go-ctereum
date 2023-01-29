@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/tests"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/tests"
 	"gopkg.in/urfave/cli.v1"
 )
 

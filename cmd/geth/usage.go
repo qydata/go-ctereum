@@ -22,9 +22,9 @@ import (
 	"io"
 	"sort"
 
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/internal/debug"
-	"github.com/ethereum/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/internal/debug"
+	"github.com/qydata/go-ctereum/internal/flags"
 	"gopkg.in/urfave/cli.v1"
 )
 

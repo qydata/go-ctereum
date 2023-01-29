@@ -19,7 +19,7 @@ package vm
 import (
 	"testing"
 
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/crypto"
 )
 
 func TestJumpDestAnalysis(t *testing.T) {

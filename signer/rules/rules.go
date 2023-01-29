@@ -23,11 +23,11 @@ import (
 	"strings"
 
 	"github.com/dop251/goja"
-	"github.com/ethereum/go-ctereum/internal/ethapi"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/signer/core"
-	"github.com/ethereum/go-ctereum/signer/rules/deps"
-	"github.com/ethereum/go-ctereum/signer/storage"
+	"github.com/qydata/go-ctereum/internal/ethapi"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/signer/core"
+	"github.com/qydata/go-ctereum/signer/rules/deps"
+	"github.com/qydata/go-ctereum/signer/storage"
 )
 
 var (

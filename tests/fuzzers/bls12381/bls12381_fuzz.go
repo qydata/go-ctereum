@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
 
+//go:build gofuzz
 // +build gofuzz
 
 package bls
@@ -28,7 +29,7 @@ import (
 	gnark "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fp"
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fr"
-	"github.com/ethereum/go-ctereum/crypto/bls12381"
+	"github.com/qydata/go-ctereum/crypto/bls12381"
 )
 
 func FuzzCrossPairing(data []byte) int {

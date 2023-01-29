@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/event"
+	"github.com/qydata/go-ctereum/event"
 )
 
 // This example demonstrates how SubscriptionScope can be used to control the lifetime of

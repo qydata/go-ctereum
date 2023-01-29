@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/common/mclock"
 )
 
 func TestExpHeap(t *testing.T) {

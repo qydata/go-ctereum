@@ -21,8 +21,8 @@ package geth
 import (
 	"errors"
 
-	"github.com/ethereum/go-ctereum"
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // Subscription represents an event subscription where events are

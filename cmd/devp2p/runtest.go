@@ -19,9 +19,9 @@ package main
 import (
 	"os"
 
-	"github.com/ethereum/go-ctereum/cmd/devp2p/internal/v4test"
-	"github.com/ethereum/go-ctereum/internal/utesting"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/cmd/devp2p/internal/v4test"
+	"github.com/qydata/go-ctereum/internal/utesting"
+	"github.com/qydata/go-ctereum/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

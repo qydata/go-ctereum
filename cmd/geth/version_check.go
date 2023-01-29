@@ -25,8 +25,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/log"
 	"github.com/jedisct1/go-minisign"
+	"github.com/qydata/go-ctereum/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

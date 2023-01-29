@@ -21,7 +21,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 // Iterator for disassembled EVM instructions

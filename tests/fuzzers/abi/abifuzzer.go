@@ -21,8 +21,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/accounts/abi"
 	fuzz "github.com/google/gofuzz"
+	"github.com/qydata/go-ctereum/accounts/abi"
 )
 
 var (

@@ -19,7 +19,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 func TestVM(t *testing.T) {

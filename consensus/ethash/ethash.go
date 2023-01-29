@@ -34,11 +34,11 @@ import (
 	"unsafe"
 
 	"github.com/edsrzf/mmap-go"
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/rpc"
 	"github.com/hashicorp/golang-lru/simplelru"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 var ErrInvalidDumpMagic = errors.New("invalid dump magic")

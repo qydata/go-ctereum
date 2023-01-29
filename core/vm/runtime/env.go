@@ -17,8 +17,8 @@
 package runtime
 
 import (
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 func NewEnv(cfg *Config) *vm.EVM {
