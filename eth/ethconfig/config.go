@@ -203,6 +203,30 @@ type Config struct {
 
 	// Berlin block override (TODO: remove after the fork)
 	OverrideLondon *big.Int `toml:",omitempty"`
+
+	// URL to connect to Heimdall node
+	HeimdallURL string
+
+	// No heimdall service
+	WithoutHeimdall bool
+
+	// Address to connect to Heimdall gRPC server
+	HeimdallgRPCAddress string
+
+	// Run heimdall service as a child process
+	RunHeimdall bool
+
+	// Arguments to pass to heimdall service
+	RunHeimdallArgs string
+
+	// Bor logs flag
+	BorLogs bool
+
+	// Arrow Glacier block override (TODO: remove after the fork)
+	OverrideArrowGlacier *big.Int `toml:",omitempty"`
+
+	// OverrideTerminalTotalDifficulty (TODO: remove after the fork)
+	OverrideTerminalTotalDifficulty *big.Int `toml:",omitempty"`
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.

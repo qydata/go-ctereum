@@ -20,9 +20,11 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/qydata/go-ctereum/eth/downloader"
 	"math/big"
 	"os"
 	"reflect"
+	"time"
 	"unicode"
 
 	"gopkg.in/urfave/cli.v1"
@@ -121,6 +123,10 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 		if err := loadConfig(file, &cfg); err != nil {
 			utils.Fatalf("%v", err)
 		}
+	}
+
+	if ctx.GlobalIsSet(utils.BorMainnetFlag.Name) {
+		setDefaultBorMainnetGethConfig(ctx, &cfg)
 	}
 
 	// Apply flags.
@@ -227,4 +233,27 @@ func applyMetricConfig(ctx *cli.Context, cfg *gethConfig) {
 	if ctx.GlobalIsSet(utils.MetricsInfluxDBTagsFlag.Name) {
 		cfg.Metrics.InfluxDBTags = ctx.GlobalString(utils.MetricsInfluxDBTagsFlag.Name)
 	}
+}
+
+func setDefaultBorMainnetGethConfig(ctx *cli.Context, config *gethConfig) {
+	config.Node.P2P.ListenAddr = fmt.Sprintf(":%d", 30303)
+	config.Node.HTTPHost = "0.0.0.0"
+	config.Node.HTTPVirtualHosts = []string{"*"}
+	config.Node.HTTPCors = []string{"*"}
+	config.Node.HTTPPort = 8545
+	config.Node.IPCPath = utils.MakeDataDir(ctx) + "/bor.ipc"
+	config.Node.HTTPModules = []string{"eth", "net", "web3", "txpool", "bor"}
+	config.Eth.SyncMode = downloader.FullSync
+	config.Eth.NetworkId = 137
+	config.Eth.Miner.GasCeil = 20000000
+	//--miner.gastarget is depreceated, No longed used
+	config.Eth.TxPool.NoLocals = true
+	config.Eth.TxPool.AccountSlots = 16
+	config.Eth.TxPool.GlobalSlots = 131072
+	config.Eth.TxPool.AccountQueue = 64
+	config.Eth.TxPool.GlobalQueue = 131072
+	config.Eth.TxPool.Lifetime = 90 * time.Minute
+	config.Node.P2P.MaxPeers = 50
+	config.Metrics.Enabled = true
+	// --pprof is enabled in 'internal/debug/flags.go'
 }

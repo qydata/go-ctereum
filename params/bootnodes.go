@@ -64,6 +64,8 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 		net = "rinkeby"
 	case GoerliGenesisHash:
 		net = "goerli"
+	case BorMainnetGenesisHash:
+		net = "bor-mainnet"
 	default:
 		return ""
 	}

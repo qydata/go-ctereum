@@ -138,6 +138,7 @@ var (
 		utils.RopstenFlag,
 		utils.RinkebyFlag,
 		utils.GoerliFlag,
+		utils.BorMainnetFlag,
 		utils.BaikalFlag,
 		utils.VMEnableDebugFlag,
 		utils.NetworkIdFlag,
@@ -284,6 +285,10 @@ func prepare(ctx *cli.Context) {
 
 	case !ctx.GlobalIsSet(utils.NetworkIdFlag.Name):
 		log.Info("Starting Geth on Ethereum mainnet...")
+
+	case ctx.GlobalIsSet(utils.BorMainnetFlag.Name):
+		log.Info("Starting Bor on Bor mainnet...")
+
 	}
 	// If we're a full node on mainnet without --cache specified, bump default cache allowance
 	if ctx.GlobalString(utils.SyncModeFlag.Name) != "light" && !ctx.GlobalIsSet(utils.CacheFlag.Name) && !ctx.GlobalIsSet(utils.NetworkIdFlag.Name) {

@@ -163,6 +163,10 @@ var (
 		Name:  "ropsten",
 		Usage: "Ropsten network: pre-configured proof-of-work test network",
 	}
+	BorMainnetFlag = cli.BoolFlag{
+		Name:  "bor-mainnet",
+		Usage: "Bor mainnet",
+	}
 	DeveloperFlag = cli.BoolFlag{
 		Name:  "dev",
 		Usage: "Ephemeral proof-of-authority network with a pre-funded developer account, mining enabled",
@@ -1841,15 +1845,31 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 
 // MakeChain creates a chain manager from set command line flags.
 func MakeChain(ctx *cli.Context, stack *node.Node) (chain *core.BlockChain, chainDb ethdb.Database) {
-	var err error
+	// expecting the last argument to be the genesis file
+	genesis, err := getGenesis(ctx.Args().Get(len(ctx.Args()) - 1))
+	if err != nil {
+		Fatalf("Valid genesis file is required as argument: {}", err)
+	}
+
 	chainDb = MakeChainDatabase(ctx, stack, false) // TODO(rjl493456442) support read-only database
 	config, _, err := core.SetupGenesisBlock(chainDb, MakeGenesis(ctx))
 	if err != nil {
 		Fatalf("%v", err)
 	}
 	var engine consensus.Engine
+	var ethereum *eth.Ethereum
 	if config.Clique != nil {
 		engine = clique.New(config.Clique, chainDb)
+	} else if config.Bor != nil {
+		ethereum = CreateBorEthereum(&eth.Config{
+			Genesis:             genesis,
+			HeimdallURL:         ctx.GlobalString(HeimdallURLFlag.Name),
+			WithoutHeimdall:     ctx.GlobalBool(WithoutHeimdallFlag.Name),
+			HeimdallgRPCAddress: ctx.GlobalString(HeimdallgRPCAddressFlag.Name),
+			RunHeimdall:         ctx.GlobalBool(RunHeimdallFlag.Name),
+			RunHeimdallArgs:     ctx.GlobalString(RunHeimdallArgsFlag.Name),
+		})
+		engine = ethereum.Engine()
 	} else {
 		engine = ethash.NewFaker()
 		if !ctx.GlobalBool(FakePoWFlag.Name) {

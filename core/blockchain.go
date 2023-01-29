@@ -28,6 +28,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/qydata/go-ctereum/common"
 	"github.com/qydata/go-ctereum/common/mclock"
 	"github.com/qydata/go-ctereum/common/prque"
@@ -44,7 +45,6 @@ import (
 	"github.com/qydata/go-ctereum/params"
 	"github.com/qydata/go-ctereum/rlp"
 	"github.com/qydata/go-ctereum/trie"
-	lru "github.com/hashicorp/golang-lru"
 )
 
 var (
@@ -209,6 +209,12 @@ type BlockChain struct {
 
 	shouldPreserve  func(*types.Block) bool        // Function used to determine whether should preserve the given block.
 	terminateInsert func(common.Hash, uint64) bool // Testing hook used to terminate ancient receipt chain insertion.
+
+	// Bor related changes
+	borReceiptsCache *lru.Cache             // Cache for the most recent bor receipt receipts per block
+	stateSyncData    []*types.StateSyncData // State sync data
+	stateSyncFeed    event.Feed             // State sync feed
+	chain2HeadFeed   event.Feed             // Reorg/NewHead/Fork data feed
 }
 
 // NewBlockChain returns a fully initialised block chain using information
