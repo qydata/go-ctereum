@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // nginxDockerfile is theis the Dockerfile required to build an nginx reverse-

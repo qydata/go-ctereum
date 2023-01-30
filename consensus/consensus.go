@@ -21,11 +21,11 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // ChainHeaderReader defines a small collection of methods needed to access the local

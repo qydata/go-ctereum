@@ -166,7 +166,7 @@ func TestUPNP_DDWRT(t *testing.T) {
 		if os.Getenv("CI") != "" {
 			t.Fatalf("not discovered")
 		} else {
-			t.Skipf("UPnP not discovered (known issue, see https://github.com/ethereum/go-tempereum/issues/21476)")
+			t.Skipf("UPnP not discovered (known issue, see https://github.com/qydata/go-ctereum/issues/21476)")
 		}
 	}
 	upnp, _ := discovered.(*upnp)

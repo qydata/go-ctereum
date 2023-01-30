@@ -22,11 +22,11 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/ethdb"
-	"github.com/ethereum/go-tempereum/params"
-	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 

@@ -23,12 +23,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/accounts/abi/bind"
-	"github.com/ethereum/go-tempereum/accounts/abi/bind/backends"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/accounts/abi/bind/backends"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/crypto"
 )
 
 var testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")

@@ -19,9 +19,9 @@ package simulations
 import (
 	"testing"
 
-	"github.com/ethereum/go-tempereum/node"
-	"github.com/ethereum/go-tempereum/p2p/enode"
-	"github.com/ethereum/go-tempereum/p2p/simulations/adapters"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/simulations/adapters"
 )
 
 func newTestNetwork(t *testing.T, nodeCount int) (*Network, []enode.ID) {

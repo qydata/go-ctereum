@@ -26,7 +26,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // Type enumerator

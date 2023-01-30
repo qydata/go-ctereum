@@ -22,12 +22,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/accounts/abi/bind"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/light"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/light"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // Test light syncing which will download all headers from genesis.
@@ -196,7 +196,7 @@ func testMissOracleBackend(t *testing.T, hasCheckpoint bool, protocol int) {
 	// that user wants to unlock something which blocks the oracle backend
 	// initialisation. But at the same time syncing starts.
 	//
-	// See https://github.com/ethereum/go-tempereum/issues/20097 for more detail.
+	// See https://github.com/qydata/go-ctereum/issues/20097 for more detail.
 	//
 	// In this case, client should run light sync or legacy checkpoint sync
 	// if hardcoded checkpoint is configured.

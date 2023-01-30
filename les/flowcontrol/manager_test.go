@@ -21,7 +21,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common/mclock"
+	"github.com/qydata/go-ctereum/common/mclock"
 )
 
 type testNode struct {

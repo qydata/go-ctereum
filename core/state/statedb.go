@@ -24,15 +24,15 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state/snapshot"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/state/snapshot"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 type revision struct {
@@ -600,8 +600,8 @@ func (s *StateDB) createObject(addr common.Address) (newobj, prev *stateObject) 
 // CreateAccount is called during the EVM CREATE operation. The situation might arise that
 // a contract does the following:
 //
-//   1. sends funds to sha(account ++ (nonce + 1))
-//   2. tx_create(sha(account ++ nonce)) (note that this gets the address of 1)
+//  1. sends funds to sha(account ++ (nonce + 1))
+//  2. tx_create(sha(account ++ nonce)) (note that this gets the address of 1)
 //
 // Carrying over the balance ensures that Ether doesn't disappear.
 func (s *StateDB) CreateAccount(addr common.Address) {
@@ -660,7 +660,7 @@ func (s *StateDB) Copy() *StateDB {
 	}
 	// Copy the dirty states, logs, and preimages
 	for addr := range s.journal.dirties {
-		// As documented [here](https://github.com/ethereum/go-ctereum/pull/16485#issuecomment-380438527),
+		// As documented [here](https://github.com/qydata/go-ctereum/pull/16485#issuecomment-380438527),
 		// and in the Finalise-method, there is a case where an object is in the journal but not
 		// in the stateObjects: OOG after touch on ripeMD prior to Byzantium. Thus, we need to check for
 		// nil

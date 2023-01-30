@@ -23,17 +23,17 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/eth/protocols/snap"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
 	fuzz "github.com/google/gofuzz"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/ethash"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/eth/protocols/snap"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 var trieRoot common.Hash

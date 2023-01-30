@@ -20,9 +20,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 type devnull struct{ len int }

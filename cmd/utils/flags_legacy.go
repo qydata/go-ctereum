@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"github.com/urfave/cli/v2"
 
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/internal/flags"
 )
 
 var ShowDeprecated = &cli.Command{

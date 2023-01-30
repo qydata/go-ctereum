@@ -24,14 +24,14 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/ethdb/memorydb"
-	"github.com/ethereum/go-ctereum/les/vflux"
-	vfs "github.com/ethereum/go-ctereum/les/vflux/server"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/ethdb/memorydb"
+	"github.com/qydata/go-ctereum/les/vflux"
+	vfs "github.com/qydata/go-ctereum/les/vflux/server"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 var (

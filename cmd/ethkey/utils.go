@@ -23,7 +23,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/cmd/utils"
 )
 
 // getPassphrase obtains a passphrase given by the user.  It first checks the

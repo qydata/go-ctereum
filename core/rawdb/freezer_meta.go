@@ -20,8 +20,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 const freezerVersion = 1 // The initial version tag of freezer table metadata

@@ -19,9 +19,9 @@ package client
 import (
 	"sync"
 
-	"github.com/ethereum/go-ctereum/les/utils"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/nodestate"
+	"github.com/qydata/go-ctereum/les/utils"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/nodestate"
 )
 
 // WrsIterator returns nodes from the specified selectable set with a weighted random

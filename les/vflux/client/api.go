@@ -19,9 +19,9 @@ package client
 import (
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/les/utils"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/les/utils"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 // PrivateClientAPI implements the vflux client side API

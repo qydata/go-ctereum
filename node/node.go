@@ -28,16 +28,16 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/accounts"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/rpc"
 	"github.com/prometheus/tsdb/fileutil"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // Node is a container on which services can be registered.

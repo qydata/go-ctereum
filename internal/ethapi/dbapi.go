@@ -17,8 +17,8 @@
 package ethapi
 
 import (
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
 )
 
 // DbGet returns the raw value of a key stored in the database.

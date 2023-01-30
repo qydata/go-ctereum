@@ -21,11 +21,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/eth"
-	"github.com/ethereum/go-tempereum/eth/ethconfig"
-	"github.com/ethereum/go-tempereum/internal/utesting"
-	"github.com/ethereum/go-tempereum/node"
-	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/qydata/go-ctereum/eth"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/internal/utesting"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/p2p"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"io"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/bor/clerk"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/bor/clerk"
 
 	proto "github.com/maticnetwork/polyproto/heimdall"
 )

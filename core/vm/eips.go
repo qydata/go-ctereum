@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/ethereum/go-ctereum/params"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var activators = map[int]func(*JumpTable){

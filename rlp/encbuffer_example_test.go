@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 func ExampleEncoderBuffer() {

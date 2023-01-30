@@ -25,8 +25,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

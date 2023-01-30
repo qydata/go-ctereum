@@ -3,9 +3,9 @@ package heimdallgrpc
 import (
 	"context"
 
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/span"
-	"github.com/ethereum/go-ctereum/consensus/bor/valset"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/span"
+	"github.com/qydata/go-ctereum/consensus/bor/valset"
+	"github.com/qydata/go-ctereum/log"
 
 	proto "github.com/maticnetwork/polyproto/heimdall"
 	protoutils "github.com/maticnetwork/polyproto/utils"

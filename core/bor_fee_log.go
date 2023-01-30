@@ -3,9 +3,9 @@ package core
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 var transferLogSig = common.HexToHash("0xe6497e3ee548a3372136af2fcb0696db31fc6cf20260707645068bd3fe97f3c4")

@@ -1,7 +1,7 @@
 package span
 
 import (
-	"github.com/ethereum/go-ctereum/consensus/bor/valset"
+	"github.com/qydata/go-ctereum/consensus/bor/valset"
 )
 
 // Span Bor represents a current bor span

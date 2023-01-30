@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/les/utils"
+	"github.com/qydata/go-ctereum/les/utils"
 )
 
 func TestTransition(t *testing.T) {

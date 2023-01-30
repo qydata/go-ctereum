@@ -20,21 +20,21 @@ package downloader
 import (
 	"errors"
 	"fmt"
-	ethereum "github.com/ethereum/go-ctereum"
+	ethereum "github.com/qydata/go-ctereum"
 	"math/big"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state/snapshot"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/eth/protocols/snap"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/state/snapshot"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/eth/protocols/snap"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var (

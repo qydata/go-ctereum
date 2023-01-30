@@ -23,8 +23,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 func TestChainIterator(t *testing.T) {

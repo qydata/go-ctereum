@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p"
 )
 
 var (

@@ -20,9 +20,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/state/snapshot"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/state/snapshot"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 // Constants to match up protocol versions and messages

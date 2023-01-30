@@ -19,7 +19,7 @@ package bloombits
 import (
 	"errors"
 
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 var (

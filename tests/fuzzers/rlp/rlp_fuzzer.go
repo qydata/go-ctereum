@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 func decodeEncode(input []byte, val interface{}, i int) {

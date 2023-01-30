@@ -24,14 +24,14 @@ import (
 	"net"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/simulations/pipes"
-	"github.com/ethereum/go-ctereum/rpc"
 	"github.com/gorilla/websocket"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/simulations/pipes"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // SimAdapter is a NodeAdapter which creates in-memory simulation nodes and

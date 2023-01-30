@@ -19,12 +19,12 @@ package accounts
 
 import (
 	"fmt"
-	ethereum "github.com/ethereum/go-ctereum"
+	ethereum "github.com/qydata/go-ctereum"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/event"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/event"
 	"golang.org/x/crypto/sha3"
 )
 

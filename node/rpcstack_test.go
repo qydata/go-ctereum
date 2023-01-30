@@ -26,11 +26,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/internal/testlog"
-	"github.com/ethereum/go-tempereum/log"
-	"github.com/ethereum/go-tempereum/rpc"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
+	"github.com/qydata/go-ctereum/internal/testlog"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/rpc"
 	"github.com/stretchr/testify/assert"
 )
 

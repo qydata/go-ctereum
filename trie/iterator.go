@@ -21,8 +21,8 @@ import (
 	"container/heap"
 	"errors"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/ethdb"
 )
 
 // Iterator is a key-value trie iterator that traverses a Trie.

@@ -24,7 +24,7 @@ import (
 	"os"
 	"runtime/trace"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // StartGoTrace turns on tracing, writing to the given file.

@@ -16,7 +16,7 @@
 
 package core
 
-import "github.com/ethereum/go-ctereum/common"
+import "github.com/qydata/go-ctereum/common"
 
 // BadHashes represent a set of manually tracked bad hashes (usually hard forks)
 var BadHashes = map[common.Hash]bool{

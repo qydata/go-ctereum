@@ -19,8 +19,8 @@ package downloader
 import (
 	"sync"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // syncState starts downloading state with the given root hash.

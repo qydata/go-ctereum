@@ -17,9 +17,9 @@
 package snap
 
 import (
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p"
 )
 
 // Peer is a collection of relevant information we have about a `snap` peer.

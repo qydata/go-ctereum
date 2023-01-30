@@ -21,8 +21,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 // Context contains some contextual infos for a transaction execution that is not

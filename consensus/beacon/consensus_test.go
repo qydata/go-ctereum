@@ -5,10 +5,10 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/consensus"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/params"
 )
 
 type mockChain struct {

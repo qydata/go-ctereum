@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/rpc"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 func TestFeeHistory(t *testing.T) {

@@ -26,36 +26,36 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ctereum/accounts"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/consensus/beacon"
-	"github.com/ethereum/go-ctereum/consensus/clique"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/bloombits"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state/pruner"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/eth/gasprice"
-	"github.com/ethereum/go-ctereum/eth/protocols/eth"
-	"github.com/ethereum/go-ctereum/eth/protocols/snap"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/internal/ethapi"
-	"github.com/ethereum/go-ctereum/internal/shutdowncheck"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/miner"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/dnsdisc"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/consensus/beacon"
+	"github.com/qydata/go-ctereum/consensus/clique"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/bloombits"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/state/pruner"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/eth/downloader"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/eth/gasprice"
+	"github.com/qydata/go-ctereum/eth/protocols/eth"
+	"github.com/qydata/go-ctereum/eth/protocols/snap"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/internal/ethapi"
+	"github.com/qydata/go-ctereum/internal/shutdowncheck"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/miner"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/dnsdisc"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // Config contains the configuration options of the ETH protocol.
@@ -152,12 +152,13 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 	}
 	merger := consensus.NewMerger(chainDb)
 	eth := &Ethereum{
-		config:            config,
-		merger:            merger,
-		chainDb:           chainDb,
-		eventMux:          stack.EventMux(),
-		accountManager:    stack.AccountManager(),
-		engine:            ethconfig.CreateConsensusEngine(stack, chainConfig, &ethashConfig, config.Miner.Notify, config.Miner.Noverify, chainDb),
+		config:         config,
+		merger:         merger,
+		chainDb:        chainDb,
+		eventMux:       stack.EventMux(),
+		accountManager: stack.AccountManager(),
+		//engine:            ethconfig.CreateConsensusEngine(stack, chainConfig, &ethashConfig, config.Miner.Notify, config.Miner.Noverify, chainDb),
+		engine:            nil,
 		closeBloomHandler: make(chan struct{}),
 		networkID:         config.NetworkId,
 		gasPrice:          config.Miner.GasPrice,
@@ -167,6 +168,22 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 		p2pServer:         stack.Server(),
 		shutdownTracker:   shutdowncheck.NewShutdownTracker(chainDb),
 	}
+
+	// START: Bor changes
+	eth.APIBackend = &EthAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, eth, nil}
+	if eth.APIBackend.allowUnprotectedTxs {
+		log.Info("Unprotected transactions allowed")
+	}
+	gpoParams := config.GPO
+	if gpoParams.Default == nil {
+		gpoParams.Default = config.Miner.GasPrice
+	}
+	eth.APIBackend.gpo = gasprice.NewOracle(eth.APIBackend, gpoParams)
+
+	// create eth api and set engine
+	ethAPI := ethapi.NewPublicBlockChainAPI(eth.APIBackend)
+	eth.engine = ethconfig.CreateConsensusEngine(stack, chainConfig, config, config.Miner.Notify, config.Miner.Noverify, chainDb, ethAPI)
+	// END: Bor changes
 
 	bcVersion := rawdb.ReadDatabaseVersion(chainDb)
 	var dbVer = "<nil>"
@@ -241,16 +258,6 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 
 	eth.miner = miner.New(eth, &config.Miner, chainConfig, eth.EventMux(), eth.engine, eth.isLocalBlock)
 	eth.miner.SetExtra(makeExtraData(config.Miner.ExtraData))
-
-	eth.APIBackend = &EthAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, eth, nil}
-	if eth.APIBackend.allowUnprotectedTxs {
-		log.Info("Unprotected transactions allowed")
-	}
-	gpoParams := config.GPO
-	if gpoParams.Default == nil {
-		gpoParams.Default = config.Miner.GasPrice
-	}
-	eth.APIBackend.gpo = gasprice.NewOracle(eth.APIBackend, gpoParams)
 
 	// Setup DNS discovery iterators.
 	dnsclient := dnsdisc.NewClient(dnsdisc.Config{})

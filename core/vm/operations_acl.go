@@ -19,9 +19,9 @@ package vm
 import (
 	"errors"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/params"
 )
 
 func makeGasSStoreFunc(clearingRefund uint64) gasFunc {

@@ -21,12 +21,12 @@ import (
 	"fmt"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/trie"
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 const (

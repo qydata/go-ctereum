@@ -27,8 +27,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/p2p"
-	"github.com/ethereum/go-tempereum/rpc"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 type gethrpc struct {

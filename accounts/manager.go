@@ -21,8 +21,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/event"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/event"
 )
 
 // managerSubBufferSize determines how many incoming wallet events

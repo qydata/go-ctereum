@@ -23,10 +23,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/params"
-	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 var (

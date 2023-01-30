@@ -22,8 +22,8 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/ethereum/go-ctereum/cmd/evm/internal/t8ntool"
-	"github.com/ethereum/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/cmd/evm/internal/t8ntool"
+	"github.com/qydata/go-ctereum/internal/flags"
 )
 
 var (

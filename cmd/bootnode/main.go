@@ -24,13 +24,13 @@ import (
 	"net"
 	"os"
 
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p/discover"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/nat"
-	"github.com/ethereum/go-ctereum/p2p/netutil"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p/discover"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/nat"
+	"github.com/qydata/go-ctereum/p2p/netutil"
 )
 
 func main() {

@@ -22,13 +22,13 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/consensus/ethash"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/ethdb"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/ethash"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // So we can deterministically seed different blockchains

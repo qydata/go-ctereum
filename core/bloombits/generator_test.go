@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 // Tests that batched bloom bits are correctly rotated from the input bloom

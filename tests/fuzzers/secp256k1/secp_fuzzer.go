@@ -21,8 +21,8 @@ package secp256k1
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/crypto/secp256k1"
 	fuzz "github.com/google/gofuzz"
+	"github.com/qydata/go-ctereum/crypto/secp256k1"
 )
 
 func Fuzz(input []byte) int {

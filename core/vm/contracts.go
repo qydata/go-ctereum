@@ -22,13 +22,13 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/crypto/blake2b"
-	"github.com/ethereum/go-ctereum/crypto/bls12381"
-	"github.com/ethereum/go-ctereum/crypto/bn256"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/crypto/blake2b"
+	"github.com/qydata/go-ctereum/crypto/bls12381"
+	"github.com/qydata/go-ctereum/crypto/bn256"
+	"github.com/qydata/go-ctereum/params"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -264,9 +264,10 @@ var (
 // modexpMultComplexity implements bigModexp multComplexity formula, as defined in EIP-198
 //
 // def mult_complexity(x):
-//    if x <= 64: return x ** 2
-//    elif x <= 1024: return x ** 2 // 4 + 96 * x - 3072
-//    else: return x ** 2 // 16 + 480 * x - 199680
+//
+//	if x <= 64: return x ** 2
+//	elif x <= 1024: return x ** 2 // 4 + 96 * x - 3072
+//	else: return x ** 2 // 16 + 480 * x - 199680
 //
 // where is x is max(length_of_MODULUS, length_of_BASE)
 func modexpMultComplexity(x *big.Int) *big.Int {

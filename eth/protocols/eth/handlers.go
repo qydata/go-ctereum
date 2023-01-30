@@ -20,12 +20,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 // handleGetBlockHeaders66 is the eth/66 version of handleGetBlockHeaders

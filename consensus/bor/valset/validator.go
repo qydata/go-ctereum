@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // Validator represets Volatile state for each Validator

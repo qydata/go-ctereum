@@ -28,8 +28,8 @@ import (
 
 	"github.com/cespare/cp"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-tempereum/accounts"
-	"github.com/ethereum/go-tempereum/common"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/common"
 )
 
 var (

@@ -22,14 +22,14 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rpc"
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 const sampleNumber = 3 // Number of transactions sampled in a block
@@ -116,7 +116,7 @@ func NewOracle(backend OracleBackend, params Config) *Oracle {
 
 	cache, _ := lru.New(2048)
 	headEvent := make(chan core.ChainHeadEvent, 1)
-	backend.SubscribeChainHeadEvent(headEvent)
+	//backend.SubscribeChainHeadEvent(headEvent)
 	go func() {
 		var lastHead common.Hash
 		for ev := range headEvent {

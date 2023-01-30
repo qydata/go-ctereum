@@ -22,9 +22,9 @@ import (
 	"github.com/urfave/cli/v2"
 	"os"
 
-	"github.com/ethereum/go-ctereum/accounts/keystore"
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/crypto"
 )
 
 type outputInspect struct {

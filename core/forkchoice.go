@@ -22,11 +22,11 @@ import (
 	"math/big"
 	mrand "math/rand"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // ChainReader defines a small collection of methods needed to access the local

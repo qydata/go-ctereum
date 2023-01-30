@@ -18,6 +18,12 @@
 package ethconfig
 
 import (
+	"github.com/qydata/go-ctereum/consensus/bor"
+	"github.com/qydata/go-ctereum/consensus/bor/contract"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/span"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdallgrpc"
+	"github.com/qydata/go-ctereum/internal/ethapi"
 	"math/big"
 	"os"
 	"os/user"
@@ -25,19 +31,19 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/consensus/beacon"
-	"github.com/ethereum/go-ctereum/consensus/clique"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/eth/gasprice"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/miner"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/consensus/beacon"
+	"github.com/qydata/go-ctereum/consensus/clique"
+	"github.com/qydata/go-ctereum/consensus/ethash"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/eth/downloader"
+	"github.com/qydata/go-ctereum/eth/gasprice"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/miner"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // FullNodeGPO contains default gasprice oracle settings for full node.
@@ -209,6 +215,27 @@ type Config struct {
 	// CheckpointOracle is the configuration for checkpoint oracle.
 	CheckpointOracle *params.CheckpointOracleConfig `toml:",omitempty"`
 
+	// URL to connect to Heimdall node
+	HeimdallURL string
+
+	// No heimdall service
+	WithoutHeimdall bool
+
+	// Address to connect to Heimdall gRPC server
+	HeimdallgRPCAddress string
+
+	// Run heimdall service as a child process
+	RunHeimdall bool
+
+	// Arguments to pass to heimdall service
+	RunHeimdallArgs string
+
+	// Bor logs flag
+	BorLogs bool
+
+	// Arrow Glacier block override (TODO: remove after the fork)
+	OverrideArrowGlacier *big.Int `toml:",omitempty"`
+
 	// OverrideTerminalTotalDifficulty (TODO: remove after the fork)
 	OverrideTerminalTotalDifficulty *big.Int `toml:",omitempty"`
 
@@ -217,11 +244,34 @@ type Config struct {
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.
-func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, config *ethash.Config, notify []string, noverify bool, db ethdb.Database) consensus.Engine {
+func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, ethConfig *Config, notify []string, noverify bool, db ethdb.Database, blockchainAPI *ethapi.BlockChainAPI) consensus.Engine {
+	config := &ethConfig.Ethash
+
 	// If proof-of-authority is requested, set it up
 	var engine consensus.Engine
 	if chainConfig.Clique != nil {
 		engine = clique.New(chainConfig.Clique, db)
+	}
+
+	// If Matic bor consensus is requested, set it up
+	// In order to pass the ethereum transaction tests, we need to set the burn contract which is in the bor config
+	// Then, bor != nil will also be enabled for ethash and clique. Only enable Bor for real if there is a validator contract present.
+	if chainConfig.Bor != nil && chainConfig.Bor.ValidatorContract != "" {
+		genesisContractsClient := contract.NewGenesisContractsClient(chainConfig, chainConfig.Bor.ValidatorContract, chainConfig.Bor.StateReceiverContract, blockchainAPI)
+		spanner := span.NewChainSpanner(blockchainAPI, contract.ValidatorSet(), chainConfig, common.HexToAddress(chainConfig.Bor.ValidatorContract))
+
+		if ethConfig.WithoutHeimdall {
+			return bor.New(chainConfig, db, blockchainAPI, spanner, nil, genesisContractsClient)
+		} else {
+			var heimdallClient bor.IHeimdallClient
+			if ethConfig.HeimdallgRPCAddress != "" {
+				heimdallClient = heimdallgrpc.NewHeimdallGRPCClient(ethConfig.HeimdallgRPCAddress)
+			} else {
+				heimdallClient = heimdall.NewHeimdallClient(ethConfig.HeimdallURL)
+			}
+
+			return bor.New(chainConfig, db, blockchainAPI, spanner, heimdallClient, genesisContractsClient)
+		}
 	} else {
 		switch config.PowMode {
 		case ethash.ModeFake:

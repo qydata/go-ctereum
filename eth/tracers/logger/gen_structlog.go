@@ -5,11 +5,11 @@ package logger
 import (
 	"encoding/json"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/core/vm"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/core/vm"
 )
 
 var _ = (*structLogMarshaling)(nil)

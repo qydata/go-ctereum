@@ -22,12 +22,12 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/consensus/ethash"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/vm"
-	"github.com/ethereum/go-tempereum/ethdb"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/ethash"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/params"
 )
 
 func TestInvalidCliqueConfig(t *testing.T) {

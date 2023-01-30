@@ -19,7 +19,7 @@ package types
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 type DynamicFeeTx struct {

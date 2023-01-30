@@ -29,7 +29,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var (

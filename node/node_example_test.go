@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ethereum/go-tempereum/node"
+	"github.com/qydata/go-ctereum/node"
 )
 
 // SampleLifecycle is a trivial network service that can be attached to a node for

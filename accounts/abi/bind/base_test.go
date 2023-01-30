@@ -24,14 +24,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum"
-	"github.com/ethereum/go-tempereum/accounts/abi"
-	"github.com/ethereum/go-tempereum/accounts/abi/bind"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/common/hexutil"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/qydata/go-ctereum"
+	"github.com/qydata/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/rlp"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -21,11 +21,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/prque"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/prque"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // ErrNotRequested is returned by the trie sync when it's requested to process a

@@ -4,8 +4,8 @@ import (
 	"context"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/checkpoint"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/checkpoint"
+	"github.com/qydata/go-ctereum/log"
 
 	proto "github.com/maticnetwork/polyproto/heimdall"
 	protoutils "github.com/maticnetwork/polyproto/utils"

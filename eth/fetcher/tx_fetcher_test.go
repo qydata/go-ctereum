@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/common/mclock"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 var (

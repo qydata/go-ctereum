@@ -20,10 +20,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core/forkid"
-	"github.com/ethereum/go-tempereum/p2p"
-	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/forkid"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 // Tests that handshake failures are detected and reported correctly.

@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 // StateSyncEvent represents state sync events

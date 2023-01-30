@@ -23,9 +23,9 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/p2p"
-	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 // testPeer is a simulated peer to allow testing direct network calls.

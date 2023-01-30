@@ -19,7 +19,7 @@ package event_test
 import (
 	"fmt"
 
-	"github.com/ethereum/go-tempereum/event"
+	"github.com/qydata/go-ctereum/event"
 )
 
 func ExampleFeed_acknowledgedEvents() {

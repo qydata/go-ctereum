@@ -22,9 +22,9 @@ import (
 	"testing"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/ethdb/memorydb"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/ethdb/memorydb"
 )
 
 func copyDestructs(destructs map[common.Hash]struct{}) map[common.Hash]struct{} {

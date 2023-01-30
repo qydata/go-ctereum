@@ -1,6 +1,6 @@
 package types
 
-import "github.com/ethereum/go-ctereum/common"
+import "github.com/qydata/go-ctereum/common"
 
 // StateSyncData represents state received from Ethereum Blockchain
 type StateSyncData struct {

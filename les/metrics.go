@@ -17,8 +17,8 @@
 package les
 
 import (
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/p2p"
 )
 
 var (

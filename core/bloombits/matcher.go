@@ -26,8 +26,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/bitutil"
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/common/bitutil"
+	"github.com/qydata/go-ctereum/crypto"
 )
 
 // bloomIndexes represents the bit indexes inside the bloom filter that belong

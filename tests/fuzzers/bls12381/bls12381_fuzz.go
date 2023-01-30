@@ -29,8 +29,8 @@ import (
 	gnark "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fp"
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fr"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/crypto/bls12381"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto/bls12381"
 	blst "github.com/supranational/blst/bindings/go"
 )
 

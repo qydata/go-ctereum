@@ -19,7 +19,7 @@ package vm
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/params"
 )
 
 type (

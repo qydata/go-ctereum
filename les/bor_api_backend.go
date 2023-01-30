@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/event"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/event"
 )
 
 // GetRootHash returns root hash for given start and end block

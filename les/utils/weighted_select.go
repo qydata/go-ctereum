@@ -20,7 +20,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 )
 
 type (

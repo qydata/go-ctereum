@@ -19,7 +19,7 @@ package params
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // DAOForkBlockExtra is the block header extra-data field to set for the DAO fork

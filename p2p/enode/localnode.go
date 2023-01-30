@@ -26,9 +26,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/p2p/netutil"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/p2p/netutil"
 )
 
 const (

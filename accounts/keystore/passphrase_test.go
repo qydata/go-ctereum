@@ -20,7 +20,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 const (

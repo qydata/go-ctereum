@@ -19,12 +19,12 @@ package bind
 import (
 	"context"
 	"errors"
-	ethereum "github.com/ethereum/go-ctereum"
+	ethereum "github.com/qydata/go-ctereum"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // WaitMined waits for tx to be mined on the blockchain.

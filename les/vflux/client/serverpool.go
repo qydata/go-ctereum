@@ -24,15 +24,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/les/utils"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/p2p/nodestate"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/les/utils"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/p2p/nodestate"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 const (

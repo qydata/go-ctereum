@@ -28,10 +28,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.

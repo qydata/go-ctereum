@@ -21,11 +21,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/eth/downloader"
-	"github.com/ethereum/go-tempereum/eth/protocols/eth"
-	"github.com/ethereum/go-tempereum/eth/protocols/snap"
-	"github.com/ethereum/go-tempereum/p2p"
-	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/qydata/go-ctereum/eth/downloader"
+	"github.com/qydata/go-ctereum/eth/protocols/eth"
+	"github.com/qydata/go-ctereum/eth/protocols/snap"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 // Tests that snap sync is disabled after a successful sync cycle.

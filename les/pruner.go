@@ -20,10 +20,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // pruner is responsible for pruning historical light chain data.

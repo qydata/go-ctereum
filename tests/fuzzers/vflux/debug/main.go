@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/tests/fuzzers/vflux"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/tests/fuzzers/vflux"
 )
 
 func main() {

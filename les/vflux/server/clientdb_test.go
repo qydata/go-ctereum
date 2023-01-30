@@ -21,10 +21,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common/mclock"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/les/utils"
-	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/les/utils"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 func expval(v uint64) utils.ExpiredValue {

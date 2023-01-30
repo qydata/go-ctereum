@@ -3,14 +3,14 @@ package bor
 import (
 	"encoding/json"
 
-	"github.com/ethereum/go-ctereum/consensus/bor/valset"
+	"github.com/qydata/go-ctereum/consensus/bor/valset"
 
 	lru "github.com/hashicorp/golang-lru"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // Snapshot is the state of the authorization voting at a given point in time.

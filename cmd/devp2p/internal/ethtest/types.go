@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ctereum/eth/protocols/eth"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/rlpx"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/eth/protocols/eth"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/rlpx"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 type Message interface {

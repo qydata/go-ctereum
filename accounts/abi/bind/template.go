@@ -16,7 +16,7 @@
 
 package bind
 
-import "github.com/ethereum/go-ctereum/accounts/abi"
+import "github.com/qydata/go-ctereum/accounts/abi"
 
 // tmplData is the data structure required to fill the binding template.
 type tmplData struct {
@@ -92,12 +92,12 @@ import (
 	"strings"
 	"errors"
 
-	ethereum "github.com/ethereum/go-ctereum"
-	"github.com/ethereum/go-ctereum/accounts/abi"
-	"github.com/ethereum/go-ctereum/accounts/abi/bind"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/event"
+	ethereum "github.com/qydata/go-ctereum"
+	"github.com/qydata/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/event"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

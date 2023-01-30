@@ -22,8 +22,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/accounts/keystore"
-	"github.com/ethereum/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/cmd/utils"
 )
 
 var newPassphraseFlag = &cli.StringFlag{

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ctereum/consensus/bor/clerk"
+	"github.com/qydata/go-ctereum/consensus/bor/clerk"
 )
 
 type MaxCheckpointLengthExceededError struct {

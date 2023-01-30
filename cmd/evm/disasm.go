@@ -22,7 +22,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/core/asm"
+	"github.com/qydata/go-ctereum/core/asm"
 )
 
 var disasmCommand = &cli.Command{

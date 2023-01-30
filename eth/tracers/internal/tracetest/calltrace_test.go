@@ -26,22 +26,22 @@ import (
 	"testing"
 	"unicode"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/common/hexutil"
-	"github.com/ethereum/go-tempereum/common/math"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/core/vm"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/eth/tracers"
-	"github.com/ethereum/go-tempereum/params"
-	"github.com/ethereum/go-tempereum/rlp"
-	"github.com/ethereum/go-tempereum/tests"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/eth/tracers"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/tests"
 
 	// Force-load native and js packages, to trigger registration
-	_ "github.com/ethereum/go-tempereum/eth/tracers/js"
-	_ "github.com/ethereum/go-tempereum/eth/tracers/native"
+	_ "github.com/qydata/go-ctereum/eth/tracers/js"
+	_ "github.com/qydata/go-ctereum/eth/tracers/native"
 )
 
 // To generate a new callTracer test, copy paste the makeTest method below into

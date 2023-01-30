@@ -17,9 +17,9 @@
 package vm
 
 import (
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/math"
 )
 
 // calcMemSize64 calculates the required memory size, and returns

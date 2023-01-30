@@ -21,15 +21,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	ethereum "github.com/ethereum/go-ctereum"
+	ethereum "github.com/qydata/go-ctereum"
 	"math/big"
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // filter is a helper struct that holds meta information over the filter type

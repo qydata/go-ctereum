@@ -21,11 +21,11 @@ import (
 	"github.com/urfave/cli/v2"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/console"
-	"github.com/ethereum/go-ctereum/internal/flags"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/console"
+	"github.com/qydata/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 var (

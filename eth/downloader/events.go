@@ -16,7 +16,7 @@
 
 package downloader
 
-import "github.com/ethereum/go-ctereum/core/types"
+import "github.com/qydata/go-ctereum/core/types"
 
 type DoneEvent struct {
 	Latest *types.Header

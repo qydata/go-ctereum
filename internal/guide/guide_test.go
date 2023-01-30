@@ -28,9 +28,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/accounts/keystore"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 // Tests that the account management snippets work correctly.

@@ -19,8 +19,8 @@ package trie
 import (
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/ethdb/memorydb"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/ethdb/memorydb"
 )
 
 // Tests that the trie database returns a missing trie node error if attempting

@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/rawdb"
 )
 
 func filledStateDB() *StateDB {

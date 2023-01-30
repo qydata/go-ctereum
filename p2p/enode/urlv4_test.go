@@ -24,8 +24,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/p2p/enr"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/p2p/enr"
 )
 
 func init() {

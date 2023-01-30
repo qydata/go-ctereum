@@ -22,12 +22,12 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/eth/protocols/snap"
-	"github.com/ethereum/go-ctereum/internal/utesting"
-	"github.com/ethereum/go-ctereum/light"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/eth/protocols/snap"
+	"github.com/qydata/go-ctereum/internal/utesting"
+	"github.com/qydata/go-ctereum/light"
+	"github.com/qydata/go-ctereum/trie"
 	"golang.org/x/crypto/sha3"
 )
 

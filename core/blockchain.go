@@ -27,23 +27,23 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/common/prque"
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/state/snapshot"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/internal/syncx"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/trie"
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/common/prque"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/state/snapshot"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/internal/syncx"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 var (
@@ -356,7 +356,7 @@ func NewBlockChain(db ethdb.Database, cacheConfig *CacheConfig, chainConfig *par
 	// The first thing the node will do is reconstruct the verification data for
 	// the head block (ethash cache or clique voting snapshot). Might as well do
 	// it in advance.
-	bc.engine.VerifyHeader(bc, bc.CurrentHeader(), true)
+	// bc.engine.VerifyHeader(bc, bc.CurrentHeader(), true)
 
 	// Check the current state of the block hashes and make sure that we do not have any of the bad blocks in our chain
 	for hash := range BadHashes {

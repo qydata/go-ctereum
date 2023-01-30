@@ -26,16 +26,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/beacon"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/eth"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/beacon"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/eth"
+	"github.com/qydata/go-ctereum/eth/downloader"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // Register adds the engine API to the full node.
@@ -143,14 +143,21 @@ func NewConsensusAPI(eth *eth.Ethereum) *ConsensusAPI {
 
 // ForkchoiceUpdatedV1 has several responsibilities:
 // If the method is called with an empty head block:
-// 		we return success, which can be used to check if the engine API is enabled
+//
+//	we return success, which can be used to check if the engine API is enabled
+//
 // If the total difficulty was not reached:
-// 		we return INVALID
+//
+//	we return INVALID
+//
 // If the finalizedBlockHash is set:
-// 		we check if we have the finalizedBlockHash in our db, if not we start a sync
+//
+//	we check if we have the finalizedBlockHash in our db, if not we start a sync
+//
 // We try to set our blockchain to the headBlock
 // If there are payloadAttributes:
-// 		we try to assemble a block with the payloadAttributes and return its payloadID
+//
+//	we try to assemble a block with the payloadAttributes and return its payloadID
 func (api *ConsensusAPI) ForkchoiceUpdatedV1(update beacon.ForkchoiceStateV1, payloadAttributes *beacon.PayloadAttributesV1) (beacon.ForkChoiceResponse, error) {
 	api.forkchoiceLock.Lock()
 	defer api.forkchoiceLock.Unlock()

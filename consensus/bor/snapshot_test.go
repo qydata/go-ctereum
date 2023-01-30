@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"pgregory.net/rapid"
 
-	"github.com/ethereum/go-ctereum/common"
-	unique "github.com/ethereum/go-ctereum/common/set"
-	"github.com/ethereum/go-ctereum/consensus/bor/valset"
+	"github.com/qydata/go-ctereum/common"
+	unique "github.com/qydata/go-ctereum/common/set"
+	"github.com/qydata/go-ctereum/consensus/bor/valset"
 )
 
 const (

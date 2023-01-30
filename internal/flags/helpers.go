@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/params"
 	"github.com/urfave/cli/v2"
 )
 

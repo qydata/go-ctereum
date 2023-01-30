@@ -31,11 +31,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/internal/testlog"
-	"github.com/ethereum/go-tempereum/log"
-	"github.com/ethereum/go-tempereum/p2p/discover/v4wire"
-	"github.com/ethereum/go-tempereum/p2p/enode"
-	"github.com/ethereum/go-tempereum/p2p/enr"
+	"github.com/qydata/go-ctereum/internal/testlog"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p/discover/v4wire"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
 )
 
 // shared test variables

@@ -10,8 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // MaxTotalVotingPower - the maximum allowed total voting power.

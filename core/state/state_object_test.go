@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 func BenchmarkCutOriginal(b *testing.B) {

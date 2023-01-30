@@ -26,10 +26,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/internal/testlog"
-	"github.com/ethereum/go-tempereum/log"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/internal/testlog"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // Tests whether remote HTTP servers are correctly notified of new work.

@@ -19,8 +19,8 @@ package vm
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // ContractRef is a reference to the contract's backing object

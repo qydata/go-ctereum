@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/rpc"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 func TestUnmarshalJSONNewFilterArgs(t *testing.T) {

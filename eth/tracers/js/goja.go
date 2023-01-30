@@ -25,12 +25,12 @@ import (
 
 	"github.com/dop251/goja"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/eth/tracers"
-	jsassets "github.com/ethereum/go-ctereum/eth/tracers/js/internal/tracers"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/eth/tracers"
+	jsassets "github.com/qydata/go-ctereum/eth/tracers/js/internal/tracers"
 )
 
 var assetTracers = make(map[string]string)

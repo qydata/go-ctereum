@@ -21,8 +21,8 @@ import (
 	"github.com/urfave/cli/v2"
 	"net"
 
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 var (

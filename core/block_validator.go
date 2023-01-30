@@ -19,11 +19,11 @@ package core
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 // BlockValidator is responsible for validating block headers, uncles and

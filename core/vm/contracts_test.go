@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // precompiledTest defines the input/output pairs for precompiled contract tests.

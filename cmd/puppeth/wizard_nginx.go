@@ -19,7 +19,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // ensureVirtualHost checks whether a reverse-proxy is running on the specified

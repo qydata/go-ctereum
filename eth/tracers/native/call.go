@@ -25,9 +25,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/eth/tracers"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/eth/tracers"
 )
 
 func init() {

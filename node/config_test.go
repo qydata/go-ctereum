@@ -23,8 +23,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/p2p"
 )
 
 // Tests that datadirs can be successfully created, be them manually configured

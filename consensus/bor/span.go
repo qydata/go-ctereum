@@ -3,12 +3,12 @@ package bor
 import (
 	"context"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/span"
-	"github.com/ethereum/go-ctereum/consensus/bor/valset"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/span"
+	"github.com/qydata/go-ctereum/consensus/bor/valset"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 //go:generate mockgen -destination=./span_mock.go -package=bor . Spanner

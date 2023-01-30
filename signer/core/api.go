@@ -25,17 +25,17 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/ethereum/go-ctereum/accounts"
-	"github.com/ethereum/go-ctereum/accounts/keystore"
-	"github.com/ethereum/go-ctereum/accounts/scwallet"
-	"github.com/ethereum/go-ctereum/accounts/usbwallet"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/internal/ethapi"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/rpc"
-	"github.com/ethereum/go-ctereum/signer/core/apitypes"
-	"github.com/ethereum/go-ctereum/signer/storage"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/accounts/scwallet"
+	"github.com/qydata/go-ctereum/accounts/usbwallet"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/internal/ethapi"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/signer/core/apitypes"
+	"github.com/qydata/go-ctereum/signer/storage"
 )
 
 const (

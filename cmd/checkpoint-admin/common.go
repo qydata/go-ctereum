@@ -20,15 +20,15 @@ import (
 	"github.com/urfave/cli/v2"
 	"strconv"
 
-	"github.com/ethereum/go-ctereum/accounts"
-	"github.com/ethereum/go-ctereum/accounts/abi/bind"
-	"github.com/ethereum/go-ctereum/accounts/external"
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/contracts/checkpointoracle"
-	"github.com/ethereum/go-ctereum/ethclient"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/accounts/external"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/contracts/checkpointoracle"
+	"github.com/qydata/go-ctereum/ethclient"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // newClient creates a client with specified remote URL.

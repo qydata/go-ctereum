@@ -21,11 +21,11 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/common/hexutil"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/state"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/params"
 )
 
 func TestMemoryGasCost(t *testing.T) {

@@ -22,11 +22,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/eth/tracers/logger"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/tests"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/eth/tracers/logger"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/tests"
 )
 
 var stateTestCommand = &cli.Command{

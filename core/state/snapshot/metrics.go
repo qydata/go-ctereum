@@ -16,7 +16,7 @@
 
 package snapshot
 
-import "github.com/ethereum/go-ctereum/metrics"
+import "github.com/qydata/go-ctereum/metrics"
 
 // Metrics in generation
 var (

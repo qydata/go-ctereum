@@ -27,13 +27,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/accounts/abi/bind"
-	"github.com/ethereum/go-tempereum/accounts/abi/bind/backends"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/contracts/checkpointoracle/contract"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/accounts/abi/bind"
+	"github.com/qydata/go-ctereum/accounts/abi/bind/backends"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/contracts/checkpointoracle/contract"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var (

@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/rlp"
 	"github.com/golang/snappy"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 // This is the maximum amount of data that will be buffered in memory

@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/network"
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/checkpoint"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/network"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/checkpoint"
 
 	"github.com/stretchr/testify/require"
 )

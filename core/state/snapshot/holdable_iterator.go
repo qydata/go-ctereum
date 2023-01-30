@@ -17,8 +17,8 @@
 package snapshot
 
 import (
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/ethdb"
 )
 
 // holdableIterator is a wrapper of underlying database iterator. It extends

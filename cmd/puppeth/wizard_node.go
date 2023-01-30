@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ctereum/accounts/keystore"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // deployNode creates a new node configuration based on some user input.

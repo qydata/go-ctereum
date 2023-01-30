@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/bor"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus/bor"
+	"github.com/qydata/go-ctereum/log"
 )
 
 var (

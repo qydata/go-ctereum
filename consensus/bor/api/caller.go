@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/internal/ethapi"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/internal/ethapi"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 //go:generate mockgen -destination=./caller_mock.go -package=api . Caller

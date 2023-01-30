@@ -22,7 +22,7 @@ package keystore
 import (
 	"time"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 	"github.com/rjeczalik/notify"
 )
 

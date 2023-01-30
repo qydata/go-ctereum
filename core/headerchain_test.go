@@ -23,12 +23,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/consensus"
-	"github.com/ethereum/go-tempereum/consensus/ethash"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/log"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/consensus/ethash"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/params"
 )
 
 func verifyUnbrokenCanonchain(hc *HeaderChain) error {

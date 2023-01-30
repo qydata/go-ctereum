@@ -19,8 +19,8 @@ package snap
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
 	"github.com/holiman/uint256"
+	"github.com/qydata/go-ctereum/common"
 )
 
 // hashRange is a utility to handle ranges of hashes, Split up the

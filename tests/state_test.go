@@ -27,11 +27,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/core/vm"
-	"github.com/ethereum/go-tempereum/eth/tracers/logger"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/eth/tracers/logger"
 )
 
 func TestState(t *testing.T) {

@@ -21,15 +21,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/light"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/light"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 const (

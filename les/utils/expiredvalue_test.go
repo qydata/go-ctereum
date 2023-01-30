@@ -19,7 +19,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/ethereum/go-tempereum/common/mclock"
+	"github.com/qydata/go-ctereum/common/mclock"
 )
 
 func TestValueExpiration(t *testing.T) {

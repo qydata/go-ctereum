@@ -19,8 +19,8 @@ package client
 import (
 	"sync"
 
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/nodestate"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/nodestate"
 )
 
 // FillSet tries to read nodes from an input iterator and add them to a node set by

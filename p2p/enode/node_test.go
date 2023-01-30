@@ -24,8 +24,8 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/ethereum/go-tempereum/p2p/enr"
-	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/rlp"
 	"github.com/stretchr/testify/assert"
 )
 

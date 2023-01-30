@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/light"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/light"
 )
 
 func TestLightPruner(t *testing.T) {

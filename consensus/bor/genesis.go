@@ -3,10 +3,10 @@ package bor
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/consensus/bor/clerk"
-	"github.com/ethereum/go-ctereum/consensus/bor/statefull"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/consensus/bor/clerk"
+	"github.com/qydata/go-ctereum/consensus/bor/statefull"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 //go:generate mockgen -destination=./genesis_contract_mock.go -package=bor . GenesisContract

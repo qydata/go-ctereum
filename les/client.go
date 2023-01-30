@@ -22,32 +22,32 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ctereum/accounts"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/bloombits"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/eth/gasprice"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/internal/ethapi"
-	"github.com/ethereum/go-ctereum/internal/shutdowncheck"
-	"github.com/ethereum/go-ctereum/les/downloader"
-	"github.com/ethereum/go-ctereum/les/vflux"
-	vfc "github.com/ethereum/go-ctereum/les/vflux/client"
-	"github.com/ethereum/go-ctereum/light"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/accounts"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/bloombits"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/eth/gasprice"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/internal/ethapi"
+	"github.com/qydata/go-ctereum/internal/shutdowncheck"
+	"github.com/qydata/go-ctereum/les/downloader"
+	"github.com/qydata/go-ctereum/les/vflux"
+	vfc "github.com/qydata/go-ctereum/les/vflux/client"
+	"github.com/qydata/go-ctereum/light"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/params"
+	"github.com/qydata/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 type LightEthereum struct {
@@ -121,7 +121,7 @@ func New(stack *node.Node, config *ethconfig.Config) (*LightEthereum, error) {
 		reqDist:         newRequestDistributor(peers, &mclock.System{}),
 		accountManager:  stack.AccountManager(),
 		merger:          merger,
-		engine:          ethconfig.CreateConsensusEngine(stack, chainConfig, &config.Ethash, nil, false, chainDb),
+		engine:          ethconfig.CreateConsensusEngine(stack, chainConfig, config, nil, false, chainDb, nil),
 		bloomRequests:   make(chan chan *bloombits.Retrieval),
 		bloomIndexer:    core.NewBloomIndexer(chainDb, params.BloomBitsBlocksClient, params.HelperTrieConfirmations),
 		p2pServer:       stack.Server(),

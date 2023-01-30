@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/checkpoint"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/checkpoint"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 type checkpointVerifier struct {

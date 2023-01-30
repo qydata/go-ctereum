@@ -22,7 +22,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/qydata/go-ctereum/rlp"
 )
 
 // Entry is implemented by known node record entry types.

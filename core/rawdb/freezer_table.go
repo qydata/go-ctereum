@@ -27,10 +27,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
 	"github.com/golang/snappy"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
 )
 
 var (

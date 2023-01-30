@@ -21,7 +21,7 @@ package geth
 import (
 	"errors"
 
-	"github.com/ethereum/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p"
 )
 
 // NodeInfo represents pi short summary of the information known about the host.

@@ -21,9 +21,9 @@ import (
 	"github.com/urfave/cli/v2"
 	"time"
 
-	"github.com/ethereum/go-ctereum/cmd/devp2p/internal/v5test"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/p2p/discover"
+	"github.com/qydata/go-ctereum/cmd/devp2p/internal/v5test"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/p2p/discover"
 )
 
 var (

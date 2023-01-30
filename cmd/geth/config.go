@@ -26,21 +26,21 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/ethereum/go-ctereum/accounts/external"
-	"github.com/ethereum/go-ctereum/accounts/keystore"
-	"github.com/ethereum/go-ctereum/accounts/scwallet"
-	"github.com/ethereum/go-ctereum/accounts/usbwallet"
-	"github.com/ethereum/go-ctereum/cmd/utils"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/internal/ethapi"
-	"github.com/ethereum/go-ctereum/internal/flags"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/params"
 	"github.com/naoina/toml"
+	"github.com/qydata/go-ctereum/accounts/external"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/accounts/scwallet"
+	"github.com/qydata/go-ctereum/accounts/usbwallet"
+	"github.com/qydata/go-ctereum/cmd/utils"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/eth/downloader"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/internal/ethapi"
+	"github.com/qydata/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var (
@@ -154,6 +154,9 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 		cfg.Ethstats.URL = ctx.String(utils.EthStatsURLFlag.Name)
 	}
 	applyMetricConfig(ctx, &cfg)
+
+	// Set Bor config flags
+	utils.SetBorConfig(ctx, &cfg.Eth)
 
 	return stack, cfg
 }

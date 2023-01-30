@@ -16,7 +16,7 @@
 
 package params
 
-import "github.com/ethereum/go-ctereum/common"
+import "github.com/qydata/go-ctereum/common"
 
 // MainnetBootnodes are the enode URLs of the P2P bootstrap nodes running on
 // the main Ethereum network.
@@ -45,6 +45,10 @@ var RinkebyBootnodes = []string{}
 var GoerliBootnodes = []string{
 	// Upstream bootnodes
 }
+
+// BorMainnetBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// main Bor network.
+var BorMainnetBootnodes = []string{}
 
 var KilnBootnodes = []string{}
 

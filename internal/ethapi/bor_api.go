@@ -3,8 +3,8 @@ package ethapi
 import (
 	"context"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/core/types"
 )
 
 // GetRootHash returns root hash for given start and end block

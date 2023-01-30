@@ -36,7 +36,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 )
 
 // Handler is the global debugging handler.

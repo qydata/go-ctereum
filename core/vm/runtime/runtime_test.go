@@ -23,21 +23,21 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/accounts/abi"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/consensus"
-	"github.com/ethereum/go-tempereum/core"
-	"github.com/ethereum/go-tempereum/core/asm"
-	"github.com/ethereum/go-tempereum/core/rawdb"
-	"github.com/ethereum/go-tempereum/core/state"
-	"github.com/ethereum/go-tempereum/core/types"
-	"github.com/ethereum/go-tempereum/core/vm"
-	"github.com/ethereum/go-tempereum/eth/tracers"
-	"github.com/ethereum/go-tempereum/eth/tracers/logger"
-	"github.com/ethereum/go-tempereum/params"
+	"github.com/qydata/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/asm"
+	"github.com/qydata/go-ctereum/core/rawdb"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/eth/tracers"
+	"github.com/qydata/go-ctereum/eth/tracers/logger"
+	"github.com/qydata/go-ctereum/params"
 
 	// force-load js tracers to trigger registration
-	_ "github.com/ethereum/go-tempereum/eth/tracers/js"
+	_ "github.com/qydata/go-ctereum/eth/tracers/js"
 )
 
 func TestDefaults(t *testing.T) {
@@ -604,7 +604,7 @@ func TestEip2929Cases(t *testing.T) {
 
 // TestColdAccountAccessCost test that the cold account access cost is reported
 // correctly
-// see: https://github.com/ethereum/go-tempereum/issues/22649
+// see: https://github.com/qydata/go-ctereum/issues/22649
 func TestColdAccountAccessCost(t *testing.T) {
 	for i, tc := range []struct {
 		code []byte

@@ -23,13 +23,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-tempereum/common/mclock"
-	"github.com/ethereum/go-tempereum/ethdb"
-	"github.com/ethereum/go-tempereum/ethdb/memorydb"
-	"github.com/ethereum/go-tempereum/les/utils"
-	"github.com/ethereum/go-tempereum/p2p/enode"
-	"github.com/ethereum/go-tempereum/p2p/enr"
-	"github.com/ethereum/go-tempereum/p2p/nodestate"
+	"github.com/qydata/go-ctereum/common/mclock"
+	"github.com/qydata/go-ctereum/ethdb"
+	"github.com/qydata/go-ctereum/ethdb/memorydb"
+	"github.com/qydata/go-ctereum/les/utils"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
+	"github.com/qydata/go-ctereum/p2p/nodestate"
 )
 
 type zeroExpirer struct{}

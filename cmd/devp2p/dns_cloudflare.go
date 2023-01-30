@@ -23,8 +23,8 @@ import (
 	"strings"
 
 	"github.com/cloudflare/cloudflare-go"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p/dnsdisc"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p/dnsdisc"
 )
 
 var (

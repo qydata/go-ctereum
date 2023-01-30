@@ -22,10 +22,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ethereum/go-ctereum/internal/debug"
-	"github.com/ethereum/go-ctereum/internal/flags"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/internal/debug"
+	"github.com/qydata/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var (

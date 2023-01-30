@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"github.com/urfave/cli/v2"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common"
 )
 
 var commandStatus = &cli.Command{

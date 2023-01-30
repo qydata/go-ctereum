@@ -5,14 +5,14 @@ import (
 	"math"
 	"math/big"
 
-	ethereum "github.com/ethereum/go-ctereum"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/params"
+	ethereum "github.com/qydata/go-ctereum"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/consensus"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/core/state"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/core/vm"
+	"github.com/qydata/go-ctereum/params"
 )
 
 var systemAddress = common.HexToAddress("0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE")

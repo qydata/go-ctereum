@@ -11,11 +11,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ethereum/go-ctereum/consensus/bor/clerk"
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/checkpoint"
-	"github.com/ethereum/go-ctereum/consensus/bor/heimdall/span"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/consensus/bor/clerk"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/checkpoint"
+	"github.com/qydata/go-ctereum/consensus/bor/heimdall/span"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
 )
 
 var (

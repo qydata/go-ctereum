@@ -23,7 +23,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -633,6 +633,8 @@ func (c *ChainConfig) String() string {
 		} else {
 			banner += "Consensus: Beacon (proof-of-stake), merged from Clique (proof-of-authority)\n"
 		}
+	case c.Bor != nil:
+		banner += "Consensus: Bor (proof-of-stake)\n"
 	default:
 		banner += "Consensus: unknown\n"
 	}

@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ctereum/cmd/evm/internal/compiler"
+	"github.com/qydata/go-ctereum/cmd/evm/internal/compiler"
 )
 
 var compileCommand = &cli.Command{

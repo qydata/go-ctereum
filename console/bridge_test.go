@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"github.com/dop251/goja"
-	"github.com/ethereum/go-tempereum/internal/jsre"
+	"github.com/qydata/go-ctereum/internal/jsre"
 )
 
 // TestUndefinedAsParam ensures that personal functions can receive

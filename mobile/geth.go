@@ -24,17 +24,17 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/ethclient"
-	"github.com/ethereum/go-ctereum/ethstats"
-	"github.com/ethereum/go-ctereum/internal/debug"
-	"github.com/ethereum/go-ctereum/les"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/nat"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/eth/downloader"
+	"github.com/qydata/go-ctereum/eth/ethconfig"
+	"github.com/qydata/go-ctereum/ethclient"
+	"github.com/qydata/go-ctereum/ethstats"
+	"github.com/qydata/go-ctereum/internal/debug"
+	"github.com/qydata/go-ctereum/les"
+	"github.com/qydata/go-ctereum/node"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/p2p/nat"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // NodeConfig represents the collection of configuration values to fine tune the Geth

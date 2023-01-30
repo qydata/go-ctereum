@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/trie"
 )
 
 //go:generate go run github.com/fjl/gencodec -type PayloadAttributesV1 -field-override payloadAttributesMarshaling -out gen_blockparams.go
@@ -136,9 +136,11 @@ func decodeTransactions(enc [][]byte) ([]*types.Transaction, error) {
 
 // ExecutableDataToBlock constructs a block from executable data.
 // It verifies that the following fields:
-// 		len(extraData) <= 32
-// 		uncleHash = emptyUncleHash
-// 		difficulty = 0
+//
+//	len(extraData) <= 32
+//	uncleHash = emptyUncleHash
+//	difficulty = 0
+//
 // and that the blockhash of the constructed block matches the parameters.
 func ExecutableDataToBlock(params ExecutableDataV1) (*types.Block, error) {
 	txs, err := decodeTransactions(params.Transactions)

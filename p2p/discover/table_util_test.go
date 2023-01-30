@@ -27,10 +27,10 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/log"
-	"github.com/ethereum/go-tempereum/p2p/enode"
-	"github.com/ethereum/go-tempereum/p2p/enr"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/p2p/enr"
 )
 
 var nullNode *enode.Node

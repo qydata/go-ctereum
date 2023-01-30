@@ -23,11 +23,11 @@ import (
 	"runtime"
 	"runtime/debug"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/core/types"
+	"github.com/qydata/go-ctereum/p2p"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // Client is a wrapper around rpc.Client that implements geth-specific functionality.

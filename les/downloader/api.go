@@ -18,11 +18,11 @@ package downloader
 
 import (
 	"context"
-	ethereum "github.com/ethereum/go-ctereum"
+	ethereum "github.com/qydata/go-ctereum"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/qydata/go-ctereum/event"
+	"github.com/qydata/go-ctereum/rpc"
 )
 
 // DownloaderAPI provides an API which gives information about the current synchronisation status.

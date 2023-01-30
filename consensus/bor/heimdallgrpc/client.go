@@ -3,7 +3,7 @@ package heimdallgrpc
 import (
 	"time"
 
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/qydata/go-ctereum/log"
 
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	proto "github.com/maticnetwork/polyproto/heimdall"

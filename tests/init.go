@@ -21,7 +21,7 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/qydata/go-ctereum/params"
 )
 
 // Forks table defines supported forks and their chain config.

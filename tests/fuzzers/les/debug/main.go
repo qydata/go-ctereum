@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethereum/go-ctereum/tests/fuzzers/les"
+	"github.com/qydata/go-ctereum/tests/fuzzers/les"
 )
 
 func main() {

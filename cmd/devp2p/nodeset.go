@@ -24,8 +24,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/p2p/enode"
 )
 
 const jsonIndent = "    "

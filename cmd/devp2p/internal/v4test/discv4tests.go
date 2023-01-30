@@ -23,9 +23,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/internal/utesting"
-	"github.com/ethereum/go-ctereum/p2p/discover/v4wire"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/internal/utesting"
+	"github.com/qydata/go-ctereum/p2p/discover/v4wire"
 )
 
 const (

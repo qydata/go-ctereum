@@ -26,13 +26,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-tempereum/accounts/keystore"
-	"github.com/ethereum/go-tempereum/common"
-	"github.com/ethereum/go-tempereum/common/hexutil"
-	"github.com/ethereum/go-tempereum/common/math"
-	"github.com/ethereum/go-tempereum/crypto"
-	"github.com/ethereum/go-tempereum/signer/core"
-	"github.com/ethereum/go-tempereum/signer/core/apitypes"
+	"github.com/qydata/go-ctereum/accounts/keystore"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/crypto"
+	"github.com/qydata/go-ctereum/signer/core"
+	"github.com/qydata/go-ctereum/signer/core/apitypes"
 )
 
 var typesStandard = apitypes.Types{

@@ -25,13 +25,13 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/ethereum/go-ctereum/internal/flags"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/metrics"
-	"github.com/ethereum/go-ctereum/metrics/exp"
 	"github.com/fjl/memsize/memsizeui"
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
+	"github.com/qydata/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/log"
+	"github.com/qydata/go-ctereum/metrics"
+	"github.com/qydata/go-ctereum/metrics/exp"
 )
 
 var Memsize memsizeui.Handler

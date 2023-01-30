@@ -29,11 +29,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/console/prompt"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/log"
 	"github.com/peterh/liner"
+	"github.com/qydata/go-ctereum/common"
+	"github.com/qydata/go-ctereum/console/prompt"
+	"github.com/qydata/go-ctereum/core"
+	"github.com/qydata/go-ctereum/log"
 	"golang.org/x/term"
 )
 

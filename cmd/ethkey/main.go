@@ -21,7 +21,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"os"
 
-	"github.com/ethereum/go-ctereum/internal/flags"
+	"github.com/qydata/go-ctereum/internal/flags"
 )
 
 const (
