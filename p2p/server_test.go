@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package p2p
 
@@ -27,12 +27,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/internal/testlog"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/p2p/rlpx"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/internal/testlog"
+	"github.com/ethereum/go-tempereum/log"
+	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/p2p/enr"
+	"github.com/ethereum/go-tempereum/p2p/rlpx"
 )
 
 type testTransport struct {
@@ -370,6 +370,8 @@ func TestServerSetupConn(t *testing.T) {
 		clientkey, srvkey = newkey(), newkey()
 		clientpub         = &clientkey.PublicKey
 		srvpub            = &srvkey.PublicKey
+		fooErr            = errors.New("foo")
+		readErr           = errors.New("read error")
 	)
 	tests := []struct {
 		dontstart bool
@@ -387,10 +389,10 @@ func TestServerSetupConn(t *testing.T) {
 			wantCloseErr: errServerStopped,
 		},
 		{
-			tt:           &setupTransport{pubkey: clientpub, encHandshakeErr: errors.New("read error")},
+			tt:           &setupTransport{pubkey: clientpub, encHandshakeErr: readErr},
 			flags:        inboundConn,
 			wantCalls:    "doEncHandshake,close,",
-			wantCloseErr: errors.New("read error"),
+			wantCloseErr: readErr,
 		},
 		{
 			tt:           &setupTransport{pubkey: clientpub, phs: protoHandshake{ID: randomID().Bytes()}},
@@ -400,11 +402,11 @@ func TestServerSetupConn(t *testing.T) {
 			wantCloseErr: DiscUnexpectedIdentity,
 		},
 		{
-			tt:           &setupTransport{pubkey: clientpub, protoHandshakeErr: errors.New("foo")},
+			tt:           &setupTransport{pubkey: clientpub, protoHandshakeErr: fooErr},
 			dialDest:     enode.NewV4(clientpub, nil, 0, 0),
 			flags:        dynDialedConn,
 			wantCalls:    "doEncHandshake,doProtoHandshake,close,",
-			wantCloseErr: errors.New("foo"),
+			wantCloseErr: fooErr,
 		},
 		{
 			tt:           &setupTransport{pubkey: srvpub, phs: protoHandshake{ID: crypto.FromECDSAPub(srvpub)[1:]}},
@@ -443,7 +445,7 @@ func TestServerSetupConn(t *testing.T) {
 			}
 			p1, _ := net.Pipe()
 			srv.SetupConn(p1, test.flags, test.dialDest)
-			if !reflect.DeepEqual(test.tt.closeErr, test.wantCloseErr) {
+			if !errors.Is(test.tt.closeErr, test.wantCloseErr) {
 				t.Errorf("test %d: close error mismatch: got %q, want %q", i, test.tt.closeErr, test.wantCloseErr)
 			}
 			if test.tt.calls != test.wantCalls {

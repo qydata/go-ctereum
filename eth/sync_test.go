@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package eth
 
@@ -21,60 +21,77 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/eth/protocols/eth"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/eth/downloader"
+	"github.com/ethereum/go-tempereum/eth/protocols/eth"
+	"github.com/ethereum/go-tempereum/eth/protocols/snap"
+	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/ethereum/go-tempereum/p2p/enode"
 )
 
-// Tests that fast sync is disabled after a successful sync cycle.
-func TestFastSyncDisabling65(t *testing.T) { testFastSyncDisabling(t, eth.ETH65) }
-func TestFastSyncDisabling66(t *testing.T) { testFastSyncDisabling(t, eth.ETH66) }
+// Tests that snap sync is disabled after a successful sync cycle.
+func TestSnapSyncDisabling66(t *testing.T) { testSnapSyncDisabling(t, eth.ETH66, snap.SNAP1) }
+func TestSnapSyncDisabling67(t *testing.T) { testSnapSyncDisabling(t, eth.ETH67, snap.SNAP1) }
 
-// Tests that fast sync gets disabled as soon as a real block is successfully
+// Tests that snap sync gets disabled as soon as a real block is successfully
 // imported into the blockchain.
-func testFastSyncDisabling(t *testing.T, protocol uint) {
+func testSnapSyncDisabling(t *testing.T, ethVer uint, snapVer uint) {
 	t.Parallel()
 
-	// Create an empty handler and ensure it's in fast sync mode
+	// Create an empty handler and ensure it's in snap sync mode
 	empty := newTestHandler()
-	if atomic.LoadUint32(&empty.handler.fastSync) == 0 {
-		t.Fatalf("fast sync disabled on pristine blockchain")
+	if atomic.LoadUint32(&empty.handler.snapSync) == 0 {
+		t.Fatalf("snap sync disabled on pristine blockchain")
 	}
 	defer empty.close()
 
-	// Create a full handler and ensure fast sync ends up disabled
+	// Create a full handler and ensure snap sync ends up disabled
 	full := newTestHandlerWithBlocks(1024)
-	if atomic.LoadUint32(&full.handler.fastSync) == 1 {
-		t.Fatalf("fast sync not disabled on non-empty blockchain")
+	if atomic.LoadUint32(&full.handler.snapSync) == 1 {
+		t.Fatalf("snap sync not disabled on non-empty blockchain")
 	}
 	defer full.close()
 
-	// Sync up the two handlers
-	emptyPipe, fullPipe := p2p.MsgPipe()
-	defer emptyPipe.Close()
-	defer fullPipe.Close()
+	// Sync up the two handlers via both `eth` and `snap`
+	caps := []p2p.Cap{{Name: "eth", Version: ethVer}, {Name: "snap", Version: snapVer}}
 
-	emptyPeer := eth.NewPeer(protocol, p2p.NewPeer(enode.ID{1}, "", nil), emptyPipe, empty.txpool)
-	fullPeer := eth.NewPeer(protocol, p2p.NewPeer(enode.ID{2}, "", nil), fullPipe, full.txpool)
-	defer emptyPeer.Close()
-	defer fullPeer.Close()
+	emptyPipeEth, fullPipeEth := p2p.MsgPipe()
+	defer emptyPipeEth.Close()
+	defer fullPipeEth.Close()
 
-	go empty.handler.runEthPeer(emptyPeer, func(peer *eth.Peer) error {
+	emptyPeerEth := eth.NewPeer(ethVer, p2p.NewPeer(enode.ID{1}, "", caps), emptyPipeEth, empty.txpool)
+	fullPeerEth := eth.NewPeer(ethVer, p2p.NewPeer(enode.ID{2}, "", caps), fullPipeEth, full.txpool)
+	defer emptyPeerEth.Close()
+	defer fullPeerEth.Close()
+
+	go empty.handler.runEthPeer(emptyPeerEth, func(peer *eth.Peer) error {
 		return eth.Handle((*ethHandler)(empty.handler), peer)
 	})
-	go full.handler.runEthPeer(fullPeer, func(peer *eth.Peer) error {
+	go full.handler.runEthPeer(fullPeerEth, func(peer *eth.Peer) error {
 		return eth.Handle((*ethHandler)(full.handler), peer)
+	})
+
+	emptyPipeSnap, fullPipeSnap := p2p.MsgPipe()
+	defer emptyPipeSnap.Close()
+	defer fullPipeSnap.Close()
+
+	emptyPeerSnap := snap.NewPeer(snapVer, p2p.NewPeer(enode.ID{1}, "", caps), emptyPipeSnap)
+	fullPeerSnap := snap.NewPeer(snapVer, p2p.NewPeer(enode.ID{2}, "", caps), fullPipeSnap)
+
+	go empty.handler.runSnapExtension(emptyPeerSnap, func(peer *snap.Peer) error {
+		return snap.Handle((*snapHandler)(empty.handler), peer)
+	})
+	go full.handler.runSnapExtension(fullPeerSnap, func(peer *snap.Peer) error {
+		return snap.Handle((*snapHandler)(full.handler), peer)
 	})
 	// Wait a bit for the above handlers to start
 	time.Sleep(250 * time.Millisecond)
 
-	// Check that fast sync was disabled
-	op := peerToSyncOp(downloader.FastSync, empty.handler.peers.peerWithHighestTD())
+	// Check that snap sync was disabled
+	op := peerToSyncOp(downloader.SnapSync, empty.handler.peers.peerWithHighestTD())
 	if err := empty.handler.doSync(op); err != nil {
 		t.Fatal("sync failed:", err)
 	}
-	if atomic.LoadUint32(&empty.handler.fastSync) == 1 {
-		t.Fatalf("fast sync not disabled after successful synchronisation")
+	if atomic.LoadUint32(&empty.handler.snapSync) == 1 {
+		t.Fatalf("snap sync not disabled after successful synchronisation")
 	}
 }

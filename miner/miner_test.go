@@ -1,37 +1,38 @@
-// Copyright 2020 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package miner implements Ethereum block creation and mining.
 package miner
 
 import (
+	"errors"
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/clique"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/ethdb/memorydb"
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/consensus/clique"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/state"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/eth/downloader"
+	"github.com/ethereum/go-tempereum/ethdb/memorydb"
+	"github.com/ethereum/go-tempereum/event"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 type mockBackend struct {
@@ -52,6 +53,10 @@ func (m *mockBackend) BlockChain() *core.BlockChain {
 
 func (m *mockBackend) TxPool() *core.TxPool {
 	return m.txPool
+}
+
+func (m *mockBackend) StateAtBlock(block *types.Block, reexec uint64, base *state.StateDB, checkLive bool, preferDisk bool) (statedb *state.StateDB, err error) {
+	return nil, errors.New("not supported")
 }
 
 type testBlockChain struct {
@@ -79,7 +84,8 @@ func (bc *testBlockChain) SubscribeChainHeadEvent(ch chan<- core.ChainHeadEvent)
 }
 
 func TestMiner(t *testing.T) {
-	miner, mux := createMiner(t)
+	miner, mux, cleanup := createMiner(t)
+	defer cleanup(false)
 	miner.Start(common.HexToAddress("0x12345"))
 	waitForMiningState(t, miner, true)
 	// Start the downloader
@@ -106,7 +112,8 @@ func TestMiner(t *testing.T) {
 // An initial FailedEvent should allow mining to stop on a subsequent
 // downloader StartEvent.
 func TestMinerDownloaderFirstFails(t *testing.T) {
-	miner, mux := createMiner(t)
+	miner, mux, cleanup := createMiner(t)
+	defer cleanup(false)
 	miner.Start(common.HexToAddress("0x12345"))
 	waitForMiningState(t, miner, true)
 	// Start the downloader
@@ -137,8 +144,8 @@ func TestMinerDownloaderFirstFails(t *testing.T) {
 }
 
 func TestMinerStartStopAfterDownloaderEvents(t *testing.T) {
-	miner, mux := createMiner(t)
-
+	miner, mux, cleanup := createMiner(t)
+	defer cleanup(false)
 	miner.Start(common.HexToAddress("0x12345"))
 	waitForMiningState(t, miner, true)
 	// Start the downloader
@@ -160,7 +167,8 @@ func TestMinerStartStopAfterDownloaderEvents(t *testing.T) {
 }
 
 func TestStartWhileDownload(t *testing.T) {
-	miner, mux := createMiner(t)
+	miner, mux, cleanup := createMiner(t)
+	defer cleanup(false)
 	waitForMiningState(t, miner, false)
 	miner.Start(common.HexToAddress("0x12345"))
 	waitForMiningState(t, miner, true)
@@ -173,7 +181,8 @@ func TestStartWhileDownload(t *testing.T) {
 }
 
 func TestStartStopMiner(t *testing.T) {
-	miner, _ := createMiner(t)
+	miner, _, cleanup := createMiner(t)
+	defer cleanup(false)
 	waitForMiningState(t, miner, false)
 	miner.Start(common.HexToAddress("0x12345"))
 	waitForMiningState(t, miner, true)
@@ -182,7 +191,8 @@ func TestStartStopMiner(t *testing.T) {
 }
 
 func TestCloseMiner(t *testing.T) {
-	miner, _ := createMiner(t)
+	miner, _, cleanup := createMiner(t)
+	defer cleanup(true)
 	waitForMiningState(t, miner, false)
 	miner.Start(common.HexToAddress("0x12345"))
 	waitForMiningState(t, miner, true)
@@ -194,7 +204,8 @@ func TestCloseMiner(t *testing.T) {
 // TestMinerSetEtherbase checks that etherbase becomes set even if mining isn't
 // possible at the moment
 func TestMinerSetEtherbase(t *testing.T) {
-	miner, mux := createMiner(t)
+	miner, mux, cleanup := createMiner(t)
+	defer cleanup(false)
 	// Start with a 'bad' mining address
 	miner.Start(common.HexToAddress("0xdead"))
 	waitForMiningState(t, miner, true)
@@ -229,7 +240,7 @@ func waitForMiningState(t *testing.T, m *Miner, mining bool) {
 	t.Fatalf("Mining() == %t, want %t", state, mining)
 }
 
-func createMiner(t *testing.T) (*Miner, *event.TypeMux) {
+func createMiner(t *testing.T) (*Miner, *event.TypeMux, func(skipMiner bool)) {
 	// Create Ethash config
 	config := Config{
 		Etherbase: common.HexToAddress("123456789"),
@@ -237,7 +248,7 @@ func createMiner(t *testing.T) (*Miner, *event.TypeMux) {
 	// Create chainConfig
 	memdb := memorydb.New()
 	chainDB := rawdb.NewDatabase(memdb)
-	genesis := core.DeveloperGenesisBlock(15, common.HexToAddress("12345"))
+	genesis := core.DeveloperGenesisBlock(15, 11_500_000, common.HexToAddress("12345"))
 	chainConfig, _, err := core.SetupGenesisBlock(chainDB, genesis)
 	if err != nil {
 		t.Fatalf("can't create new chain config: %v", err)
@@ -257,5 +268,14 @@ func createMiner(t *testing.T) (*Miner, *event.TypeMux) {
 	// Create event Mux
 	mux := new(event.TypeMux)
 	// Create Miner
-	return New(backend, &config, chainConfig, mux, engine, nil), mux
+	miner := New(backend, &config, chainConfig, mux, engine, nil)
+	cleanup := func(skipMiner bool) {
+		bc.Stop()
+		engine.Close()
+		pool.Stop()
+		if !skipMiner {
+			miner.Close()
+		}
+	}
+	return miner, mux, cleanup
 }

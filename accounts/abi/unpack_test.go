@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package abi
 
@@ -26,7 +26,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/ethereum/go-tempereum/common"
 	"github.com/stretchr/testify/require"
 )
 
@@ -201,6 +201,23 @@ var unpackTests = []unpackTest{
 			IntOne *big.Int
 		}{big.NewInt(1)},
 	},
+	{
+		def:  `[{"type":"bool"}]`,
+		enc:  "",
+		want: false,
+		err:  "abi: attempting to unmarshall an empty string while arguments are expected",
+	},
+	{
+		def:  `[{"type":"bytes32","indexed":true},{"type":"uint256","indexed":false}]`,
+		enc:  "",
+		want: false,
+		err:  "abi: attempting to unmarshall an empty string while arguments are expected",
+	},
+	{
+		def:  `[{"type":"bool","indexed":true},{"type":"uint64","indexed":true}]`,
+		enc:  "",
+		want: false,
+	},
 }
 
 // TestLocalUnpackTests runs test specially designed only for unpacking.
@@ -336,6 +353,11 @@ func TestMethodMultiReturn(t *testing.T) {
 		"",
 		"Can unpack into a slice",
 	}, {
+		&[]interface{}{&bigint, ""},
+		&[]interface{}{&expected.Int, expected.String},
+		"",
+		"Can unpack into a slice without indirection",
+	}, {
 		&[2]interface{}{&bigint, new(string)},
 		&[2]interface{}{&expected.Int, &expected.String},
 		"",
@@ -407,7 +429,7 @@ func TestMultiReturnWithStringArray(t *testing.T) {
 	}
 	buff := new(bytes.Buffer)
 	buff.Write(common.Hex2Bytes("000000000000000000000000000000000000000000000000000000005c1b78ea0000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000001a055690d9db80000000000000000000000000000ab1257528b3782fb40d7ed5f72e624b744dffb2f00000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000008457468657265756d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001048656c6c6f2c20457468657265756d2100000000000000000000000000000000"))
-	temp, _ := big.NewInt(0).SetString("30000000000000000000", 10)
+	temp, _ := new(big.Int).SetString("30000000000000000000", 10)
 	ret1, ret1Exp := new([3]*big.Int), [3]*big.Int{big.NewInt(1545304298), big.NewInt(6), temp}
 	ret2, ret2Exp := new(common.Address), common.HexToAddress("ab1257528b3782fb40d7ed5f72e624b744dffb2f")
 	ret3, ret3Exp := new([2]string), [2]string{"Ethereum", "Hello, Ethereum!"}
@@ -448,7 +470,7 @@ func TestMultiReturnWithStringSlice(t *testing.T) {
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[1] length
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000064")) // output[1][0] value
 	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000065")) // output[1][1] value
-	ret1, ret1Exp := new([]string), []string{"ethereum", "go-ctereum"}
+	ret1, ret1Exp := new([]string), []string{"ethereum", "go-tempereum"}
 	ret2, ret2Exp := new([]*big.Int), []*big.Int{big.NewInt(100), big.NewInt(101)}
 	if err := abi.UnpackIntoInterface(&[]interface{}{ret1, ret2}, "multi", buff.Bytes()); err != nil {
 		t.Fatal(err)
@@ -762,20 +784,24 @@ func TestUnpackTuple(t *testing.T) {
 	buff.Write(common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")) // ret[b] = -1
 
 	// If the result is single tuple, use struct as return value container directly.
-	v := struct {
+	type v struct {
 		A *big.Int
 		B *big.Int
-	}{new(big.Int), new(big.Int)}
+	}
+	type r struct {
+		Result v
+	}
+	var ret0 = new(r)
+	err = abi.UnpackIntoInterface(ret0, "tuple", buff.Bytes())
 
-	err = abi.UnpackIntoInterface(&v, "tuple", buff.Bytes())
 	if err != nil {
 		t.Error(err)
 	} else {
-		if v.A.Cmp(big.NewInt(1)) != 0 {
-			t.Errorf("unexpected value unpacked: want %x, got %x", 1, v.A)
+		if ret0.Result.A.Cmp(big.NewInt(1)) != 0 {
+			t.Errorf("unexpected value unpacked: want %x, got %x", 1, ret0.Result.A)
 		}
-		if v.B.Cmp(big.NewInt(-1)) != 0 {
-			t.Errorf("unexpected value unpacked: want %x, got %x", -1, v.B)
+		if ret0.Result.B.Cmp(big.NewInt(-1)) != 0 {
+			t.Errorf("unexpected value unpacked: want %x, got %x", -1, ret0.Result.B)
 		}
 	}
 

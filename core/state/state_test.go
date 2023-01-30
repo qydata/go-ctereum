@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package state
 
@@ -21,10 +21,11 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/ethdb"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/ethdb"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 type stateTest struct {
@@ -40,7 +41,7 @@ func newStateTest() *stateTest {
 
 func TestDump(t *testing.T) {
 	db := rawdb.NewMemoryDatabase()
-	sdb, _ := New(common.Hash{}, NewDatabaseWithConfig(db, nil), nil)
+	sdb, _ := New(common.Hash{}, NewDatabaseWithConfig(db, &trie.Config{Preimages: true}), nil)
 	s := &stateTest{db: db, state: sdb}
 
 	// generate a few entries

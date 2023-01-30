@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package ethash
 
@@ -25,10 +25,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/math"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 type diffTest struct {
@@ -103,7 +103,7 @@ func TestDifficultyCalculators(t *testing.T) {
 	for i := 0; i < 5000; i++ {
 		// 1 to 300 seconds diff
 		var timeDelta = uint64(1 + rand.Uint32()%3000)
-		diffBig := big.NewInt(0).SetBytes(randSlice(2, 10))
+		diffBig := new(big.Int).SetBytes(randSlice(2, 10))
 		if diffBig.Cmp(params.MinimumDifficulty) < 0 {
 			diffBig.Set(params.MinimumDifficulty)
 		}
@@ -121,8 +121,8 @@ func TestDifficultyCalculators(t *testing.T) {
 			bigFn  func(time uint64, parent *types.Header) *big.Int
 			u256Fn func(time uint64, parent *types.Header) *big.Int
 		}{
-			{FrontierDifficultyCalulator, CalcDifficultyFrontierU256},
-			{HomesteadDifficultyCalulator, CalcDifficultyHomesteadU256},
+			{FrontierDifficultyCalculator, CalcDifficultyFrontierU256},
+			{HomesteadDifficultyCalculator, CalcDifficultyHomesteadU256},
 			{DynamicDifficultyCalculator(bombDelay), MakeDifficultyCalculatorU256(bombDelay)},
 		} {
 			time := header.Time + timeDelta

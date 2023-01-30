@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package nat
 
@@ -21,6 +21,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"runtime"
 	"strings"
 	"testing"
@@ -162,7 +163,11 @@ func TestUPNP_DDWRT(t *testing.T) {
 	// Attempt to discover the fake device.
 	discovered := discoverUPnP()
 	if discovered == nil {
-		t.Fatalf("not discovered")
+		if os.Getenv("CI") != "" {
+			t.Fatalf("not discovered")
+		} else {
+			t.Skipf("UPnP not discovered (known issue, see https://github.com/ethereum/go-tempereum/issues/21476)")
+		}
 	}
 	upnp, _ := discovered.(*upnp)
 	if upnp.service != "IGDv1-IP1" {
@@ -218,7 +223,7 @@ func (dev *fakeIGD) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (dev *fakeIGD) replaceListenAddr(resp string) string {
-	return strings.Replace(resp, "{{listenAddr}}", dev.listener.Addr().String(), -1)
+	return strings.ReplaceAll(resp, "{{listenAddr}}", dev.listener.Addr().String())
 }
 
 func (dev *fakeIGD) listen() (err error) {

@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package keystore
 
@@ -20,22 +20,17 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/crypto"
 )
 
 func tmpKeyStoreIface(t *testing.T, encrypted bool) (dir string, ks keyStore) {
-	d, err := ioutil.TempDir("", "geth-keystore-test")
-	if err != nil {
-		t.Fatal(err)
-	}
+	d := t.TempDir()
 	if encrypted {
 		ks = &keyStorePassphrase{d, veryLightScryptN, veryLightScryptP, true}
 	} else {
@@ -45,8 +40,7 @@ func tmpKeyStoreIface(t *testing.T, encrypted bool) (dir string, ks keyStore) {
 }
 
 func TestKeyStorePlain(t *testing.T) {
-	dir, ks := tmpKeyStoreIface(t, false)
-	defer os.RemoveAll(dir)
+	_, ks := tmpKeyStoreIface(t, false)
 
 	pass := "" // not used but required by API
 	k1, account, err := storeNewKey(ks, rand.Reader, pass)
@@ -66,8 +60,7 @@ func TestKeyStorePlain(t *testing.T) {
 }
 
 func TestKeyStorePassphrase(t *testing.T) {
-	dir, ks := tmpKeyStoreIface(t, true)
-	defer os.RemoveAll(dir)
+	_, ks := tmpKeyStoreIface(t, true)
 
 	pass := "foo"
 	k1, account, err := storeNewKey(ks, rand.Reader, pass)
@@ -87,8 +80,7 @@ func TestKeyStorePassphrase(t *testing.T) {
 }
 
 func TestKeyStorePassphraseDecryptionFail(t *testing.T) {
-	dir, ks := tmpKeyStoreIface(t, true)
-	defer os.RemoveAll(dir)
+	_, ks := tmpKeyStoreIface(t, true)
 
 	pass := "foo"
 	k1, account, err := storeNewKey(ks, rand.Reader, pass)
@@ -102,7 +94,6 @@ func TestKeyStorePassphraseDecryptionFail(t *testing.T) {
 
 func TestImportPreSaleKey(t *testing.T) {
 	dir, ks := tmpKeyStoreIface(t, true)
-	defer os.RemoveAll(dir)
 
 	// file content of a presale key file generated with:
 	// python pyethsaletool.py genwallet

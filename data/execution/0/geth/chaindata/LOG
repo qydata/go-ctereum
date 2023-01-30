@@ -1,0 +1,20 @@
+=============== Jan 9, 2023 (CST) ===============
+15:00:21.386034 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:00:21.396019 db@open opening
+15:00:21.401605 version@stat F·[] S·0B[] Sc·[]
+15:00:21.403999 db@janitor F·2 G·0
+15:00:21.404051 db@open done T·7.9872ms
+15:00:23.577237 db@close closing
+15:00:23.578671 db@close done T·1.4308ms
+=============== Jan 9, 2023 (CST) ===============
+15:00:31.661155 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:00:31.661993 version@stat F·[] S·0B[] Sc·[]
+15:00:31.662059 db@open opening
+15:00:31.662172 journal@recovery F·1
+15:00:31.666769 journal@recovery recovering @1
+15:00:31.676722 memdb@flush created L0@2 N·22 S·1KiB "Dat..ion,v14":"unc..own,v22"
+15:00:31.681082 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
+15:00:31.694459 db@janitor F·3 G·0
+15:00:31.694507 db@open done T·32.425ms
+15:00:33.846687 db@close closing
+15:00:33.851139 db@close done T·4.4485ms

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package bloombits
 
@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 // Tests that batched bloom bits are correctly rotated from the input bloom
@@ -70,7 +70,7 @@ func BenchmarkGenerator(b *testing.B) {
 			if err != nil {
 				b.Fatalf("failed to create bloombit generator: %v", err)
 			}
-			for j, bloom := range input {
+			for j, bloom := range &input {
 				if err := gen.AddBloom(uint(j), bloom); err != nil {
 					b.Fatalf("bloom %d: failed to add: %v", i, err)
 				}
@@ -89,7 +89,7 @@ func BenchmarkGenerator(b *testing.B) {
 			if err != nil {
 				b.Fatalf("failed to create bloombit generator: %v", err)
 			}
-			for j, bloom := range input {
+			for j, bloom := range &input {
 				if err := gen.AddBloom(uint(j), bloom); err != nil {
 					b.Fatalf("bloom %d: failed to add: %v", i, err)
 				}

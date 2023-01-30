@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rlp
 
@@ -21,12 +21,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
+	"runtime"
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common/math"
+	"github.com/ethereum/go-tempereum/common/math"
 )
 
 type testEncoder struct {
@@ -119,16 +119,24 @@ var encTests = []encTest{
 	{val: big.NewInt(0xFFFFFFFFFFFF), output: "86FFFFFFFFFFFF"},
 	{val: big.NewInt(0xFFFFFFFFFFFFFF), output: "87FFFFFFFFFFFFFF"},
 	{
-		val:    big.NewInt(0).SetBytes(unhex("102030405060708090A0B0C0D0E0F2")),
+		val:    new(big.Int).SetBytes(unhex("102030405060708090A0B0C0D0E0F2")),
 		output: "8F102030405060708090A0B0C0D0E0F2",
 	},
 	{
-		val:    big.NewInt(0).SetBytes(unhex("0100020003000400050006000700080009000A000B000C000D000E01")),
+		val:    new(big.Int).SetBytes(unhex("0100020003000400050006000700080009000A000B000C000D000E01")),
 		output: "9C0100020003000400050006000700080009000A000B000C000D000E01",
 	},
 	{
-		val:    big.NewInt(0).SetBytes(unhex("010000000000000000000000000000000000000000000000000000000000000000")),
+		val:    new(big.Int).SetBytes(unhex("010000000000000000000000000000000000000000000000000000000000000000")),
 		output: "A1010000000000000000000000000000000000000000000000000000000000000000",
+	},
+	{
+		val:    veryBigInt,
+		output: "89FFFFFFFFFFFFFFFFFF",
+	},
+	{
+		val:    veryVeryBigInt,
+		output: "B848FFFFFFFFFFFFFFFFF800000000000000001BFFFFFFFFFFFFFFFFC8000000000000000045FFFFFFFFFFFFFFFFC800000000000000001BFFFFFFFFFFFFFFFFF8000000000000000001",
 	},
 
 	// non-pointer big.Int
@@ -136,7 +144,8 @@ var encTests = []encTest{
 	{val: *big.NewInt(0xFFFFFF), output: "83FFFFFF"},
 
 	// negative ints are not supported
-	{val: big.NewInt(-1), error: "rlp: cannot encode negative *big.Int"},
+	{val: big.NewInt(-1), error: "rlp: cannot encode negative big.Int"},
+	{val: *big.NewInt(-1), error: "rlp: cannot encode negative big.Int"},
 
 	// byte arrays
 	{val: [0]byte{}, output: "80"},
@@ -389,13 +398,28 @@ func TestEncodeToBytes(t *testing.T) {
 	runEncTests(t, EncodeToBytes)
 }
 
+func TestEncodeAppendToBytes(t *testing.T) {
+	buffer := make([]byte, 20)
+	runEncTests(t, func(val interface{}) ([]byte, error) {
+		w := NewEncoderBuffer(nil)
+		defer w.Flush()
+
+		err := Encode(w, val)
+		if err != nil {
+			return nil, err
+		}
+		output := w.AppendToBytes(buffer[:0])
+		return output, nil
+	})
+}
+
 func TestEncodeToReader(t *testing.T) {
 	runEncTests(t, func(val interface{}) ([]byte, error) {
 		_, r, err := EncodeToReader(val)
 		if err != nil {
 			return nil, err
 		}
-		return ioutil.ReadAll(r)
+		return io.ReadAll(r)
 	})
 }
 
@@ -436,7 +460,7 @@ func TestEncodeToReaderReturnToPool(t *testing.T) {
 		go func() {
 			for i := 0; i < 1000; i++ {
 				_, r, _ := EncodeToReader("foo")
-				ioutil.ReadAll(r)
+				io.ReadAll(r)
 				r.Read(buf)
 				r.Read(buf)
 				r.Read(buf)
@@ -476,6 +500,85 @@ func BenchmarkEncodeBigInts(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		out.Reset()
 		if err := Encode(out, ints); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkEncodeConcurrentInterface(b *testing.B) {
+	type struct1 struct {
+		A string
+		B *big.Int
+		C [20]byte
+	}
+	value := []interface{}{
+		uint(999),
+		&struct1{A: "hello", B: big.NewInt(0xFFFFFFFF)},
+		[10]byte{1, 2, 3, 4, 5, 6},
+		[]string{"yeah", "yeah", "yeah"},
+	}
+
+	var wg sync.WaitGroup
+	for cpu := 0; cpu < runtime.NumCPU(); cpu++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			var buffer bytes.Buffer
+			for i := 0; i < b.N; i++ {
+				buffer.Reset()
+				err := Encode(&buffer, value)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+type byteArrayStruct struct {
+	A [20]byte
+	B [32]byte
+	C [32]byte
+}
+
+func BenchmarkEncodeByteArrayStruct(b *testing.B) {
+	var out bytes.Buffer
+	var value byteArrayStruct
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		out.Reset()
+		if err := Encode(&out, &value); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+type structSliceElem struct {
+	X uint64
+	Y uint64
+	Z uint64
+}
+
+type structPtrSlice []*structSliceElem
+
+func BenchmarkEncodeStructPtrSlice(b *testing.B) {
+	var out bytes.Buffer
+	var value = structPtrSlice{
+		&structSliceElem{1, 1, 1},
+		&structSliceElem{2, 2, 2},
+		&structSliceElem{3, 3, 3},
+		&structSliceElem{5, 5, 5},
+		&structSliceElem{6, 6, 6},
+		&structSliceElem{7, 7, 7},
+	}
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		out.Reset()
+		if err := Encode(&out, &value); err != nil {
 			b.Fatal(err)
 		}
 	}

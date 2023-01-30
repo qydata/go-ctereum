@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -23,19 +23,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/light"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/mclock"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/les/downloader"
+	"github.com/ethereum/go-tempereum/light"
+	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/ethereum/go-tempereum/params"
+	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 func expectResponse(r p2p.MsgReader, msgcode, reqID, bv uint64, data interface{}) error {
@@ -370,7 +370,7 @@ func testGetReceipt(t *testing.T, protocol int) {
 		block := bc.GetBlockByNumber(i)
 
 		hashes = append(hashes, block.Hash())
-		receipts = append(receipts, rawdb.ReadRawReceipts(server.db, block.Hash(), block.NumberU64()))
+		receipts = append(receipts, rawdb.ReadReceipts(server.db, block.Hash(), block.NumberU64(), bc.Config()))
 	}
 	// Send the hash request and verify the response
 	sendRequest(rawPeer.app, GetReceiptsMsg, 42, hashes)
@@ -405,7 +405,7 @@ func testGetProofs(t *testing.T, protocol int) {
 	accounts := []common.Address{bankAddr, userAddr1, userAddr2, signerAddr, {}}
 	for i := uint64(0); i <= bc.CurrentBlock().NumberU64(); i++ {
 		header := bc.GetHeaderByNumber(i)
-		trie, _ := trie.New(header.Root, trie.NewDatabase(server.db))
+		trie, _ := trie.New(common.Hash{}, header.Root, trie.NewDatabase(server.db))
 
 		for _, acc := range accounts {
 			req := ProofReq{
@@ -456,7 +456,7 @@ func testGetStaleProof(t *testing.T, protocol int) {
 		var expected []rlp.RawValue
 		if wantOK {
 			proofsV2 := light.NewNodeSet()
-			t, _ := trie.New(header.Root, trie.NewDatabase(server.db))
+			t, _ := trie.New(common.Hash{}, header.Root, trie.NewDatabase(server.db))
 			t.Prove(account, 0, proofsV2)
 			expected = proofsV2.NodeList()
 		}
@@ -512,7 +512,7 @@ func testGetCHTProofs(t *testing.T, protocol int) {
 		AuxData: [][]byte{rlp},
 	}
 	root := light.GetChtRoot(server.db, 0, bc.GetHeaderByNumber(config.ChtSize-1).Hash())
-	trie, _ := trie.New(root, trie.NewDatabase(rawdb.NewTable(server.db, light.ChtTablePrefix)))
+	trie, _ := trie.New(common.Hash{}, root, trie.NewDatabase(rawdb.NewTable(server.db, light.ChtTablePrefix)))
 	trie.Prove(key, 0, &proofsV2.Proofs)
 	// Assemble the requests for the different protocols
 	requestsV2 := []HelperTrieReq{{
@@ -577,7 +577,7 @@ func testGetBloombitsProofs(t *testing.T, protocol int) {
 		var proofs HelperTrieResps
 
 		root := light.GetBloomTrieRoot(server.db, 0, bc.GetHeaderByNumber(config.BloomTrieSize-1).Hash())
-		trie, _ := trie.New(root, trie.NewDatabase(rawdb.NewTable(server.db, light.BloomTrieTablePrefix)))
+		trie, _ := trie.New(common.Hash{}, root, trie.NewDatabase(rawdb.NewTable(server.db, light.BloomTrieTablePrefix)))
 		trie.Prove(key, 0, &proofs.Proofs)
 
 		// Send the proof request and verify the response

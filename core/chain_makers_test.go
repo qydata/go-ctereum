@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 func ExampleGenerateChain() {

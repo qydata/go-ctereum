@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package filters
 
@@ -22,13 +22,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/bitutil"
-	"github.com/ethereum/go-ctereum/core/bloombits"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/node"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/bitutil"
+	"github.com/ethereum/go-tempereum/core/bloombits"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/ethdb"
+	"github.com/ethereum/go-tempereum/node"
 )
 
 func BenchmarkBloomBits512(b *testing.B) {
@@ -62,6 +62,7 @@ func BenchmarkBloomBits32k(b *testing.B) {
 const benchFilterCnt = 2000
 
 func benchmarkBloomBits(b *testing.B, sectionSize uint64) {
+	b.Skip("test disabled: this tests presume (and modify) an existing datadir.")
 	benchDataDir := node.DefaultDataDir() + "/geth/chaindata"
 	b.Log("Running bloombits benchmark   section size:", sectionSize)
 
@@ -92,9 +93,9 @@ func benchmarkBloomBits(b *testing.B, sectionSize uint64) {
 		var header *types.Header
 		for i := sectionIdx * sectionSize; i < (sectionIdx+1)*sectionSize; i++ {
 			hash := rawdb.ReadCanonicalHash(db, i)
-			header = rawdb.ReadHeader(db, hash, i)
-			if header == nil {
+			if header = rawdb.ReadHeader(db, hash, i); header == nil {
 				b.Fatalf("Error creating bloomBits data")
+				return
 			}
 			bc.AddBloom(uint(i-sectionIdx*sectionSize), header.Bloom)
 		}
@@ -121,31 +122,36 @@ func benchmarkBloomBits(b *testing.B, sectionSize uint64) {
 
 	b.Log("Running filter benchmarks...")
 	start = time.Now()
-	var backend *testBackend
 
+	var (
+		backend *testBackend
+		sys     *FilterSystem
+	)
 	for i := 0; i < benchFilterCnt; i++ {
 		if i%20 == 0 {
 			db.Close()
 			db, _ = rawdb.NewLevelDBDatabase(benchDataDir, 128, 1024, "", false)
 			backend = &testBackend{db: db, sections: cnt}
+			sys = NewFilterSystem(backend, Config{})
 		}
 		var addr common.Address
 		addr[0] = byte(i)
 		addr[1] = byte(i / 256)
-		filter := NewRangeFilter(backend, 0, int64(cnt*sectionSize-1), []common.Address{addr}, nil)
+		filter := sys.NewRangeFilter(0, int64(cnt*sectionSize-1), []common.Address{addr}, nil)
 		if _, err := filter.Logs(context.Background()); err != nil {
-			b.Error("filter.Find error:", err)
+			b.Error("filter.Logs error:", err)
 		}
 	}
+
 	d = time.Since(start)
 	b.Log("Finished running filter benchmarks")
 	b.Log(" ", d, "total  ", d/time.Duration(benchFilterCnt), "per address", d*time.Duration(1000000)/time.Duration(benchFilterCnt*cnt*sectionSize), "per million blocks")
 	db.Close()
 }
 
-var bloomBitsPrefix = []byte("bloomBits-")
-
+//nolint:unused
 func clearBloomBits(db ethdb.Database) {
+	var bloomBitsPrefix = []byte("bloomBits-")
 	fmt.Println("Clearing bloombits data...")
 	it := db.NewIterator(bloomBitsPrefix, nil)
 	for it.Next() {
@@ -155,6 +161,7 @@ func clearBloomBits(db ethdb.Database) {
 }
 
 func BenchmarkNoBloomBits(b *testing.B) {
+	b.Skip("test disabled: this tests presume (and modify) an existing datadir.")
 	benchDataDir := node.DefaultDataDir() + "/geth/chaindata"
 	b.Log("Running benchmark without bloombits")
 	db, err := rawdb.NewLevelDBDatabase(benchDataDir, 128, 1024, "", false)
@@ -169,10 +176,11 @@ func BenchmarkNoBloomBits(b *testing.B) {
 
 	clearBloomBits(db)
 
+	_, sys := newTestFilterSystem(b, db, Config{})
+
 	b.Log("Running filter benchmarks...")
 	start := time.Now()
-	backend := &testBackend{db: db}
-	filter := NewRangeFilter(backend, 0, int64(*headNum), []common.Address{{}}, nil)
+	filter := sys.NewRangeFilter(0, int64(*headNum), []common.Address{{}}, nil)
 	filter.Logs(context.Background())
 	d := time.Since(start)
 	b.Log("Finished running filter benchmarks")

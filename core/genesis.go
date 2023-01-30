@@ -18,6 +18,7 @@ package core
 
 import (
 	"bytes"
+	"embed"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -41,6 +42,9 @@ import (
 
 //go:generate go run github.com/fjl/gencodec -type Genesis -field-override genesisSpecMarshaling -out gen_genesis.go
 //go:generate go run github.com/fjl/gencodec -type GenesisAccount -field-override genesisAccountMarshaling -out gen_genesis_account.go
+
+//go:embed allocs
+var allocs embed.FS
 
 var errGenesisNoConfig = errors.New("genesis has no chain configuration")
 
@@ -234,10 +238,10 @@ func (e *GenesisMismatchError) Error() string {
 // SetupGenesisBlock writes or updates the genesis block in db.
 // The block that will be used is:
 //
-//                          genesis == nil       genesis != nil
-//                       +------------------------------------------
-//     db has no genesis |  main-net default  |  genesis
-//     db has genesis    |  from DB           |  genesis (if compatible)
+//	                     genesis == nil       genesis != nil
+//	                  +------------------------------------------
+//	db has no genesis |  main-net default  |  genesis
+//	db has genesis    |  from DB           |  genesis (if compatible)
 //
 // The stored chain configuration will be updated if it is compatible (i.e. does not
 // specify a fork block below the local head block). In case of a conflict, the
@@ -355,6 +359,8 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return params.RinkebyChainConfig
 	case ghash == params.GoerliGenesisHash:
 		return params.GoerliChainConfig
+	case ghash == params.BorMainnetGenesisHash:
+		return params.BorMainnetChainConfig
 	case ghash == params.KilnGenesisHash:
 		return DefaultKilnGenesisBlock().Config
 	default:
@@ -501,6 +507,20 @@ func DefaultGoerliGenesisBlock() *Genesis {
 	}
 }
 
+// DefaultBorMainnet returns the Bor Mainnet network gensis block.
+func DefaultBorMainnetGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.BorMainnetChainConfig,
+		Nonce:      0,
+		Timestamp:  1590824836,
+		GasLimit:   10000000,
+		Difficulty: big.NewInt(1),
+		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
+		Alloc:      readPrealloc("allocs/bor_mainnet.json"),
+	}
+}
+
 // DefaultSepoliaGenesisBlock returns the Sepolia network genesis block.
 func DefaultSepoliaGenesisBlock() *Genesis {
 	return &Genesis{
@@ -563,6 +583,21 @@ func decodePrealloc(data string) GenesisAlloc {
 	ga := make(GenesisAlloc, len(p))
 	for _, account := range p {
 		ga[common.BigToAddress(account.Addr)] = GenesisAccount{Balance: account.Balance}
+	}
+	return ga
+}
+
+func readPrealloc(filename string) GenesisAlloc {
+	f, err := allocs.Open(filename)
+	if err != nil {
+		panic(fmt.Sprintf("Could not open genesis preallocation for %s: %v", filename, err))
+	}
+	defer f.Close()
+	decoder := json.NewDecoder(f)
+	ga := make(GenesisAlloc)
+	err = decoder.Decode(&ga)
+	if err != nil {
+		panic(fmt.Sprintf("Could not parse genesis preallocation for %s: %v", filename, err))
 	}
 	return ga
 }

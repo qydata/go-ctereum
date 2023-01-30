@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package types
 
@@ -22,13 +22,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/rlp"
 )
 
 // The values in those tests are from the Transaction Tests
@@ -75,7 +76,7 @@ func TestDecodeEmptyTypedTx(t *testing.T) {
 	input := []byte{0x80}
 	var tx Transaction
 	err := rlp.DecodeBytes(input, &tx)
-	if err != errEmptyTypedTx {
+	if err != errShortTypedTx {
 		t.Fatal("wrong error:", err)
 	}
 }
@@ -113,7 +114,6 @@ func TestEIP2718TransactionSigHash(t *testing.T) {
 
 // This test checks signature operations on access list transactions.
 func TestEIP2930Signer(t *testing.T) {
-
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		keyAddr = crypto.PubkeyToAddress(key.PublicKey)
@@ -258,36 +258,77 @@ func TestRecipientNormal(t *testing.T) {
 	}
 }
 
+func TestTransactionPriceNonceSortLegacy(t *testing.T) {
+	testTransactionPriceNonceSort(t, nil)
+}
+
+func TestTransactionPriceNonceSort1559(t *testing.T) {
+	testTransactionPriceNonceSort(t, big.NewInt(0))
+	testTransactionPriceNonceSort(t, big.NewInt(5))
+	testTransactionPriceNonceSort(t, big.NewInt(50))
+}
+
 // Tests that transactions can be correctly sorted according to their price in
 // decreasing order, but at the same time with increasing nonces when issued by
 // the same account.
-func TestTransactionPriceNonceSort(t *testing.T) {
+func testTransactionPriceNonceSort(t *testing.T, baseFee *big.Int) {
 	// Generate a batch of accounts to start with
 	keys := make([]*ecdsa.PrivateKey, 25)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
 	}
-	signer := HomesteadSigner{}
+	signer := LatestSignerForChainID(common.Big1)
 
 	// Generate a batch of transactions with overlapping values, but shifted nonces
 	groups := map[common.Address]Transactions{}
+	expectedCount := 0
 	for start, key := range keys {
 		addr := crypto.PubkeyToAddress(key.PublicKey)
+		count := 25
 		for i := 0; i < 25; i++ {
-			tx, _ := SignTx(NewTransaction(uint64(start+i), common.Address{}, big.NewInt(100), 100, big.NewInt(int64(start+i)), nil), signer, key)
+			var tx *Transaction
+			gasFeeCap := rand.Intn(50)
+			if baseFee == nil {
+				tx = NewTx(&LegacyTx{
+					Nonce:    uint64(start + i),
+					To:       &common.Address{},
+					Value:    big.NewInt(100),
+					Gas:      100,
+					GasPrice: big.NewInt(int64(gasFeeCap)),
+					Data:     nil,
+				})
+			} else {
+				tx = NewTx(&DynamicFeeTx{
+					Nonce:     uint64(start + i),
+					To:        &common.Address{},
+					Value:     big.NewInt(100),
+					Gas:       100,
+					GasFeeCap: big.NewInt(int64(gasFeeCap)),
+					GasTipCap: big.NewInt(int64(rand.Intn(gasFeeCap + 1))),
+					Data:      nil,
+				})
+				if count == 25 && int64(gasFeeCap) < baseFee.Int64() {
+					count = i
+				}
+			}
+			tx, err := SignTx(tx, signer, key)
+			if err != nil {
+				t.Fatalf("failed to sign tx: %s", err)
+			}
 			groups[addr] = append(groups[addr], tx)
 		}
+		expectedCount += count
 	}
 	// Sort the transactions and cross check the nonce ordering
-	txset := NewTransactionsByPriceAndNonce(signer, groups)
+	txset := NewTransactionsByPriceAndNonce(signer, groups, baseFee)
 
 	txs := Transactions{}
 	for tx := txset.Peek(); tx != nil; tx = txset.Peek() {
 		txs = append(txs, tx)
 		txset.Shift()
 	}
-	if len(txs) != 25*25 {
-		t.Errorf("expected %d transactions, found %d", 25*25, len(txs))
+	if len(txs) != expectedCount {
+		t.Errorf("expected %d transactions, found %d", expectedCount, len(txs))
 	}
 	for i, txi := range txs {
 		fromi, _ := Sender(signer, txi)
@@ -303,7 +344,12 @@ func TestTransactionPriceNonceSort(t *testing.T) {
 		if i+1 < len(txs) {
 			next := txs[i+1]
 			fromNext, _ := Sender(signer, next)
-			if fromi != fromNext && txi.GasPrice().Cmp(next.GasPrice()) < 0 {
+			tip, err := txi.EffectiveGasTip(baseFee)
+			nextTip, nextErr := next.EffectiveGasTip(baseFee)
+			if err != nil || nextErr != nil {
+				t.Errorf("error calculating effective tip")
+			}
+			if fromi != fromNext && tip.Cmp(nextTip) < 0 {
 				t.Errorf("invalid gasprice ordering: tx #%d (A=%x P=%v) < tx #%d (A=%x P=%v)", i, fromi[:4], txi.GasPrice(), i+1, fromNext[:4], next.GasPrice())
 			}
 		}
@@ -331,7 +377,7 @@ func TestTransactionTimeSort(t *testing.T) {
 		groups[addr] = append(groups[addr], tx)
 	}
 	// Sort the transactions and cross check the nonce ordering
-	txset := NewTransactionsByPriceAndNonce(signer, groups)
+	txset := NewTransactionsByPriceAndNonce(signer, groups, nil)
 
 	txs := Transactions{}
 	for tx := txset.Peek(); tx != nil; tx = txset.Peek() {
@@ -430,14 +476,18 @@ func TestTransactionCoding(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(parsedTx, tx)
+		if err := assertEqual(parsedTx, tx); err != nil {
+			t.Fatal(err)
+		}
 
 		// JSON
 		parsedTx, err = encodeDecodeJSON(tx)
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertEqual(parsedTx, tx)
+		if err := assertEqual(parsedTx, tx); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 

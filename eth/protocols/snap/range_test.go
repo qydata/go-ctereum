@@ -1,25 +1,25 @@
-// Copyright 2021 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2021 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package snap
 
 import (
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/ethereum/go-tempereum/common"
 )
 
 // Tests that given a starting hash and a density, the hash ranger can correctly
@@ -53,7 +53,7 @@ func TestHashRanges(t *testing.T) {
 			head:   common.HexToHash("0x2000000000000000000000000000000000000000000000000000000000000000"),
 			chunks: 2,
 			starts: []common.Hash{
-				common.Hash{},
+				{},
 				common.HexToHash("0x9000000000000000000000000000000000000000000000000000000000000000"),
 			},
 			ends: []common.Hash{

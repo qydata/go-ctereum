@@ -17,8 +17,11 @@
 package miner
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ctereum/common/tracing"
+	"go.opentelemetry.io/otel"
 	"math/big"
 	"sync"
 	"sync/atomic"
@@ -148,6 +151,8 @@ func (env *environment) discard() {
 
 // task contains all information for consensus engine sealing and result submitting.
 type task struct {
+	//nolint:containedctx
+	ctx       context.Context
 	receipts  []*types.Receipt
 	state     *state.StateDB
 	block     *types.Block
@@ -162,6 +167,8 @@ const (
 
 // newWorkReq represents a request for new sealing work submitting with relative interrupt notifier.
 type newWorkReq struct {
+	//nolint:containedctx
+	ctx       context.Context
 	interrupt *int32
 	noempty   bool
 	timestamp int64
@@ -169,6 +176,8 @@ type newWorkReq struct {
 
 // getWorkReq represents a request for getting a new sealing work with provided parameters.
 type getWorkReq struct {
+	//nolint:containedctx
+	ctx    context.Context
 	params *generateParams
 	result chan *types.Block // non-blocking channel
 	err    chan error
@@ -289,9 +298,11 @@ func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus
 		recommit = minRecommitInterval
 	}
 
+	ctx := tracing.WithTracer(context.Background(), otel.GetTracerProvider().Tracer("MinerWorker"))
+
 	worker.wg.Add(4)
-	go worker.mainLoop()
-	go worker.newWorkLoop(recommit)
+	go worker.mainLoop(ctx)
+	go worker.newWorkLoop(ctx, recommit)
 	go worker.resultLoop()
 	go worker.taskLoop()
 
@@ -414,7 +425,7 @@ func recalcRecommit(minRecommit, prev time.Duration, target float64, inc bool) t
 }
 
 // newWorkLoop is a standalone goroutine to submit new sealing work upon received events.
-func (w *worker) newWorkLoop(recommit time.Duration) {
+func (w *worker) newWorkLoop(ctx context.Context, recommit time.Duration) {
 	defer w.wg.Done()
 	var (
 		interrupt   *int32
@@ -428,12 +439,16 @@ func (w *worker) newWorkLoop(recommit time.Duration) {
 
 	// commit aborts in-flight transaction execution with given signal and resubmits a new one.
 	commit := func(noempty bool, s int32) {
+		// we close spans only by the place we created them
+		ctx, span := tracing.Trace(ctx, "worker.newWorkLoop.commit")
+		tracing.EndSpan(span)
+
 		if interrupt != nil {
 			atomic.StoreInt32(interrupt, s)
 		}
 		interrupt = new(int32)
 		select {
-		case w.newWorkCh <- &newWorkReq{interrupt: interrupt, noempty: noempty, timestamp: timestamp}:
+		case w.newWorkCh <- &newWorkReq{interrupt: interrupt, noempty: noempty, timestamp: timestamp, ctx: ctx}:
 		case <-w.exitCh:
 			return
 		}
@@ -514,7 +529,7 @@ func (w *worker) newWorkLoop(recommit time.Duration) {
 // mainLoop is responsible for generating and submitting sealing work based on
 // the received event. It can support two modes: automatically generate task and
 // submit it or return task according to given parameters for various proposes.
-func (w *worker) mainLoop() {
+func (w *worker) mainLoop(ctx context.Context) {
 	defer w.wg.Done()
 	defer w.txsSub.Unsubscribe()
 	defer w.chainHeadSub.Unsubscribe()
@@ -531,10 +546,10 @@ func (w *worker) mainLoop() {
 	for {
 		select {
 		case req := <-w.newWorkCh:
-			w.commitWork(req.interrupt, req.noempty, req.timestamp)
+			w.commitWork(req.ctx, req.interrupt, req.noempty, req.timestamp)
 
 		case req := <-w.getWorkCh:
-			block, err := w.generateWork(req.params)
+			block, err := w.generateWork(req.ctx, req.params)
 			if err != nil {
 				req.err <- err
 				req.result <- nil
@@ -562,7 +577,7 @@ func (w *worker) mainLoop() {
 			if w.isRunning() && w.current != nil && len(w.current.uncles) < 2 {
 				start := time.Now()
 				if err := w.commitUncle(w.current, ev.Block.Header()); err == nil {
-					w.commit(w.current.copy(), nil, true, start)
+					w.commit(ctx, w.current.copy(), nil, true, start)
 				}
 			}
 
@@ -609,7 +624,7 @@ func (w *worker) mainLoop() {
 				// submit sealing work here since all empty submission will be rejected
 				// by clique. Of course the advance sealing(empty submission) is disabled.
 				if w.chainConfig.Clique != nil && w.chainConfig.Clique.Period == 0 {
-					w.commitWork(nil, true, time.Now().Unix())
+					w.commitWork(ctx, nil, true, time.Now().Unix())
 				}
 			}
 			atomic.AddInt32(&w.newTxs, int32(len(ev.Txs)))
@@ -665,7 +680,7 @@ func (w *worker) taskLoop() {
 			w.pendingTasks[sealHash] = task
 			w.pendingMu.Unlock()
 
-			if err := w.engine.Seal(w.chain, task.block, w.resultCh, stopCh); err != nil {
+			if err := w.engine.Seal(task.ctx, w.chain, task.block, w.resultCh, stopCh); err != nil {
 				log.Warn("Block sealing failed", "err", err)
 				w.pendingMu.Lock()
 				delete(w.pendingTasks, sealHash)
@@ -1074,7 +1089,7 @@ func (w *worker) fillTransactions(interrupt *int32, env *environment) error {
 }
 
 // generateWork generates a sealing block based on the given parameters.
-func (w *worker) generateWork(params *generateParams) (*types.Block, error) {
+func (w *worker) generateWork(ctx context.Context, params *generateParams) (*types.Block, error) {
 	work, err := w.prepareWork(params)
 	if err != nil {
 		return nil, err
@@ -1084,12 +1099,12 @@ func (w *worker) generateWork(params *generateParams) (*types.Block, error) {
 	if !params.noTxs {
 		w.fillTransactions(nil, work)
 	}
-	return w.engine.FinalizeAndAssemble(w.chain, work.header, work.state, work.txs, work.unclelist(), work.receipts)
+	return w.engine.FinalizeAndAssemble(ctx, w.chain, work.header, work.state, work.txs, work.unclelist(), work.receipts)
 }
 
 // commitWork generates several new sealing tasks based on the parent block
 // and submit them to the sealer.
-func (w *worker) commitWork(interrupt *int32, noempty bool, timestamp int64) {
+func (w *worker) commitWork(ctx context.Context, interrupt *int32, noempty bool, timestamp int64) {
 	start := time.Now()
 
 	// Set the coinbase if the worker is running or it's required
@@ -1111,7 +1126,7 @@ func (w *worker) commitWork(interrupt *int32, noempty bool, timestamp int64) {
 	// Create an empty block based on temporary copied state for
 	// sealing in advance without waiting block execution finished.
 	if !noempty && atomic.LoadUint32(&w.noempty) == 0 {
-		w.commit(work.copy(), nil, false, start)
+		w.commit(ctx, work.copy(), nil, false, start)
 	}
 
 	// Fill pending transactions from the txpool
@@ -1120,7 +1135,7 @@ func (w *worker) commitWork(interrupt *int32, noempty bool, timestamp int64) {
 		work.discard()
 		return
 	}
-	w.commit(work.copy(), w.fullTaskHook, true, start)
+	w.commit(ctx, work.copy(), w.fullTaskHook, true, start)
 
 	// Swap out the old work with the new one, terminating any leftover
 	// prefetcher processes in the mean time and starting a new one.
@@ -1134,7 +1149,7 @@ func (w *worker) commitWork(interrupt *int32, noempty bool, timestamp int64) {
 // and commits new work if consensus engine is running.
 // Note the assumption is held that the mutation is allowed to the passed env, do
 // the deep copy first.
-func (w *worker) commit(env *environment, interval func(), update bool, start time.Time) error {
+func (w *worker) commit(ctx context.Context, env *environment, interval func(), update bool, start time.Time) error {
 	if w.isRunning() {
 		if interval != nil {
 			interval()
@@ -1142,7 +1157,7 @@ func (w *worker) commit(env *environment, interval func(), update bool, start ti
 		// Create a local environment copy, avoid the data race with snapshot state.
 		// https://github.com/ethereum/go-ctereum/issues/24299
 		env := env.copy()
-		block, err := w.engine.FinalizeAndAssemble(w.chain, env.header, env.state, env.txs, env.unclelist(), env.receipts)
+		block, err := w.engine.FinalizeAndAssemble(ctx, w.chain, env.header, env.state, env.txs, env.unclelist(), env.receipts)
 		if err != nil {
 			return err
 		}

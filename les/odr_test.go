@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -26,17 +26,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/light"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/math"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/state"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/ethdb"
+	"github.com/ethereum/go-tempereum/light"
+	"github.com/ethereum/go-tempereum/params"
+	"github.com/ethereum/go-tempereum/rlp"
 )
 
 type odrTestFn func(ctx context.Context, db ethdb.Database, config *params.ChainConfig, bc *core.BlockChain, lc *light.LightChain, bhash common.Hash) []byte
@@ -135,11 +135,11 @@ func odrContractCall(ctx context.Context, db ethdb.Database, config *params.Chai
 				from := statedb.GetOrNewStateObject(bankAddr)
 				from.SetBalance(math.MaxBig256)
 
-				msg := callmsg{types.NewMessage(from.Address(), &testContractAddr, 0, new(big.Int), 100000, new(big.Int), nil, nil, data, nil, false)}
+				msg := callmsg{types.NewMessage(from.Address(), &testContractAddr, 0, new(big.Int), 100000, big.NewInt(params.InitialBaseFee), big.NewInt(params.InitialBaseFee), new(big.Int), data, nil, true)}
 
 				context := core.NewEVMBlockContext(header, bc, nil)
 				txContext := core.NewEVMTxContext(msg)
-				vmenv := vm.NewEVM(context, txContext, statedb, config, vm.Config{})
+				vmenv := vm.NewEVM(context, txContext, statedb, config, vm.Config{NoBaseFee: true})
 
 				//vmenv := core.NewEnv(statedb, config, bc, msg, header, vm.Config{})
 				gp := new(core.GasPool).AddGas(math.MaxUint64)
@@ -150,10 +150,10 @@ func odrContractCall(ctx context.Context, db ethdb.Database, config *params.Chai
 			header := lc.GetHeaderByHash(bhash)
 			state := light.NewState(ctx, header, lc.Odr())
 			state.SetBalance(bankAddr, math.MaxBig256)
-			msg := callmsg{types.NewMessage(bankAddr, &testContractAddr, 0, new(big.Int), 100000, new(big.Int), nil, nil, data, nil, false)}
+			msg := callmsg{types.NewMessage(bankAddr, &testContractAddr, 0, new(big.Int), 100000, big.NewInt(params.InitialBaseFee), big.NewInt(params.InitialBaseFee), new(big.Int), data, nil, true)}
 			context := core.NewEVMBlockContext(header, lc, nil)
 			txContext := core.NewEVMTxContext(msg)
-			vmenv := vm.NewEVM(context, txContext, state, config, vm.Config{})
+			vmenv := vm.NewEVM(context, txContext, state, config, vm.Config{NoBaseFee: true})
 			gp := new(core.GasPool).AddGas(math.MaxUint64)
 			result, _ := core.ApplyMessage(vmenv, msg, gp)
 			if state.Error() == nil {
@@ -392,18 +392,16 @@ func testGetTxStatusFromUnindexedPeers(t *testing.T, protocol int) {
 	for _, testspec := range testspecs {
 		// Create a bunch of server peers with different tx history
 		var (
-			serverPeers []*testPeer
-			closeFns    []func()
+			closeFns []func()
 		)
 		for i := 0; i < testspec.peers; i++ {
 			peer, closePeer, _ := client.newRawPeer(t, fmt.Sprintf("server-%d", i), protocol, testspec.txLookups[i])
-			serverPeers = append(serverPeers, peer)
 			closeFns = append(closeFns, closePeer)
 
 			// Create a one-time routine for serving message
-			go func(i int, peer *testPeer) {
-				serveMsg(peer, testspec.txLookups[i])
-			}(i, peer)
+			go func(i int, peer *testPeer, lookup uint64) {
+				serveMsg(peer, lookup)
+			}(i, peer, testspec.txLookups[i])
 		}
 
 		// Send out the GetTxStatus requests, compare the result with

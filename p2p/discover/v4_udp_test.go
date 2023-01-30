@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package discover
 
@@ -31,11 +31,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/internal/testlog"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/p2p/discover/v4wire"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
+	"github.com/ethereum/go-tempereum/internal/testlog"
+	"github.com/ethereum/go-tempereum/log"
+	"github.com/ethereum/go-tempereum/p2p/discover/v4wire"
+	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/p2p/enr"
 )
 
 // shared test variables
@@ -284,6 +284,7 @@ func TestUDPv4_findnode(t *testing.T) {
 		test.waitPacketOut(func(p *v4wire.Neighbors, to *net.UDPAddr, hash []byte) {
 			if len(p.Nodes) != len(want) {
 				t.Errorf("wrong number of results: got %d, want %d", len(p.Nodes), bucketSize)
+				return
 			}
 			for i, n := range p.Nodes {
 				if n.ID.ID() != want[i].ID() {
@@ -470,13 +471,13 @@ func TestUDPv4_EIP868(t *testing.T) {
 	// Perform endpoint proof and check for sequence number in packet tail.
 	test.packetIn(nil, &v4wire.Ping{Expiration: futureExp})
 	test.waitPacketOut(func(p *v4wire.Pong, addr *net.UDPAddr, hash []byte) {
-		if p.ENRSeq() != wantNode.Seq() {
-			t.Errorf("wrong sequence number in pong: %d, want %d", p.ENRSeq(), wantNode.Seq())
+		if p.ENRSeq != wantNode.Seq() {
+			t.Errorf("wrong sequence number in pong: %d, want %d", p.ENRSeq, wantNode.Seq())
 		}
 	})
 	test.waitPacketOut(func(p *v4wire.Ping, addr *net.UDPAddr, hash []byte) {
-		if p.ENRSeq() != wantNode.Seq() {
-			t.Errorf("wrong sequence number in ping: %d, want %d", p.ENRSeq(), wantNode.Seq())
+		if p.ENRSeq != wantNode.Seq() {
+			t.Errorf("wrong sequence number in ping: %d, want %d", p.ENRSeq, wantNode.Seq())
 		}
 		test.packetIn(nil, &v4wire.Pong{Expiration: futureExp, ReplyTok: hash})
 	})
@@ -489,7 +490,7 @@ func TestUDPv4_EIP868(t *testing.T) {
 			t.Fatalf("invalid record: %v", err)
 		}
 		if !reflect.DeepEqual(n, wantNode) {
-			t.Fatalf("wrong node in enrResponse: %v", n)
+			t.Fatalf("wrong node in ENRResponse: %v", n)
 		}
 	})
 }

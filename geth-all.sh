@@ -1,0 +1,1 @@
+./geth-clean-data.sh &&  ./geth-genesis.sh && echo $[$(date +%s)+100] && ./geth.sh

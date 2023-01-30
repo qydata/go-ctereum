@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
@@ -20,7 +20,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/rlp"
 )
 
 func newTestFullNode(v []byte) []interface{} {
@@ -90,5 +91,125 @@ func TestDecodeFullNode(t *testing.T) {
 	_, err := decodeNode([]byte("testdecode"), buf.Bytes())
 	if err != nil {
 		t.Fatalf("decode full node err: %v", err)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/ethereum/go-tempereum/trie
+// BenchmarkEncodeShortNode
+// BenchmarkEncodeShortNode-8   	16878850	        70.81 ns/op	      48 B/op	       1 allocs/op
+func BenchmarkEncodeShortNode(b *testing.B) {
+	node := &shortNode{
+		Key: []byte{0x1, 0x2},
+		Val: hashNode(randBytes(32)),
+	}
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		nodeToBytes(node)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/ethereum/go-tempereum/trie
+// BenchmarkEncodeFullNode
+// BenchmarkEncodeFullNode-8   	 4323273	       284.4 ns/op	     576 B/op	       1 allocs/op
+func BenchmarkEncodeFullNode(b *testing.B) {
+	node := &fullNode{}
+	for i := 0; i < 16; i++ {
+		node.Children[i] = hashNode(randBytes(32))
+	}
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		nodeToBytes(node)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/ethereum/go-tempereum/trie
+// BenchmarkDecodeShortNode
+// BenchmarkDecodeShortNode-8   	 7925638	       151.0 ns/op	     157 B/op	       4 allocs/op
+func BenchmarkDecodeShortNode(b *testing.B) {
+	node := &shortNode{
+		Key: []byte{0x1, 0x2},
+		Val: hashNode(randBytes(32)),
+	}
+	blob := nodeToBytes(node)
+	hash := crypto.Keccak256(blob)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		mustDecodeNode(hash, blob)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/ethereum/go-tempereum/trie
+// BenchmarkDecodeShortNodeUnsafe
+// BenchmarkDecodeShortNodeUnsafe-8   	 9027476	       128.6 ns/op	     109 B/op	       3 allocs/op
+func BenchmarkDecodeShortNodeUnsafe(b *testing.B) {
+	node := &shortNode{
+		Key: []byte{0x1, 0x2},
+		Val: hashNode(randBytes(32)),
+	}
+	blob := nodeToBytes(node)
+	hash := crypto.Keccak256(blob)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		mustDecodeNodeUnsafe(hash, blob)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/ethereum/go-tempereum/trie
+// BenchmarkDecodeFullNode
+// BenchmarkDecodeFullNode-8   	 1597462	       761.9 ns/op	    1280 B/op	      18 allocs/op
+func BenchmarkDecodeFullNode(b *testing.B) {
+	node := &fullNode{}
+	for i := 0; i < 16; i++ {
+		node.Children[i] = hashNode(randBytes(32))
+	}
+	blob := nodeToBytes(node)
+	hash := crypto.Keccak256(blob)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		mustDecodeNode(hash, blob)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/ethereum/go-tempereum/trie
+// BenchmarkDecodeFullNodeUnsafe
+// BenchmarkDecodeFullNodeUnsafe-8   	 1789070	       687.1 ns/op	     704 B/op	      17 allocs/op
+func BenchmarkDecodeFullNodeUnsafe(b *testing.B) {
+	node := &fullNode{}
+	for i := 0; i < 16; i++ {
+		node.Children[i] = hashNode(randBytes(32))
+	}
+	blob := nodeToBytes(node)
+	hash := crypto.Keccak256(blob)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		mustDecodeNodeUnsafe(hash, blob)
 	}
 }

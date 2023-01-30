@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package light
 
@@ -23,13 +23,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 type testTxRelay struct {
@@ -77,13 +77,16 @@ func txPoolTestChainGen(i int, block *core.BlockGen) {
 
 func TestTxPool(t *testing.T) {
 	for i := range testTx {
-		testTx[i], _ = types.SignTx(types.NewTransaction(uint64(i), acc1Addr, big.NewInt(10000), params.TxGas, nil, nil), types.HomesteadSigner{}, testBankKey)
+		testTx[i], _ = types.SignTx(types.NewTransaction(uint64(i), acc1Addr, big.NewInt(10000), params.TxGas, big.NewInt(params.InitialBaseFee), nil), types.HomesteadSigner{}, testBankKey)
 	}
 
 	var (
-		sdb     = rawdb.NewMemoryDatabase()
-		ldb     = rawdb.NewMemoryDatabase()
-		gspec   = core.Genesis{Alloc: core.GenesisAlloc{testBankAddress: {Balance: testBankFunds}}}
+		sdb   = rawdb.NewMemoryDatabase()
+		ldb   = rawdb.NewMemoryDatabase()
+		gspec = core.Genesis{
+			Alloc:   core.GenesisAlloc{testBankAddress: {Balance: testBankFunds}},
+			BaseFee: big.NewInt(params.InitialBaseFee),
+		}
 		genesis = gspec.MustCommit(sdb)
 	)
 	gspec.MustCommit(ldb)

@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2019 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package checkpointoracle
 
@@ -27,13 +27,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/accounts/abi/bind"
-	"github.com/ethereum/go-ctereum/accounts/abi/bind/backends"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/contracts/checkpointoracle/contract"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/accounts/abi/bind"
+	"github.com/ethereum/go-tempereum/accounts/abi/bind/backends"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/contracts/checkpointoracle/contract"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 var (
@@ -175,7 +175,13 @@ func TestCheckpointRegister(t *testing.T) {
 	sort.Sort(accounts)
 
 	// Deploy registrar contract
-	contractBackend := backends.NewSimulatedBackend(core.GenesisAlloc{accounts[0].addr: {Balance: big.NewInt(1000000000)}, accounts[1].addr: {Balance: big.NewInt(1000000000)}, accounts[2].addr: {Balance: big.NewInt(1000000000)}}, 10000000)
+	contractBackend := backends.NewSimulatedBackend(
+		core.GenesisAlloc{
+			accounts[0].addr: {Balance: big.NewInt(10000000000000000)},
+			accounts[1].addr: {Balance: big.NewInt(10000000000000000)},
+			accounts[2].addr: {Balance: big.NewInt(10000000000000000)},
+		}, 10000000,
+	)
 	defer contractBackend.Close()
 
 	transactOpts, _ := bind.NewKeyedTransactorWithChainID(accounts[0].key, big.NewInt(1337))

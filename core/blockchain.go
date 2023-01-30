@@ -213,6 +213,12 @@ type BlockChain struct {
 	processor  Processor // Block transaction processor interface
 	forker     *ForkChoice
 	vmConfig   vm.Config
+
+	// Bor related changes
+	borReceiptsCache *lru.Cache             // Cache for the most recent bor receipt receipts per block
+	stateSyncData    []*types.StateSyncData // State sync data
+	stateSyncFeed    event.Feed             // State sync feed
+	chain2HeadFeed   event.Feed             // Reorg/NewHead/Fork data feed
 }
 
 // NewBlockChain returns a fully initialised block chain using information

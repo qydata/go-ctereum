@@ -1,18 +1,18 @@
-// Copyright 2020 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package utils
 
@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
+	"github.com/ethereum/go-tempereum/common/mclock"
 )
 
 func TestUpdateTimer(t *testing.T) {
@@ -37,7 +37,7 @@ func TestUpdateTimer(t *testing.T) {
 	if updated := timer.Update(func(diff time.Duration) bool { return true }); !updated {
 		t.Fatalf("Doesn't update the clock when reaching the threshold")
 	}
-	if updated := timer.UpdateAt(sim.Now()+mclock.AbsTime(time.Second), func(diff time.Duration) bool { return true }); !updated {
+	if updated := timer.UpdateAt(sim.Now().Add(time.Second), func(diff time.Duration) bool { return true }); !updated {
 		t.Fatalf("Doesn't update the clock when reaching the threshold")
 	}
 	timer = NewUpdateTimer(sim, 0)

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/metrics"
+	"github.com/ethereum/go-tempereum/metrics"
 )
 
 func TestMain(m *testing.M) {

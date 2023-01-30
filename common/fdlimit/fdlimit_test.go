@@ -1,23 +1,22 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package fdlimit
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -30,7 +29,7 @@ func TestFileDescriptorLimits(t *testing.T) {
 		t.Fatal(err)
 	}
 	if hardlimit < target {
-		t.Skip(fmt.Sprintf("system limit is less than desired test target: %d < %d", hardlimit, target))
+		t.Skipf("system limit is less than desired test target: %d < %d", hardlimit, target)
 	}
 
 	if limit, err := Current(); err != nil || limit <= 0 {

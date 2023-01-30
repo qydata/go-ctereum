@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2019 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package les
 
@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"sync"
@@ -28,19 +27,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/eth"
-	"github.com/ethereum/go-ctereum/eth/downloader"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/les/flowcontrol"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/simulations"
-	"github.com/ethereum/go-ctereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/hexutil"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/eth"
+	ethdownloader "github.com/ethereum/go-tempereum/eth/downloader"
+	"github.com/ethereum/go-tempereum/eth/ethconfig"
+	"github.com/ethereum/go-tempereum/les/downloader"
+	"github.com/ethereum/go-tempereum/les/flowcontrol"
+	"github.com/ethereum/go-tempereum/log"
+	"github.com/ethereum/go-tempereum/node"
+	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/p2p/simulations"
+	"github.com/ethereum/go-tempereum/p2p/simulations/adapters"
+	"github.com/ethereum/go-tempereum/rpc"
 	"github.com/mattn/go-colorable"
 )
 
@@ -340,7 +340,6 @@ func freezeClient(ctx context.Context, t *testing.T, server *rpc.Client, clientI
 	if err := server.CallContext(ctx, nil, "debug_freezeClient", clientID); err != nil {
 		t.Fatalf("Failed to freeze client: %v", err)
 	}
-
 }
 
 func setCapacity(ctx context.Context, t *testing.T, server *rpc.Client, clientID enode.ID, cap uint64) {
@@ -422,7 +421,7 @@ func NewAdapter(adapterType string, services adapters.LifecycleConstructors) (ad
 		//	case "socket":
 		//		adapter = adapters.NewSocketAdapter(services)
 	case "exec":
-		baseDir, err0 := ioutil.TempDir("", "les-test")
+		baseDir, err0 := os.MkdirTemp("", "les-test")
 		if err0 != nil {
 			return nil, teardown, err0
 		}
@@ -494,14 +493,14 @@ func testSim(t *testing.T, serverCount, clientCount int, serverDir, clientDir []
 
 func newLesClientService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
 	config := ethconfig.Defaults
-	config.SyncMode = downloader.LightSync
+	config.SyncMode = (ethdownloader.SyncMode)(downloader.LightSync)
 	config.Ethash.PowMode = ethash.ModeFake
 	return New(stack, &config)
 }
 
 func newLesServerService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
 	config := ethconfig.Defaults
-	config.SyncMode = downloader.FullSync
+	config.SyncMode = (ethdownloader.SyncMode)(downloader.FullSync)
 	config.LightServ = testServerCapacity
 	config.LightPeers = testMaxClients
 	ethereum, err := eth.New(stack, &config)

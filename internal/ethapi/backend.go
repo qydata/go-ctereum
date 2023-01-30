@@ -84,6 +84,25 @@ type Backend interface {
 	TxPoolContentFrom(addr common.Address) (types.Transactions, types.Transactions)
 	SubscribeNewTxsEvent(chan<- core.NewTxsEvent) event.Subscription
 
+	// Filter API
+	//BloomStatus() (uint64, uint64)
+	//GetLogs(ctx context.Context, blockHash common.Hash) ([][]*types.Log, error)
+	//ServiceFilter(ctx context.Context, session *bloombits.MatcherSession)
+	//SubscribeLogsEvent(ch chan<- []*types.Log) event.Subscription
+	//SubscribePendingLogsEvent(ch chan<- []*types.Log) event.Subscription
+	//SubscribeRemovedLogsEvent(ch chan<- core.RemovedLogsEvent) event.Subscription
+
+	// Bor related APIs
+	SubscribeStateSyncEvent(ch chan<- core.StateSyncEvent) event.Subscription
+	GetRootHash(ctx context.Context, starBlockNr uint64, endBlockNr uint64) (string, error)
+	GetBorBlockReceipt(ctx context.Context, hash common.Hash) (*types.Receipt, error)
+	GetBorBlockLogs(ctx context.Context, hash common.Hash) ([]*types.Log, error)
+	GetBorBlockTransaction(ctx context.Context, txHash common.Hash) (*types.Transaction, common.Hash, uint64, uint64, error)
+	GetBorBlockTransactionWithBlockHash(ctx context.Context, txHash common.Hash, blockHash common.Hash) (*types.Transaction, common.Hash, uint64, uint64, error)
+	SubscribeChain2HeadEvent(ch chan<- core.Chain2HeadEvent) event.Subscription
+	GetCheckpointWhitelist() map[uint64]common.Hash
+	PurgeCheckpointWhitelist()
+
 	ChainConfig() *params.ChainConfig
 	Engine() consensus.Engine
 

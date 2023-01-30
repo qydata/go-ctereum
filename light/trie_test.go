@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package light
 
@@ -20,23 +20,27 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"math/big"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/state"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/params"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 func TestNodeIterator(t *testing.T) {
 	var (
 		fulldb  = rawdb.NewMemoryDatabase()
 		lightdb = rawdb.NewMemoryDatabase()
-		gspec   = core.Genesis{Alloc: core.GenesisAlloc{testBankAddress: {Balance: testBankFunds}}}
+		gspec   = core.Genesis{
+			Alloc:   core.GenesisAlloc{testBankAddress: {Balance: testBankFunds}},
+			BaseFee: big.NewInt(params.InitialBaseFee),
+		}
 		genesis = gspec.MustCommit(fulldb)
 	)
 	gspec.MustCommit(lightdb)
@@ -72,7 +76,7 @@ func diffTries(t1, t2 state.Trie) error {
 	case i1.Err != nil:
 		return fmt.Errorf("full trie iterator error: %v", i1.Err)
 	case i2.Err != nil:
-		return fmt.Errorf("light trie iterator error: %v", i1.Err)
+		return fmt.Errorf("light trie iterator error: %v", i2.Err)
 	case i1.Next():
 		return fmt.Errorf("full trie iterator has more k/v pairs")
 	case i2.Next():

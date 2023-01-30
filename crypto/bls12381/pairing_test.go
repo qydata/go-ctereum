@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/ethereum/go-tempereum/common"
 )
 
 func TestPairingExpected(t *testing.T) {

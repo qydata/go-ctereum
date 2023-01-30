@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package simulations
 
@@ -29,13 +29,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/event"
-	"github.com/ethereum/go-ctereum/log"
-	"github.com/ethereum/go-ctereum/node"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/ethereum/go-tempereum/event"
+	"github.com/ethereum/go-tempereum/log"
+	"github.com/ethereum/go-tempereum/node"
+	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/p2p/simulations/adapters"
+	"github.com/ethereum/go-tempereum/rpc"
 	"github.com/mattn/go-colorable"
 )
 
@@ -141,7 +141,7 @@ func (t *testService) Stop() error {
 // message with the given code
 func (t *testService) handshake(rw p2p.MsgReadWriter, code uint64) error {
 	errc := make(chan error, 2)
-	go func() { errc <- p2p.Send(rw, code, struct{}{}) }()
+	go func() { errc <- p2p.SendItems(rw, code) }()
 	go func() { errc <- p2p.ExpectMsg(rw, code, struct{}{}) }()
 	for i := 0; i < 2; i++ {
 		if err := <-errc; err != nil {
@@ -489,7 +489,6 @@ func (t *expectEvents) expect(events ...*Event) {
 			}
 
 			switch expected.Type {
-
 			case EventTypeNode:
 				if event.Node == nil {
 					t.Fatal("expected event.Node to be set")
@@ -514,7 +513,6 @@ func (t *expectEvents) expect(events ...*Event) {
 				if event.Conn.Up != expected.Conn.Up {
 					t.Fatalf("expected conn event %d to have up=%t, got up=%t", i, expected.Conn.Up, event.Conn.Up)
 				}
-
 			}
 
 			i++

@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package tests
 
@@ -20,8 +20,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 var (
@@ -76,15 +76,21 @@ func TestDifficulty(t *testing.T) {
 	dt.config("EIP2384", params.ChainConfig{
 		MuirGlacierBlock: big.NewInt(0),
 	})
+	dt.config("EIP4345", params.ChainConfig{
+		ArrowGlacierBlock: big.NewInt(0),
+	})
+	dt.config("EIP5133", params.ChainConfig{
+		GrayGlacierBlock: big.NewInt(0),
+	})
 	dt.config("difficulty.json", mainnetChainConfig)
 
 	dt.walk(t, difficultyTestDir, func(t *testing.T, name string, test *DifficultyTest) {
-		cfg := dt.findConfig(name)
+		cfg := dt.findConfig(t)
 		if test.ParentDifficulty.Cmp(params.MinimumDifficulty) < 0 {
 			t.Skip("difficulty below minimum")
 			return
 		}
-		if err := dt.checkFailure(t, name, test.Run(cfg)); err != nil {
+		if err := dt.checkFailure(t, test.Run(cfg)); err != nil {
 			t.Error(err)
 		}
 	})

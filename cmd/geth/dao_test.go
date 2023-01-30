@@ -1,31 +1,30 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of go-ctereum.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of go-tempereum.
 //
-// go-ctereum is free software: you can redistribute it and/or modify
+// go-tempereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ctereum is distributed in the hope that it will be useful,
+// go-tempereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ctereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-tempereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
 import (
-	"io/ioutil"
 	"math/big"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 // Genesis block for nodes which don't care about the DAO fork (i.e. not configured)
@@ -106,13 +105,12 @@ func TestDAOForkBlockNewChain(t *testing.T) {
 
 func testDAOForkBlockNewChain(t *testing.T, test int, genesis string, expectBlock *big.Int, expectVote bool) {
 	// Create a temporary data directory to use and inspect later
-	datadir := tmpdir(t)
-	defer os.RemoveAll(datadir)
+	datadir := t.TempDir()
 
 	// Start a Geth instance with the requested flags set and immediately terminate
 	if genesis != "" {
 		json := filepath.Join(datadir, "genesis.json")
-		if err := ioutil.WriteFile(json, []byte(genesis), 0600); err != nil {
+		if err := os.WriteFile(json, []byte(genesis), 0600); err != nil {
 			t.Fatalf("test %d: failed to write genesis file: %v", test, err)
 		}
 		runGeth(t, "--datadir", datadir, "--networkid", "1337", "init", json).WaitExit()
@@ -129,7 +127,7 @@ func testDAOForkBlockNewChain(t *testing.T, test int, genesis string, expectBloc
 	}
 	defer db.Close()
 
-	genesisHash := common.HexToHash("0x862c4e21b13f9f917cc0bec37b479a60fb43494355f80724603174db6ec7beb2")
+	genesisHash := common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	if genesis != "" {
 		genesisHash = daoGenesisHash
 	}

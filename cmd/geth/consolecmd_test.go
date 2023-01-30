@@ -1,25 +1,24 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of go-ctereum.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of go-tempereum.
 //
-// go-ctereum is free software: you can redistribute it and/or modify
+// go-tempereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ctereum is distributed in the hope that it will be useful,
+// go-tempereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ctereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-tempereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
 import (
 	"crypto/rand"
 	"math/big"
-	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -27,11 +26,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 const (
-	ipcAPIs  = "admin:1.0 debug:1.0 eth:1.0 ethash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0"
+	ipcAPIs  = "admin:1.0 debug:1.0 engine:1.0 eth:1.0 ethash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0"
 	httpAPIs = "eth:1.0 net:1.0 rpc:1.0 web3:1.0"
 )
 
@@ -42,8 +41,9 @@ func runMinimalGeth(t *testing.T, args ...string) *testgeth {
 	// --ropsten to make the 'writing genesis to disk' faster (no accounts)
 	// --networkid=1337 to avoid cache bump
 	// --syncmode=full to avoid allocating fast sync bloom
-	allArgs := []string{"--ropsten", "--networkid", "1337", "--syncmode=full", "--port", "0",
-		"--nat", "none", "--nodiscover", "--maxpeers", "0", "--cache", "64"}
+	allArgs := []string{"--ropsten", "--networkid", "1337", "--authrpc.port", "0", "--syncmode=full", "--port", "0",
+		"--nat", "none", "--nodiscover", "--maxpeers", "0", "--cache", "64",
+		"--datadir.minfreedisk", "0"}
 	return runGeth(t, append(allArgs, args...)...)
 }
 
@@ -75,7 +75,7 @@ at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
  modules: {{apis}}
 
-To exit, press ctrl-d
+To exit, press ctrl-d or type exit
 > {{.InputLine "exit"}}
 `)
 	geth.ExpectExit()
@@ -92,9 +92,7 @@ func TestAttachWelcome(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		ipc = `\\.\pipe\geth` + strconv.Itoa(trulyRandInt(100000, 999999))
 	} else {
-		ws := tmpdir(t)
-		defer os.RemoveAll(ws)
-		ipc = filepath.Join(ws, "geth.ipc")
+		ipc = filepath.Join(t.TempDir(), "geth.ipc")
 	}
 	// And HTTP + WS attachment
 	p := trulyRandInt(1024, 65533) // Yeah, sometimes this will fail, sorry :P
@@ -118,6 +116,7 @@ func TestAttachWelcome(t *testing.T) {
 		waitForEndpoint(t, endpoint, 3*time.Second)
 		testAttachWelcome(t, geth, endpoint, httpAPIs)
 	})
+	geth.ExpectExit()
 }
 
 func testAttachWelcome(t *testing.T, geth *testgeth, endpoint, apis string) {
@@ -149,14 +148,14 @@ at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}
  modules: {{apis}}
 
-To exit, press ctrl-d
+To exit, press ctrl-d or type exit
 > {{.InputLine "exit" }}
 `)
 	attach.ExpectExit()
 }
 
 // trulyRandInt generates a crypto random integer used by the console tests to
-// not clash network ports with other tests running cocurrently.
+// not clash network ports with other tests running concurrently.
 func trulyRandInt(lo, hi int) int {
 	num, _ := rand.Int(rand.Reader, big.NewInt(int64(hi-lo)))
 	return int(num.Int64()) + lo

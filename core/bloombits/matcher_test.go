@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package bloombits
 
@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/ethereum/go-tempereum/common"
 )
 
 const testSectionSize = 4096
@@ -86,7 +86,7 @@ func TestMatcherRandom(t *testing.T) {
 
 // Tests that the matcher can properly find matches if the starting block is
 // shifter from a multiple of 8. This is needed to cover an optimisation with
-// bitset matching https://github.com/ethereum/go-ctereum/issues/15309.
+// bitset matching https://github.com/ethereum/go-tempereum/issues/15309.
 func TestMatcherShifted(t *testing.T) {
 	t.Parallel()
 	// Block 0 always matches in the tests, skip ahead of first 8 blocks with the
@@ -124,13 +124,13 @@ func makeRandomIndexes(lengths []int, max int) [][]bloomIndexes {
 
 // testMatcherDiffBatches runs the given matches test in single-delivery and also
 // in batches delivery mode, verifying that all kinds of deliveries are handled
-// correctly withn.
+// correctly within.
 func testMatcherDiffBatches(t *testing.T, filter [][]bloomIndexes, start, blocks uint64, intermittent bool, retrievals uint32) {
 	singleton := testMatcher(t, filter, start, blocks, intermittent, retrievals, 1)
 	batched := testMatcher(t, filter, start, blocks, intermittent, retrievals, 16)
 
 	if singleton != batched {
-		t.Errorf("filter = %v blocks = %v intermittent = %v: request count mismatch, %v in signleton vs. %v in batched mode", filter, blocks, intermittent, singleton, batched)
+		t.Errorf("filter = %v blocks = %v intermittent = %v: request count mismatch, %v in singleton vs. %v in batched mode", filter, blocks, intermittent, singleton, batched)
 	}
 }
 

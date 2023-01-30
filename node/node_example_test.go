@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package node_test
 
@@ -20,15 +20,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ethereum/go-ctereum/node"
+	"github.com/ethereum/go-tempereum/node"
 )
 
 // SampleLifecycle is a trivial network service that can be attached to a node for
 // life cycle management.
 //
 // The following methods are needed to implement a node.Lifecycle:
-//  - Start() error              - method invoked when the node is ready to start the service
-//  - Stop() error               - method invoked when the node terminates the service
+//   - Start() error              - method invoked when the node is ready to start the service
+//   - Stop() error               - method invoked when the node terminates the service
 type SampleLifecycle struct{}
 
 func (s *SampleLifecycle) Start() error { fmt.Println("Service starting..."); return nil }

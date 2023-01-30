@@ -18,6 +18,7 @@ package eth
 
 import (
 	"errors"
+	"github.com/ethereum/go-ctereum/internal/ethapi"
 	"math"
 	"math/big"
 	"sync"
@@ -109,6 +110,8 @@ type handler struct {
 	txFetcher    *fetcher.TxFetcher
 	peers        *peerSet
 	merger       *consensus.Merger
+
+	ethAPI *ethapi.BlockChainAPI // EthAPI to interact
 
 	eventMux      *event.TypeMux
 	txsCh         chan core.NewTxsEvent

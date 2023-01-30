@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package console
 
@@ -20,21 +20,20 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/console/prompt"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/eth"
-	"github.com/ethereum/go-ctereum/eth/ethconfig"
-	"github.com/ethereum/go-ctereum/internal/jsre"
-	"github.com/ethereum/go-ctereum/miner"
-	"github.com/ethereum/go-ctereum/node"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/console/prompt"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/eth"
+	"github.com/ethereum/go-tempereum/eth/ethconfig"
+	"github.com/ethereum/go-tempereum/internal/jsre"
+	"github.com/ethereum/go-tempereum/miner"
+	"github.com/ethereum/go-tempereum/node"
 )
 
 const (
@@ -88,10 +87,7 @@ type tester struct {
 // Please ensure you call Close() on the returned tester to avoid leaks.
 func newTester(t *testing.T, confOverride func(*ethconfig.Config)) *tester {
 	// Create a temporary storage for the node keys and initialize it
-	workspace, err := ioutil.TempDir("", "console-tester-")
-	if err != nil {
-		t.Fatalf("failed to create temporary keystore: %v", err)
-	}
+	workspace := t.TempDir()
 
 	// Create a networkless protocol stack and start an Ethereum service within
 	stack, err := node.New(&node.Config{DataDir: workspace, UseLightweightKDF: true, Name: testInstance})
@@ -99,7 +95,7 @@ func newTester(t *testing.T, confOverride func(*ethconfig.Config)) *tester {
 		t.Fatalf("failed to create node: %v", err)
 	}
 	ethConf := &ethconfig.Config{
-		Genesis: core.DeveloperGenesisBlock(15, common.Address{}),
+		Genesis: core.DeveloperGenesisBlock(15, 11_500_000, common.Address{}),
 		Miner: miner.Config{
 			Etherbase: common.HexToAddress(testAddress),
 		},
@@ -238,19 +234,6 @@ func TestPreload(t *testing.T) {
 	}
 }
 
-// Tests that JavaScript scripts can be executes from the configured asset path.
-func TestExecute(t *testing.T) {
-	tester := newTester(t, nil)
-	defer tester.Close(t)
-
-	tester.console.Execute("exec.js")
-
-	tester.console.Evaluate("execed")
-	if output := tester.output.String(); !strings.Contains(output, "some-executed-string") {
-		t.Fatalf("execed variable missing: have %s, want %s", output, "some-executed-string")
-	}
-}
-
 // Tests that the JavaScript objects returned by statement executions are properly
 // pretty printed instead of just displaying "[object]".
 func TestPrettyPrint(t *testing.T) {
@@ -289,7 +272,7 @@ func TestPrettyError(t *testing.T) {
 	defer tester.Close(t)
 	tester.console.Evaluate("throw 'hello'")
 
-	want := jsre.ErrorColor("hello") + "\n\tat <eval>:1:7(1)\n\n"
+	want := jsre.ErrorColor("hello") + "\n\tat <eval>:1:1(1)\n\n"
 	if output := tester.output.String(); output != want {
 		t.Fatalf("pretty error mismatch: have %s, want %s", output, want)
 	}

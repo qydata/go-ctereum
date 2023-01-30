@@ -1,20 +1,20 @@
-// Copyright 2020 The go-ctereum Authors
-// This file is part of go-ctereum.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of go-tempereum.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
+// go-tempereum is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// go-tempereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with go-tempereum. If not, see <http://www.gnu.org/licenses/>.
 
-// Package utils contains internal helper functions for go-ctereum commands.
+// Package utils contains internal helper functions for go-tempereum commands.
 package utils
 
 import (

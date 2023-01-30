@@ -73,6 +73,9 @@ type LightChain struct {
 	running          int32 // whether LightChain is running or stopped
 	procInterrupt    int32 // interrupts chain insert
 	disableCheckFreq int32 // disables header verification
+
+	// Bor
+	chain2HeadFeed event.Feed
 }
 
 // NewLightChain returns a fully initialised light chain using information
@@ -592,4 +595,15 @@ func (lc *LightChain) DisableCheckFreq() {
 // EnableCheckFreq enables header validation.
 func (lc *LightChain) EnableCheckFreq() {
 	atomic.StoreInt32(&lc.disableCheckFreq, 0)
+}
+
+// SubscribeStateSyncEvent implements the interface of filters.Backend
+// LightChain does not send core.NewStateChangeSyncEvent, so return an empty subscription.
+func (lc *LightChain) SubscribeStateSyncEvent(ch chan<- core.StateSyncEvent) event.Subscription {
+	return lc.scope.Track(new(event.Feed).Subscribe(ch))
+}
+
+// SubscribeChain2HeadEvent registers a subscription of Reorg/head/fork events.
+func (lc *LightChain) SubscribeChain2HeadEvent(ch chan<- core.Chain2HeadEvent) event.Subscription {
+	return lc.scope.Track(lc.chain2HeadFeed.Subscribe(ch))
 }

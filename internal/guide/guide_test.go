@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains the code snippets from the developer's guide embedded into
 // Go tests. This ensures that any code published in out guides will not break
@@ -23,26 +23,20 @@
 package guide
 
 import (
-	"io/ioutil"
 	"math/big"
-	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/accounts/keystore"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/accounts/keystore"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 // Tests that the account management snippets work correctly.
 func TestAccountManagement(t *testing.T) {
 	// Create a temporary folder to work with
-	workdir, err := ioutil.TempDir("", "")
-	if err != nil {
-		t.Fatalf("Failed to create temporary work dir: %v", err)
-	}
-	defer os.RemoveAll(workdir)
+	workdir := t.TempDir()
 
 	// Create an encrypted keystore with standard crypto parameters
 	ks := keystore.NewKeyStore(filepath.Join(workdir, "keystore"), keystore.StandardScryptN, keystore.StandardScryptP)

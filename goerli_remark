@@ -4,6 +4,9 @@
   eth.getBalance(  "dFf2f4aeBCABcb90f4cEF444c542130610e3C840" )
   eth.getBalance(  "448d25406E7b031bC6beD2076DD6eedd9Ee87c49" )
   eth.getBalance(  "0xeDac0f5E9077280E67b7157878938148C1721b9B" )
+  eth.getBalance(  "0x123463a4B065722E99115D6c222f267d9cABb524" )
+  eth.getBalance(  "0x4242424242424242424242424242424242424242" )
+  eth.getBalance(  "0x0000000000000000000000000000000000000000" )
 
 
 personal.importRawKey("2e0834786285daccd064ca17f1654f67b4aef298acbb82cef9ec422fb4975622", "zdsafq")
@@ -16,7 +19,12 @@ debug.ver
 debug.verbosity(5)
 debug.verbosity(4)
 debug.verbosity(2)
+eth.getBlock(8)
 eth.getBlock(0)
+eth.getBlock(1)
 eth.getBlock(25)
-eth.getBlock(20)
 eth.getBlockByHash("0x976b65a4214b75156e0b3fbf17311b92ffadb728bb28f914935fb332c7f3a7f4")
+
+
+hash:0xd8e6b416ca853e4d72d2d0fd5e1c0f3bf8075f1d25ec59997e25da17913c318a
+timestamp:1622016327

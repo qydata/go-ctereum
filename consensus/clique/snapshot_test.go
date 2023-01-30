@@ -1,34 +1,35 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package clique
 
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"math/big"
 	"sort"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 // testerAccountPool is a pool to maintain currently active tester accounts,
@@ -304,7 +305,7 @@ func TestClique(t *testing.T) {
 		}, {
 			// Ensure that pending votes don't survive authorization status changes. This
 			// corner case can only appear if a signer is quickly added, removed and then
-			// readded (or the inverse), while one of the original voters dropped. If a
+			// re-added (or the inverse), while one of the original voters dropped. If a
 			// past vote is left cached in the system somewhere, this will interfere with
 			// the final signer outcome.
 			signers: []string{"A", "B", "C", "D", "E"},
@@ -343,7 +344,7 @@ func TestClique(t *testing.T) {
 			},
 			failure: errUnauthorizedSigner,
 		}, {
-			// An authorized signer that signed recenty should not be able to sign again
+			// An authorized signer that signed recently should not be able to sign again
 			signers: []string{"A", "B"},
 			votes: []testerVote{
 				{signer: "A"},
@@ -363,7 +364,7 @@ func TestClique(t *testing.T) {
 			failure: errRecentlySigned,
 		}, {
 			// Recent signatures should not reset on checkpoint blocks imported in a new
-			// batch (https://github.com/ethereum/go-ctereum/issues/17593). Whilst this
+			// batch (https://github.com/ethereum/go-tempereum/issues/17593). Whilst this
 			// seems overly specific and weird, it was a Rinkeby consensus split.
 			epoch:   3,
 			signers: []string{"A", "B", "C"},
@@ -395,13 +396,14 @@ func TestClique(t *testing.T) {
 		// Create the genesis block with the initial set of signers
 		genesis := &core.Genesis{
 			ExtraData: make([]byte, extraVanity+common.AddressLength*len(signers)+extraSeal),
+			BaseFee:   big.NewInt(params.InitialBaseFee),
 		}
 		for j, signer := range signers {
 			copy(genesis.ExtraData[extraVanity+j*common.AddressLength:], signer[:])
 		}
 		// Create a pristine blockchain with the genesis injected
 		db := rawdb.NewMemoryDatabase()
-		genesis.Commit(db)
+		genesisBlock := genesis.MustCommit(db)
 
 		// Assemble a chain of headers from the cast votes
 		config := *params.TestChainConfig
@@ -412,7 +414,7 @@ func TestClique(t *testing.T) {
 		engine := New(config.Clique, db)
 		engine.fakeDiff = true
 
-		blocks, _ := core.GenerateChain(&config, genesis.ToBlock(db), engine, db, len(tt.votes), func(j int, gen *core.BlockGen) {
+		blocks, _ := core.GenerateChain(&config, genesisBlock, engine, db, len(tt.votes), func(j int, gen *core.BlockGen) {
 			// Cast the vote contained in this block
 			gen.SetCoinbase(accounts.address(tt.votes[j].voted))
 			if tt.votes[j].auth {

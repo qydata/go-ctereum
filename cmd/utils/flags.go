@@ -143,6 +143,10 @@ var (
 		Usage:    "Görli network: pre-configured proof-of-authority test network",
 		Category: flags.EthCategory,
 	}
+	BorMainnetFlag = cli.BoolFlag{
+		Name:  "bor-mainnet",
+		Usage: "Bor mainnet",
+	}
 	SepoliaFlag = &cli.BoolFlag{
 		Name:     "sepolia",
 		Usage:    "Sepolia network: pre-configured proof-of-work test network",

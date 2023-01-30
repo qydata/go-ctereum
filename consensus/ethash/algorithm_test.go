@@ -1,34 +1,33 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package ethash
 
 import (
 	"bytes"
 	"encoding/binary"
-	"io/ioutil"
 	"math/big"
 	"os"
 	"reflect"
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/hexutil"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 // prepare converts an ethash cache or dataset from a byte stream into the internal
@@ -698,7 +697,9 @@ func TestHashimoto(t *testing.T) {
 // Tests that caches generated on disk may be done concurrently.
 func TestConcurrentDiskCacheGeneration(t *testing.T) {
 	// Create a temp folder to generate the caches into
-	cachedir, err := ioutil.TempDir("", "")
+	// TODO: t.TempDir fails to remove the directory on Windows
+	// \AppData\Local\Temp\1\TestConcurrentDiskCacheGeneration2382060137\001\cache-R23-1dca8a85e74aa763: Access is denied.
+	cachedir, err := os.MkdirTemp("", "")
 	if err != nil {
 		t.Fatalf("Failed to create temporary cache dir: %v", err)
 	}
@@ -794,11 +795,7 @@ func BenchmarkHashimotoFullSmall(b *testing.B) {
 
 func benchmarkHashimotoFullMmap(b *testing.B, name string, lock bool) {
 	b.Run(name, func(b *testing.B) {
-		tmpdir, err := ioutil.TempDir("", "ethash-test")
-		if err != nil {
-			b.Fatal(err)
-		}
-		defer os.RemoveAll(tmpdir)
+		tmpdir := b.TempDir()
 
 		d := &dataset{epoch: 0}
 		d.generate(tmpdir, 1, lock, false)

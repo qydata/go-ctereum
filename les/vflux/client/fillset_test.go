@@ -1,18 +1,18 @@
-// Copyright 2020 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package client
 
@@ -21,10 +21,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/p2p/enode"
-	"github.com/ethereum/go-ctereum/p2p/enr"
-	"github.com/ethereum/go-ctereum/p2p/nodestate"
+	"github.com/ethereum/go-tempereum/common/mclock"
+	"github.com/ethereum/go-tempereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/p2p/enr"
+	"github.com/ethereum/go-tempereum/p2p/nodestate"
 )
 
 type testIter struct {
@@ -34,16 +34,20 @@ type testIter struct {
 }
 
 func (i *testIter) Next() bool {
-	i.waitCh <- struct{}{}
+	if _, ok := <-i.waitCh; !ok {
+		return false
+	}
 	i.node = <-i.nodeCh
-	return i.node != nil
+	return true
 }
 
 func (i *testIter) Node() *enode.Node {
 	return i.node
 }
 
-func (i *testIter) Close() {}
+func (i *testIter) Close() {
+	close(i.waitCh)
+}
 
 func (i *testIter) push() {
 	var id enode.ID
@@ -53,7 +57,7 @@ func (i *testIter) push() {
 
 func (i *testIter) waiting(timeout time.Duration) bool {
 	select {
-	case <-i.waitCh:
+	case i.waitCh <- struct{}{}:
 		return true
 	case <-time.After(timeout):
 		return false
@@ -100,7 +104,7 @@ func TestFillSet(t *testing.T) {
 	fs.SetTarget(10)
 	expWaiting(4, true)
 	expNotWaiting()
-	// remove all previosly set flags
+	// remove all previously set flags
 	ns.ForEach(sfTest1, nodestate.Flags{}, func(node *enode.Node, state nodestate.Flags) {
 		ns.SetState(node, nodestate.Flags{}, sfTest1, 0)
 	})

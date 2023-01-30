@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rlp
 
@@ -26,6 +26,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/ethereum/go-tempereum/common/math"
 )
 
 func TestStreamKind(t *testing.T) {
@@ -284,6 +286,47 @@ func TestStreamRaw(t *testing.T) {
 	}
 }
 
+func TestStreamReadBytes(t *testing.T) {
+	tests := []struct {
+		input string
+		size  int
+		err   string
+	}{
+		// kind List
+		{input: "C0", size: 1, err: "rlp: expected String or Byte"},
+		// kind Byte
+		{input: "04", size: 0, err: "input value has wrong size 1, want 0"},
+		{input: "04", size: 1},
+		{input: "04", size: 2, err: "input value has wrong size 1, want 2"},
+		// kind String
+		{input: "820102", size: 0, err: "input value has wrong size 2, want 0"},
+		{input: "820102", size: 1, err: "input value has wrong size 2, want 1"},
+		{input: "820102", size: 2},
+		{input: "820102", size: 3, err: "input value has wrong size 2, want 3"},
+	}
+
+	for _, test := range tests {
+		test := test
+		name := fmt.Sprintf("input_%s/size_%d", test.input, test.size)
+		t.Run(name, func(t *testing.T) {
+			s := NewStream(bytes.NewReader(unhex(test.input)), 0)
+			b := make([]byte, test.size)
+			err := s.ReadBytes(b)
+			if test.err == "" {
+				if err != nil {
+					t.Errorf("unexpected error %q", err)
+				}
+			} else {
+				if err == nil {
+					t.Errorf("expected error, got nil")
+				} else if err.Error() != test.err {
+					t.Errorf("wrong error %q", err)
+				}
+			}
+		})
+	}
+}
+
 func TestDecodeErrors(t *testing.T) {
 	r := bytes.NewReader(nil)
 
@@ -325,6 +368,11 @@ type simplestruct struct {
 type recstruct struct {
 	I     uint
 	Child *recstruct `rlp:"nil"`
+}
+
+type bigIntStruct struct {
+	I *big.Int
+	B string
 }
 
 type invalidNilTag struct {
@@ -403,10 +451,11 @@ type ignoredField struct {
 }
 
 var (
-	veryBigInt = big.NewInt(0).Add(
-		big.NewInt(0).Lsh(big.NewInt(0xFFFFFFFFFFFFFF), 16),
+	veryBigInt = new(big.Int).Add(
+		new(big.Int).Lsh(big.NewInt(0xFFFFFFFFFFFFFF), 16),
 		big.NewInt(0xFFFF),
 	)
+	veryVeryBigInt = new(big.Int).Exp(veryBigInt, big.NewInt(8), nil)
 )
 
 var decodeTests = []decodeTest{
@@ -477,12 +526,15 @@ var decodeTests = []decodeTest{
 	{input: "C0", ptr: new(string), error: "rlp: expected input string or byte for string"},
 
 	// big ints
+	{input: "80", ptr: new(*big.Int), value: big.NewInt(0)},
 	{input: "01", ptr: new(*big.Int), value: big.NewInt(1)},
 	{input: "89FFFFFFFFFFFFFFFFFF", ptr: new(*big.Int), value: veryBigInt},
+	{input: "B848FFFFFFFFFFFFFFFFF800000000000000001BFFFFFFFFFFFFFFFFC8000000000000000045FFFFFFFFFFFFFFFFC800000000000000001BFFFFFFFFFFFFFFFFF8000000000000000001", ptr: new(*big.Int), value: veryVeryBigInt},
 	{input: "10", ptr: new(big.Int), value: *big.NewInt(16)}, // non-pointer also works
 	{input: "C0", ptr: new(*big.Int), error: "rlp: expected input string or byte for *big.Int"},
-	{input: "820001", ptr: new(big.Int), error: "rlp: non-canonical integer (leading zero bytes) for *big.Int"},
-	{input: "8105", ptr: new(big.Int), error: "rlp: non-canonical size information for *big.Int"},
+	{input: "00", ptr: new(*big.Int), error: "rlp: non-canonical integer (leading zero bytes) for *big.Int"},
+	{input: "820001", ptr: new(*big.Int), error: "rlp: non-canonical integer (leading zero bytes) for *big.Int"},
+	{input: "8105", ptr: new(*big.Int), error: "rlp: non-canonical size information for *big.Int"},
 
 	// structs
 	{
@@ -494,6 +546,13 @@ var decodeTests = []decodeTest{
 		input: "C601C402C203C0",
 		ptr:   new(recstruct),
 		value: recstruct{1, &recstruct{2, &recstruct{3, nil}}},
+	},
+	{
+		// This checks that empty big.Int works correctly in struct context. It's easy to
+		// miss the update of s.kind for this case, so it needs its own test.
+		input: "C58083343434",
+		ptr:   new(bigIntStruct),
+		value: bigIntStruct{new(big.Int), "444"},
 	},
 
 	// struct errors
@@ -972,7 +1031,7 @@ func TestInvalidOptionalField(t *testing.T) {
 		v   interface{}
 		err string
 	}{
-		{v: new(invalid1), err: `rlp: struct field rlp.invalid1.B needs "optional" tag`},
+		{v: new(invalid1), err: `rlp: invalid struct tag "" for rlp.invalid1.B (must be optional because preceding field "A" is optional)`},
 		{v: new(invalid2), err: `rlp: invalid struct tag "optional" for rlp.invalid2.T (also has "tail" tag)`},
 		{v: new(invalid3), err: `rlp: invalid struct tag "tail" for rlp.invalid3.T (also has "optional" tag)`},
 	}
@@ -984,7 +1043,6 @@ func TestInvalidOptionalField(t *testing.T) {
 			t.Errorf("wrong error for %T: %v", test.v, err.Error())
 		}
 	}
-
 }
 
 func ExampleDecode() {
@@ -1063,7 +1121,7 @@ func ExampleStream() {
 	// [102 111 111 98 97 114] <nil>
 }
 
-func BenchmarkDecode(b *testing.B) {
+func BenchmarkDecodeUints(b *testing.B) {
 	enc := encodeTestSlice(90000)
 	b.SetBytes(int64(len(enc)))
 	b.ReportAllocs()
@@ -1078,7 +1136,7 @@ func BenchmarkDecode(b *testing.B) {
 	}
 }
 
-func BenchmarkDecodeIntSliceReuse(b *testing.B) {
+func BenchmarkDecodeUintsReused(b *testing.B) {
 	enc := encodeTestSlice(100000)
 	b.SetBytes(int64(len(enc)))
 	b.ReportAllocs()
@@ -1089,6 +1147,44 @@ func BenchmarkDecodeIntSliceReuse(b *testing.B) {
 		r := bytes.NewReader(enc)
 		if err := Decode(r, &s); err != nil {
 			b.Fatalf("Decode error: %v", err)
+		}
+	}
+}
+
+func BenchmarkDecodeByteArrayStruct(b *testing.B) {
+	enc, err := EncodeToBytes(&byteArrayStruct{})
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.SetBytes(int64(len(enc)))
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	var out byteArrayStruct
+	for i := 0; i < b.N; i++ {
+		if err := DecodeBytes(enc, &out); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkDecodeBigInts(b *testing.B) {
+	ints := make([]*big.Int, 200)
+	for i := range ints {
+		ints[i] = math.BigPow(2, int64(i))
+	}
+	enc, err := EncodeToBytes(ints)
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.SetBytes(int64(len(enc)))
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	var out []*big.Int
+	for i := 0; i < b.N; i++ {
+		if err := DecodeBytes(enc, &out); err != nil {
+			b.Fatal(err)
 		}
 	}
 }
@@ -1106,7 +1202,7 @@ func encodeTestSlice(n uint) []byte {
 }
 
 func unhex(str string) []byte {
-	b, err := hex.DecodeString(strings.Replace(str, " ", "", -1))
+	b, err := hex.DecodeString(strings.ReplaceAll(str, " ", ""))
 	if err != nil {
 		panic(fmt.Sprintf("invalid hex string: %q", str))
 	}

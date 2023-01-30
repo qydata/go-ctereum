@@ -1,41 +1,32 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of go-ctereum.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of go-tempereum.
 //
-// go-ctereum is free software: you can redistribute it and/or modify
+// go-tempereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ctereum is distributed in the hope that it will be useful,
+// go-tempereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ctereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-tempereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/docker/docker/pkg/reexec"
-	"github.com/ethereum/go-ctereum/internal/cmdtest"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/ethereum/go-tempereum/internal/cmdtest"
+	"github.com/ethereum/go-tempereum/rpc"
 )
-
-func tmpdir(t *testing.T) string {
-	dir, err := ioutil.TempDir("", "geth-test")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return dir
-}
 
 type testgeth struct {
 	*cmdtest.TestCmd
@@ -82,15 +73,9 @@ func runGeth(t *testing.T, args ...string) *testgeth {
 		}
 	}
 	if tt.Datadir == "" {
-		tt.Datadir = tmpdir(t)
-		tt.Cleanup = func() { os.RemoveAll(tt.Datadir) }
+		// The temporary datadir will be removed automatically if something fails below.
+		tt.Datadir = t.TempDir()
 		args = append([]string{"--datadir", tt.Datadir}, args...)
-		// Remove the temporary datadir if something fails below.
-		defer func() {
-			if t.Failed() {
-				tt.Cleanup()
-			}
-		}()
 	}
 
 	// Boot "geth". This actually runs the test binary but the TestMain

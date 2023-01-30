@@ -1,0 +1,1 @@
+./geth init  /root/ct-network-config/execution/genesis.json

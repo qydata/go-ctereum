@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package light
 
@@ -22,13 +22,13 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/ethdb"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 // So we can deterministically seed different blockchains
@@ -104,12 +104,13 @@ func testFork(t *testing.T, LightChain *LightChain, i, n int, comparator func(td
 	}
 	// Sanity check that the forked chain can be imported into the original
 	var tdPre, tdPost *big.Int
-
-	tdPre = LightChain.GetTdByHash(LightChain.CurrentHeader().Hash())
+	cur := LightChain.CurrentHeader()
+	tdPre = LightChain.GetTd(cur.Hash(), cur.Number.Uint64())
 	if err := testHeaderChainImport(headerChainB, LightChain); err != nil {
 		t.Fatalf("failed to import forked header chain: %v", err)
 	}
-	tdPost = LightChain.GetTdByHash(headerChainB[len(headerChainB)-1].Hash())
+	last := headerChainB[len(headerChainB)-1]
+	tdPost = LightChain.GetTd(last.Hash(), last.Number.Uint64())
 	// Compare the total difficulties of the chains
 	comparator(tdPre, tdPost)
 }
@@ -124,7 +125,8 @@ func testHeaderChainImport(chain []*types.Header, lightchain *LightChain) error 
 		}
 		// Manually insert the header into the database, but don't reorganize (allows subsequent testing)
 		lightchain.chainmu.Lock()
-		rawdb.WriteTd(lightchain.chainDb, header.Hash(), header.Number.Uint64(), new(big.Int).Add(header.Difficulty, lightchain.GetTdByHash(header.ParentHash)))
+		rawdb.WriteTd(lightchain.chainDb, header.Hash(), header.Number.Uint64(),
+			new(big.Int).Add(header.Difficulty, lightchain.GetTd(header.ParentHash, header.Number.Uint64()-1)))
 		rawdb.WriteHeader(lightchain.chainDb, header)
 		lightchain.chainmu.Unlock()
 	}
@@ -309,7 +311,7 @@ func testReorg(t *testing.T, first, second []int, td int64) {
 	}
 	// Make sure the chain total difficulty is the correct one
 	want := new(big.Int).Add(bc.genesisBlock.Difficulty(), big.NewInt(td))
-	if have := bc.GetTdByHash(bc.CurrentHeader().Hash()); have.Cmp(want) != 0 {
+	if have := bc.GetTd(bc.CurrentHeader().Hash(), bc.CurrentHeader().Number.Uint64()); have.Cmp(want) != 0 {
 		t.Errorf("total difficulty mismatch: have %v, want %v", have, want)
 	}
 }
@@ -322,8 +324,8 @@ func TestBadHeaderHashes(t *testing.T) {
 	var err error
 	headers := makeHeaderChainWithDiff(bc.genesisBlock, []int{1, 2, 4}, 10)
 	core.BadHashes[headers[2].Hash()] = true
-	if _, err = bc.InsertHeaderChain(headers, 1); !errors.Is(err, core.ErrBlacklistedHash) {
-		t.Errorf("error mismatch: have: %v, want %v", err, core.ErrBlacklistedHash)
+	if _, err = bc.InsertHeaderChain(headers, 1); !errors.Is(err, core.ErrBannedHash) {
+		t.Errorf("error mismatch: have: %v, want %v", err, core.ErrBannedHash)
 	}
 }
 

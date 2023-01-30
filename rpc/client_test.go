@@ -1,24 +1,25 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rpc
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net"
@@ -33,7 +34,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ctereum/log"
+	"github.com/ethereum/go-tempereum/log"
 )
 
 func TestClientRequest(t *testing.T) {
@@ -142,6 +143,53 @@ func TestClientBatchRequest(t *testing.T) {
 	if !reflect.DeepEqual(batch, wantResult) {
 		t.Errorf("batch results mismatch:\ngot %swant %s", spew.Sdump(batch), spew.Sdump(wantResult))
 	}
+}
+
+func TestClientBatchRequest_len(t *testing.T) {
+	b, err := json.Marshal([]jsonrpcMessage{
+		{Version: "2.0", ID: json.RawMessage("1"), Method: "foo", Result: json.RawMessage(`"0x1"`)},
+		{Version: "2.0", ID: json.RawMessage("2"), Method: "bar", Result: json.RawMessage(`"0x2"`)},
+	})
+	if err != nil {
+		t.Fatal("failed to encode jsonrpc message:", err)
+	}
+	s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		_, err := rw.Write(b)
+		if err != nil {
+			t.Error("failed to write response:", err)
+		}
+	}))
+	t.Cleanup(s.Close)
+
+	client, err := Dial(s.URL)
+	if err != nil {
+		t.Fatal("failed to dial test server:", err)
+	}
+	defer client.Close()
+
+	t.Run("too-few", func(t *testing.T) {
+		batch := []BatchElem{
+			{Method: "foo"},
+			{Method: "bar"},
+			{Method: "baz"},
+		}
+		ctx, cancelFn := context.WithTimeout(context.Background(), time.Second)
+		defer cancelFn()
+		if err := client.BatchCallContext(ctx, batch); !errors.Is(err, ErrBadResult) {
+			t.Errorf("expected %q but got: %v", ErrBadResult, err)
+		}
+	})
+
+	t.Run("too-many", func(t *testing.T) {
+		batch := []BatchElem{
+			{Method: "foo"},
+		}
+		ctx, cancelFn := context.WithTimeout(context.Background(), time.Second)
+		defer cancelFn()
+		if err := client.BatchCallContext(ctx, batch); !errors.Is(err, ErrBadResult) {
+			t.Errorf("expected %q but got: %v", ErrBadResult, err)
+		}
+	})
 }
 
 func TestClientNotify(t *testing.T) {
@@ -354,7 +402,7 @@ func TestClientSubscribeClose(t *testing.T) {
 	}
 }
 
-// This test reproduces https://github.com/ethereum/go-ctereum/issues/17837 where the
+// This test reproduces https://github.com/ethereum/go-tempereum/issues/17837 where the
 // client hangs during shutdown when Unsubscribe races with Client.Close.
 func TestClientCloseUnsubscribeRace(t *testing.T) {
 	server := newTestServer()
@@ -438,7 +486,7 @@ func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
 }
 
 // This checks that the subscribed channel can be closed after Unsubscribe.
-// It is the reproducer for https://github.com/ethereum/go-ctereum/issues/22322
+// It is the reproducer for https://github.com/ethereum/go-tempereum/issues/22322
 func TestClientSubscriptionChannelClose(t *testing.T) {
 	t.Parallel()
 
@@ -618,6 +666,7 @@ func TestClientReconnect(t *testing.T) {
 	if err != nil {
 		t.Fatal("can't dial", err)
 	}
+	defer client.Close()
 
 	// Perform a call. This should work because the server is up.
 	var resp echoResult
@@ -692,7 +741,7 @@ func httpTestClient(srv *Server, transport string, fl *flakeyListener) (*Client,
 
 func ipcTestClient(srv *Server, fl *flakeyListener) (*Client, net.Listener) {
 	// Listen on a random endpoint.
-	endpoint := fmt.Sprintf("go-ctereum-test-ipc-%d-%d", os.Getpid(), rand.Int63())
+	endpoint := fmt.Sprintf("go-tempereum-test-ipc-%d-%d", os.Getpid(), rand.Int63())
 	if runtime.GOOS == "windows" {
 		endpoint = `\\.\pipe\` + endpoint
 	} else {

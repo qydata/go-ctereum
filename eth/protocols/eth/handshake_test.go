@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package eth
 
@@ -20,14 +20,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/forkid"
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/forkid"
+	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/ethereum/go-tempereum/p2p/enode"
 )
 
 // Tests that handshake failures are detected and reported correctly.
-func TestHandshake65(t *testing.T) { testHandshake(t, ETH65) }
 func TestHandshake66(t *testing.T) { testHandshake(t, ETH66) }
 
 func testHandshake(t *testing.T, protocol uint) {

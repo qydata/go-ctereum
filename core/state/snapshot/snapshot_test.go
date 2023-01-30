@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package snapshot
 
@@ -22,11 +22,12 @@ import (
 	"math/big"
 	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/rlp"
 )
 
 // randomHash generates a random blob of data and returns it as a hash.
@@ -264,7 +265,7 @@ func TestPostCapBasicDataAccess(t *testing.T) {
 	snaps.Update(common.HexToHash("0xa3"), common.HexToHash("0xa2"), nil, setAccount("0xa3"), nil)
 	snaps.Update(common.HexToHash("0xb3"), common.HexToHash("0xb2"), nil, setAccount("0xb3"), nil)
 
-	// checkExist verifies if an account exiss in a snapshot
+	// checkExist verifies if an account exists in a snapshot
 	checkExist := func(layer *diffLayer, key string) error {
 		if data, _ := layer.Account(common.HexToHash(key)); data == nil {
 			return fmt.Errorf("expected %x to exist, got nil", common.HexToHash(key))
@@ -324,7 +325,7 @@ func TestPostCapBasicDataAccess(t *testing.T) {
 	}
 }
 
-// TestSnaphots tests the functionality for retrieveing the snapshot
+// TestSnaphots tests the functionality for retrieving the snapshot
 // with given head root and the desired depth.
 func TestSnaphots(t *testing.T) {
 	// setAccount is a helper to construct a random account entry and assign it to
@@ -421,5 +422,65 @@ func TestSnaphots(t *testing.T) {
 		if bottommost.Root() != c.expectBottom {
 			t.Errorf("overflow test %d: snapshot mismatch, want %v, get %v", i, c.expectBottom, bottommost.Root())
 		}
+	}
+}
+
+// TestReadStateDuringFlattening tests the scenario that, during the
+// bottom diff layers are merging which tags these as stale, the read
+// happens via a pre-created top snapshot layer which tries to access
+// the state in these stale layers. Ensure this read can retrieve the
+// right state back(block until the flattening is finished) instead of
+// an unexpected error(snapshot layer is stale).
+func TestReadStateDuringFlattening(t *testing.T) {
+	// setAccount is a helper to construct a random account entry and assign it to
+	// an account slot in a snapshot
+	setAccount := func(accKey string) map[common.Hash][]byte {
+		return map[common.Hash][]byte{
+			common.HexToHash(accKey): randomAccount(),
+		}
+	}
+	// Create a starting base layer and a snapshot tree out of it
+	base := &diskLayer{
+		diskdb: rawdb.NewMemoryDatabase(),
+		root:   common.HexToHash("0x01"),
+		cache:  fastcache.New(1024 * 500),
+	}
+	snaps := &Tree{
+		layers: map[common.Hash]snapshot{
+			base.root: base,
+		},
+	}
+	// 4 layers in total, 3 diff layers and 1 disk layers
+	snaps.Update(common.HexToHash("0xa1"), common.HexToHash("0x01"), nil, setAccount("0xa1"), nil)
+	snaps.Update(common.HexToHash("0xa2"), common.HexToHash("0xa1"), nil, setAccount("0xa2"), nil)
+	snaps.Update(common.HexToHash("0xa3"), common.HexToHash("0xa2"), nil, setAccount("0xa3"), nil)
+
+	// Obtain the topmost snapshot handler for state accessing
+	snap := snaps.Snapshot(common.HexToHash("0xa3"))
+
+	// Register the testing hook to access the state after flattening
+	var result = make(chan *Account)
+	snaps.onFlatten = func() {
+		// Spin up a thread to read the account from the pre-created
+		// snapshot handler. It's expected to be blocked.
+		go func() {
+			account, _ := snap.Account(common.HexToHash("0xa1"))
+			result <- account
+		}()
+		select {
+		case res := <-result:
+			t.Fatalf("Unexpected return %v", res)
+		case <-time.NewTimer(time.Millisecond * 300).C:
+		}
+	}
+	// Cap the snap tree, which will mark the bottom-most layer as stale.
+	snaps.Cap(common.HexToHash("0xa3"), 1)
+	select {
+	case account := <-result:
+		if account == nil {
+			t.Fatal("Failed to retrieve account")
+		}
+	case <-time.NewTimer(time.Millisecond * 300).C:
+		t.Fatal("Unexpected blocker")
 	}
 }

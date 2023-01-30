@@ -1,0 +1,1 @@
+nohup ./bootnode --nodekey boot.key  -addr 172.16.169.162:30300 > bootnode.out 2>&1 &

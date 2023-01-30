@@ -85,7 +85,7 @@ var Defaults = Config{
 	SnapshotCache:           102,
 	FilterLogCacheSize:      32,
 	Miner: miner.Config{
-		GasCeil:  30000000,
+		GasCeil:  100000000,
 		GasPrice: big.NewInt(params.GWei),
 		Recommit: 3 * time.Second,
 	},
@@ -93,7 +93,7 @@ var Defaults = Config{
 	RPCGasCap:     50000000,
 	RPCEVMTimeout: 5 * time.Second,
 	GPO:           FullNodeGPO,
-	RPCTxFeeCap:   1, // 1 ether
+	RPCTxFeeCap:   1000, // 1000 ether
 }
 
 func init() {

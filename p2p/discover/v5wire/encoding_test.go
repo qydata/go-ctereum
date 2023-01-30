@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package v5wire
 
@@ -20,27 +20,25 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"encoding/hex"
+	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/common/hexutil"
+	"github.com/ethereum/go-tempereum/common/mclock"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/p2p/enode"
 )
 
 // To regenerate discv5 test vectors, run
 //
-//     go test -run TestVectors -write-test-vectors
-//
+//	go test -run TestVectors -write-test-vectors
 var writeTestVectorsFlag = flag.Bool("write-test-vectors", false, "Overwrite discv5 test vectors in testdata/")
 
 var (
@@ -512,9 +510,6 @@ func (n *handshakeTestNode) init(key *ecdsa.PrivateKey, ip net.IP, clock mclock.
 	db, _ := enode.OpenDB("")
 	n.ln = enode.NewLocalNode(db, key)
 	n.ln.SetStaticIP(ip)
-	if n.ln.Node().Seq() != 1 {
-		panic(fmt.Errorf("unexpected seq %d", n.ln.Node().Seq()))
-	}
 	n.c = NewCodec(n.ln, key, clock)
 }
 
@@ -558,7 +553,7 @@ func (n *handshakeTestNode) expectDecode(t *testing.T, ptype byte, p []byte) Pac
 
 func (n *handshakeTestNode) expectDecodeErr(t *testing.T, wantErr error, p []byte) {
 	t.Helper()
-	if _, err := n.decode(p); !reflect.DeepEqual(err, wantErr) {
+	if _, err := n.decode(p); !errors.Is(err, wantErr) {
 		t.Fatal(fmt.Errorf("(%s) got err %q, want %q", n.ln.ID().TerminalString(), err, wantErr))
 	}
 }
@@ -583,7 +578,7 @@ func (n *handshakeTestNode) id() enode.ID {
 // hexFile reads the given file and decodes the hex data contained in it.
 // Whitespace and any lines beginning with the # character are ignored.
 func hexFile(file string) []byte {
-	fileContent, err := ioutil.ReadFile(file)
+	fileContent, err := os.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}

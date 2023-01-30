@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package eth
 
@@ -25,10 +25,11 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/state"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 var dumper = spew.ConfigState{Indent: "    "}
@@ -66,7 +67,7 @@ func TestAccountRange(t *testing.T) {
 	t.Parallel()
 
 	var (
-		statedb  = state.NewDatabaseWithConfig(rawdb.NewMemoryDatabase(), nil)
+		statedb  = state.NewDatabaseWithConfig(rawdb.NewMemoryDatabase(), &trie.Config{Preimages: true})
 		state, _ = state.New(common.Hash{}, statedb, nil)
 		addrs    = [AccountRangeMaxResults * 2]common.Address{}
 		m        = map[common.Address]bool{}
@@ -213,7 +214,7 @@ func TestStorageRangeAt(t *testing.T) {
 			t.Error(err)
 		}
 		if !reflect.DeepEqual(result, test.want) {
-			t.Fatalf("wrong result for range 0x%x.., limit %d:\ngot %s\nwant %s",
+			t.Fatalf("wrong result for range %#x.., limit %d:\ngot %s\nwant %s",
 				test.start, test.limit, dumper.Sdump(result), dumper.Sdump(&test.want))
 		}
 	}

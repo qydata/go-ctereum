@@ -1,18 +1,18 @@
-// Copyright 2021 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2021 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package types_test
 
@@ -24,12 +24,13 @@ import (
 	mrand "math/rand"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/hexutil"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 func TestDeriveSha(t *testing.T) {
@@ -38,7 +39,7 @@ func TestDeriveSha(t *testing.T) {
 		t.Fatal(err)
 	}
 	for len(txs) < 1000 {
-		exp := types.DeriveSha(txs, new(trie.Trie))
+		exp := types.DeriveSha(txs, trie.NewEmpty(trie.NewDatabase(rawdb.NewMemoryDatabase())))
 		got := types.DeriveSha(txs, trie.NewStackTrie(nil))
 		if !bytes.Equal(got[:], exp[:]) {
 			t.Fatalf("%d txs: got %x exp %x", len(txs), got, exp)
@@ -85,7 +86,7 @@ func BenchmarkDeriveSha200(b *testing.B) {
 		b.ResetTimer()
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			exp = types.DeriveSha(txs, new(trie.Trie))
+			exp = types.DeriveSha(txs, trie.NewEmpty(trie.NewDatabase(rawdb.NewMemoryDatabase())))
 		}
 	})
 
@@ -106,7 +107,7 @@ func TestFuzzDeriveSha(t *testing.T) {
 	rndSeed := mrand.Int()
 	for i := 0; i < 10; i++ {
 		seed := rndSeed + i
-		exp := types.DeriveSha(newDummy(i), new(trie.Trie))
+		exp := types.DeriveSha(newDummy(i), trie.NewEmpty(trie.NewDatabase(rawdb.NewMemoryDatabase())))
 		got := types.DeriveSha(newDummy(i), trie.NewStackTrie(nil))
 		if !bytes.Equal(got[:], exp[:]) {
 			printList(newDummy(seed))
@@ -134,7 +135,7 @@ func TestDerivableList(t *testing.T) {
 		},
 	}
 	for i, tc := range tcs[1:] {
-		exp := types.DeriveSha(flatList(tc), new(trie.Trie))
+		exp := types.DeriveSha(flatList(tc), trie.NewEmpty(trie.NewDatabase(rawdb.NewMemoryDatabase())))
 		got := types.DeriveSha(flatList(tc), trie.NewStackTrie(nil))
 		if !bytes.Equal(got[:], exp[:]) {
 			t.Fatalf("case %d: got %x exp %x", i, got, exp)
@@ -196,7 +197,7 @@ func printList(l types.DerivableList) {
 	for i := 0; i < l.Len(); i++ {
 		var buf bytes.Buffer
 		l.EncodeIndex(i, &buf)
-		fmt.Printf("\"0x%x\",\n", buf.Bytes())
+		fmt.Printf("\"%#x\",\n", buf.Bytes())
 	}
 	fmt.Printf("},\n")
 }

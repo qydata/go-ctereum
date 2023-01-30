@@ -1,18 +1,18 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 // This file contains some shares testing functionality, common to  multiple
 // different files and modules being tested.
@@ -21,9 +21,11 @@ package eth
 
 import (
 	"crypto/rand"
+	"testing"
 
-	"github.com/ethereum/go-ctereum/p2p"
-	"github.com/ethereum/go-ctereum/p2p/enode"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/p2p"
+	"github.com/ethereum/go-tempereum/p2p/enode"
 )
 
 // testPeer is a simulated peer to allow testing direct network calls.
@@ -58,4 +60,29 @@ func newTestPeer(name string, version uint, backend Backend) (*testPeer, <-chan 
 func (p *testPeer) close() {
 	p.Peer.Close()
 	p.app.Close()
+}
+
+func TestPeerSet(t *testing.T) {
+	size := 5
+	s := newKnownCache(size)
+
+	// add 10 items
+	for i := 0; i < size*2; i++ {
+		s.Add(common.Hash{byte(i)})
+	}
+
+	if s.Cardinality() != size {
+		t.Fatalf("wrong size, expected %d but found %d", size, s.Cardinality())
+	}
+
+	vals := []common.Hash{}
+	for i := 10; i < 20; i++ {
+		vals = append(vals, common.Hash{byte(i)})
+	}
+
+	// add item in batch
+	s.Add(vals...)
+	if s.Cardinality() < size {
+		t.Fatalf("bad size")
+	}
 }

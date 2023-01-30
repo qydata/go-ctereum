@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package filters
 
@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/rpc"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/rpc"
 )
 
 func TestUnmarshalJSONNewFilterArgs(t *testing.T) {
@@ -56,7 +56,7 @@ func TestUnmarshalJSONNewFilterArgs(t *testing.T) {
 
 	// from, to block number
 	var test1 FilterCriteria
-	vector := fmt.Sprintf(`{"fromBlock":"0x%x","toBlock":"0x%x"}`, fromBlock, toBlock)
+	vector := fmt.Sprintf(`{"fromBlock":"%#x","toBlock":"%#x"}`, fromBlock, toBlock)
 	if err := json.Unmarshal([]byte(vector), &test1); err != nil {
 		t.Fatal(err)
 	}

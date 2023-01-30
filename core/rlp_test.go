@@ -1,18 +1,18 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2020 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -21,13 +21,13 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/params"
+	"github.com/ethereum/go-tempereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -40,7 +40,7 @@ func getBlock(transactions int, uncles int, dataSize int) *types.Block {
 		// A sender who makes transactions, has some funds
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		address = crypto.PubkeyToAddress(key.PublicKey)
-		funds   = big.NewInt(1000000000)
+		funds   = big.NewInt(1_000_000_000_000_000_000)
 		gspec   = &Genesis{
 			Config: params.TestChainConfig,
 			Alloc:  GenesisAlloc{address: {Balance: funds}},
@@ -55,7 +55,7 @@ func getBlock(transactions int, uncles int, dataSize int) *types.Block {
 				// Add transactions and stuff on the last block
 				for i := 0; i < transactions; i++ {
 					tx, _ := types.SignTx(types.NewTransaction(uint64(i), aa,
-						big.NewInt(0), 50000, big.NewInt(1), make([]byte, dataSize)), types.HomesteadSigner{}, key)
+						big.NewInt(0), 50000, b.header.BaseFee, make([]byte, dataSize)), types.HomesteadSigner{}, key)
 					b.AddTx(tx)
 				}
 				for i := 0; i < uncles; i++ {

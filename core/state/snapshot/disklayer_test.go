@@ -1,34 +1,30 @@
-// Copyright 2019 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2019 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package snapshot
 
 import (
 	"bytes"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/ethdb/leveldb"
-	"github.com/ethereum/go-ctereum/ethdb/memorydb"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/ethdb/memorydb"
+	"github.com/ethereum/go-tempereum/rlp"
 )
 
 // reverse reverses the contents of a byte slice. It's used to update random accs
@@ -518,18 +514,9 @@ func TestDiskMidAccountPartialMerge(t *testing.T) {
 // TestDiskSeek tests that seek-operations work on the disk layer
 func TestDiskSeek(t *testing.T) {
 	// Create some accounts in the disk layer
-	var db ethdb.Database
+	db := rawdb.NewMemoryDatabase()
+	defer db.Close()
 
-	if dir, err := ioutil.TempDir("", "disklayer-test"); err != nil {
-		t.Fatal(err)
-	} else {
-		defer os.RemoveAll(dir)
-		diskdb, err := leveldb.New(dir, 256, 0, "", false)
-		if err != nil {
-			t.Fatal(err)
-		}
-		db = rawdb.NewDatabase(diskdb)
-	}
 	// Fill even keys [0,2,4...]
 	for i := 0; i < 0xff; i += 2 {
 		acc := common.Hash{byte(i)}

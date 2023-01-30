@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package crypto
 
@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"encoding/hex"
-	"io/ioutil"
 	"math/big"
 	"os"
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/hexutil"
 )
 
 var testAddrHex = "970e8128ab834e8eac17ab8e3812f010678cf791"
@@ -182,7 +181,7 @@ func TestLoadECDSA(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		f, err := ioutil.TempFile("", "loadecdsa_test.*.txt")
+		f, err := os.CreateTemp("", "loadecdsa_test.*.txt")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -203,7 +202,7 @@ func TestLoadECDSA(t *testing.T) {
 }
 
 func TestSaveECDSA(t *testing.T) {
-	f, err := ioutil.TempFile("", "saveecdsa_test.*.txt")
+	f, err := os.CreateTemp("", "saveecdsa_test.*.txt")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ctereum/core/rawdb"
 	"math/big"
 	"strings"
 	"time"
@@ -70,7 +71,7 @@ func (s *EthereumAPI) GasPrice(ctx context.Context) (*hexutil.Big, error) {
 	//return (*hexutil.Big)(tipcap), err
 	//这里设置为建议的手续费  0.105 ETH
 	if s.b.ChainConfig().IsImplAuth(s.b.CurrentBlock().Number()) {
-		price := big.NewInt(s.b.ChainConfig().ImplGasPrice())
+		price := big.NewInt(s.b.ChainConfig().FixedGasPrice())
 		return (*hexutil.Big)(price), nil
 	} else {
 		price := big.NewInt(5000100000000)
@@ -80,11 +81,18 @@ func (s *EthereumAPI) GasPrice(ctx context.Context) (*hexutil.Big, error) {
 
 // MaxPriorityFeePerGas returns a suggestion for a gas tip cap for dynamic fee transactions.
 func (s *EthereumAPI) MaxPriorityFeePerGas(ctx context.Context) (*hexutil.Big, error) {
-	tipcap, err := s.b.SuggestGasTipCap(ctx)
-	if err != nil {
-		return nil, err
+	//tipcap, err := s.b.SuggestGasTipCap(ctx)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return (*hexutil.Big)(tipcap), err
+	if s.b.ChainConfig().IsImplAuth(s.b.CurrentBlock().Number()) {
+		price := big.NewInt(s.b.ChainConfig().FixedGasPrice())
+		return (*hexutil.Big)(price), nil
+	} else {
+		price := big.NewInt(5000100000000)
+		return (*hexutil.Big)(price), nil
 	}
-	return (*hexutil.Big)(tipcap), err
 }
 
 type feeHistoryResult struct {
@@ -119,6 +127,23 @@ func (s *EthereumAPI) FeeHistory(ctx context.Context, blockCount rpc.DecimalOrHe
 			results.BaseFee[i] = (*hexutil.Big)(v)
 		}
 	}
+
+	price := big.NewInt(s.b.ChainConfig().FixedGasPrice())
+	//results.GasUsedRatio = make([]float64, len(gasUsed))
+	//for i := range gasUsed {
+	//	results.GasUsedRatio[i] = 1
+	//}
+	results.Reward = make([][]*hexutil.Big, len(reward))
+	for i, w := range reward {
+		results.Reward[i] = make([]*hexutil.Big, len(w))
+		for j, _ := range w {
+			results.Reward[i][j] = (*hexutil.Big)(price)
+		}
+	}
+	//results.BaseFee = make([]*hexutil.Big, len(baseFee))
+	//for i := range baseFee {
+	//	results.BaseFee[i] = (*hexutil.Big)(price)
+	//}
 	return results, nil
 }
 
@@ -617,6 +642,96 @@ func NewBlockChainAPI(b Backend) *BlockChainAPI {
 	return &BlockChainAPI{b}
 }
 
+// PublicBlockChainAPI provides an API to access the Ethereum blockchain.
+// It offers only methods that operate on public data that is freely available to anyone.
+//type PublicBlockChainAPI struct {
+//	b Backend
+//}
+
+// NewPublicBlockChainAPI creates a new Ethereum blockchain API.
+func NewPublicBlockChainAPI(b Backend) *BlockChainAPI {
+	return &BlockChainAPI{b}
+}
+
+// GetTransactionReceiptsByBlock returns the transaction receipts for the given block number or hash.
+func (s *BlockChainAPI) GetTransactionReceiptsByBlock(ctx context.Context, blockNrOrHash rpc.BlockNumberOrHash) ([]map[string]interface{}, error) {
+	block, err := s.b.BlockByNumberOrHash(ctx, blockNrOrHash)
+	if err != nil {
+		return nil, err
+	}
+
+	receipts, err := s.b.GetReceipts(ctx, block.Hash())
+	if err != nil {
+		return nil, err
+	}
+
+	txs := block.Transactions()
+
+	var txHash common.Hash
+
+	borReceipt := rawdb.ReadBorReceipt(s.b.ChainDb(), block.Hash(), block.NumberU64())
+	if borReceipt != nil {
+		receipts = append(receipts, borReceipt)
+		txHash = types.GetDerivedBorTxHash(types.BorReceiptKey(block.Number().Uint64(), block.Hash()))
+		if txHash != (common.Hash{}) {
+			borTx, _, _, _, _ := s.b.GetBorBlockTransactionWithBlockHash(ctx, txHash, block.Hash())
+			txs = append(txs, borTx)
+		}
+	}
+
+	if len(txs) != len(receipts) {
+		return nil, fmt.Errorf("txs length %d doesn't equal to receipts' length %d", len(txs), len(receipts))
+	}
+
+	txReceipts := make([]map[string]interface{}, 0, len(txs))
+	for idx, receipt := range receipts {
+		tx := txs[idx]
+		var signer types.Signer = types.FrontierSigner{}
+		if tx.Protected() {
+			signer = types.NewEIP155Signer(tx.ChainId())
+		}
+		from, _ := types.Sender(signer, tx)
+
+		fields := map[string]interface{}{
+			"blockHash":         block.Hash(),
+			"blockNumber":       hexutil.Uint64(block.NumberU64()),
+			"transactionHash":   tx.Hash(),
+			"transactionIndex":  hexutil.Uint64(idx),
+			"from":              from,
+			"to":                tx.To(),
+			"gasUsed":           hexutil.Uint64(receipt.GasUsed),
+			"cumulativeGasUsed": hexutil.Uint64(receipt.CumulativeGasUsed),
+			"contractAddress":   nil,
+			"logs":              receipt.Logs,
+			"logsBloom":         receipt.Bloom,
+			"type":              hexutil.Uint(tx.Type()),
+		}
+
+		// Assign receipt status or post state.
+		if len(receipt.PostState) > 0 {
+			fields["root"] = hexutil.Bytes(receipt.PostState)
+		} else {
+			fields["status"] = hexutil.Uint(receipt.Status)
+		}
+		if receipt.Logs == nil {
+			fields["logs"] = [][]*types.Log{}
+		}
+
+		if borReceipt != nil && idx == len(receipts)-1 {
+			fields["transactionHash"] = txHash
+		}
+
+		// If the ContractAddress is 20 0x0 bytes, assume it is not a contract creation
+		if receipt.ContractAddress != (common.Address{}) {
+			fields["contractAddress"] = receipt.ContractAddress
+		}
+
+		txReceipts = append(txReceipts, fields)
+	}
+
+	return txReceipts, nil
+}
+
 // ChainId is the EIP-155 replay-protection chain id for the current Ethereum chain config.
 //
 // Note, this method does not conform to EIP-695 because the configured chain ID is always
@@ -739,10 +854,10 @@ func (s *BlockChainAPI) GetHeaderByHash(ctx context.Context, hash common.Hash) m
 }
 
 // GetBlockByNumber returns the requested canonical block.
-// * When blockNr is -1 the chain head is returned.
-// * When blockNr is -2 the pending chain head is returned.
-// * When fullTx is true all transactions in the block are returned, otherwise
-//   only the transaction hash is returned.
+//   - When blockNr is -1 the chain head is returned.
+//   - When blockNr is -2 the pending chain head is returned.
+//   - When fullTx is true all transactions in the block are returned, otherwise
+//     only the transaction hash is returned.
 func (s *BlockChainAPI) GetBlockByNumber(ctx context.Context, number rpc.BlockNumber, fullTx bool) (map[string]interface{}, error) {
 	block, err := s.b.BlockByNumber(ctx, number)
 	if block != nil && err == nil {
@@ -1035,7 +1150,7 @@ func (s *BlockChainAPI) Call(ctx context.Context, args TransactionArgs, blockNrO
 func DoEstimateGas(ctx context.Context, b Backend, args TransactionArgs, blockNrOrHash rpc.BlockNumberOrHash, gasCap uint64) (hexutil.Uint64, error) {
 	// Binary search the gas requirement, as it may be higher than the amount used
 	var (
-		lo  uint64 = params.TxGas - 1
+		lo  = params.TxGas - 1
 		hi  uint64
 		cap uint64
 	)

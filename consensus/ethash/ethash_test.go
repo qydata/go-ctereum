@@ -1,23 +1,22 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package ethash
 
 import (
-	"io/ioutil"
 	"math/big"
 	"math/rand"
 	"os"
@@ -25,9 +24,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/hexutil"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/hexutil"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 // Tests that ethash works correctly in test mode.
@@ -55,9 +54,11 @@ func TestTestMode(t *testing.T) {
 }
 
 // This test checks that cache lru logic doesn't crash under load.
-// It reproduces https://github.com/ethereum/go-ctereum/issues/14943
+// It reproduces https://github.com/ethereum/go-tempereum/issues/14943
 func TestCacheFileEvict(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "ethash-test")
+	// TODO: t.TempDir fails to remove the directory on Windows
+	// \AppData\Local\Temp\1\TestCacheFileEvict2179435125\001\cache-R23-0000000000000000: Access is denied.
+	tmpdir, err := os.MkdirTemp("", "ethash-test")
 	if err != nil {
 		t.Fatal(err)
 	}

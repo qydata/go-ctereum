@@ -1,18 +1,18 @@
-// Copyright 2020 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2019 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package fetcher
 
@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/mclock"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/mclock"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 var (
@@ -304,7 +304,6 @@ func TestTransactionFetcherSingletonRequesting(t *testing.T) {
 func TestTransactionFetcherFailedRescheduling(t *testing.T) {
 	// Create a channel to control when tx requests can fail
 	proceed := make(chan struct{})
-
 	testTransactionFetcherParallel(t, txFetcherTest{
 		init: func() *TxFetcher {
 			return NewTxFetcher(
@@ -1012,7 +1011,7 @@ func TestTransactionFetcherOutOfBoundDeliveries(t *testing.T) {
 }
 
 // Tests that dropping a peer cleans out all internal data structures in all the
-// live or danglng stages.
+// live or dangling stages.
 func TestTransactionFetcherDrop(t *testing.T) {
 	testTransactionFetcherParallel(t, txFetcherTest{
 		init: func() *TxFetcher {
@@ -1122,7 +1121,7 @@ func TestTransactionFetcherDropRescheduling(t *testing.T) {
 }
 
 // This test reproduces a crash caught by the fuzzer. The root cause was a
-// dangling transaction timing out and clashing on readd with a concurrently
+// dangling transaction timing out and clashing on re-add with a concurrently
 // announced one.
 func TestTransactionFetcherFuzzCrash01(t *testing.T) {
 	testTransactionFetcherParallel(t, txFetcherTest{
@@ -1149,7 +1148,7 @@ func TestTransactionFetcherFuzzCrash01(t *testing.T) {
 }
 
 // This test reproduces a crash caught by the fuzzer. The root cause was a
-// dangling transaction getting peer-dropped and clashing on readd with a
+// dangling transaction getting peer-dropped and clashing on re-add with a
 // concurrently announced one.
 func TestTransactionFetcherFuzzCrash02(t *testing.T) {
 	testTransactionFetcherParallel(t, txFetcherTest{
@@ -1262,6 +1261,16 @@ func testTransactionFetcher(t *testing.T, tt txFetcherTest) {
 
 	fetcher.Start()
 	defer fetcher.Stop()
+
+	defer func() { // drain the wait chan on exit
+		for {
+			select {
+			case <-wait:
+			default:
+				return
+			}
+		}
+	}()
 
 	// Crunch through all the test steps and execute them
 	for i, step := range tt.steps {

@@ -1,28 +1,30 @@
-// Copyright 2021 The go-ctereum Authors
-// This file is part of go-ctereum.
+// Copyright 2021 The go-tempereum Authors
+// This file is part of go-tempereum.
 //
-// go-ctereum is free software: you can redistribute it and/or modify
+// go-tempereum is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// go-ctereum is distributed in the hope that it will be useful,
+// go-tempereum is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with go-ctereum. If not, see <http://www.gnu.org/licenses/>.
+// along with go-tempereum. If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
 import (
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/ethereum/go-tempereum/common"
 )
 
 func TestFacebook(t *testing.T) {
+	// TODO: Remove facebook auth or implement facebook api, which seems to require an API key
+	t.Skipf("The facebook access is flaky, needs to be reimplemented or removed")
 	for _, tt := range []struct {
 		url  string
 		want common.Address

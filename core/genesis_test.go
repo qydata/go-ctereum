@@ -1,18 +1,18 @@
-// Copyright 2017 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2017 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -22,22 +22,19 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/ethdb"
+	"github.com/ethereum/go-tempereum/params"
 )
 
-func TestDefaultGenesisBlock(t *testing.T) {
-	block := DefaultGenesisBlock().ToBlock(nil)
-	if block.Hash() != params.MainnetGenesisHash {
-		t.Errorf("wrong mainnet genesis hash, got %v, want %v", block.Hash(), params.MainnetGenesisHash)
-	}
-	block = DefaultRopstenGenesisBlock().ToBlock(nil)
-	if block.Hash() != params.RopstenGenesisHash {
-		t.Errorf("wrong ropsten genesis hash, got %v, want %v", block.Hash(), params.RopstenGenesisHash)
+func TestInvalidCliqueConfig(t *testing.T) {
+	block := DefaultGoerliGenesisBlock()
+	block.ExtraData = []byte{}
+	if _, err := block.Commit(nil); err == nil {
+		t.Fatal("Expected error on invalid clique config")
 	}
 }
 
@@ -163,37 +160,82 @@ func TestSetupGenesis(t *testing.T) {
 	}
 }
 
-// TestGenesisHashes checks the congruity of default genesis data to corresponding hardcoded genesis hash values.
+// TestGenesisHashes checks the congruity of default genesis data to
+// corresponding hardcoded genesis hash values.
 func TestGenesisHashes(t *testing.T) {
-	cases := []struct {
+	for i, c := range []struct {
 		genesis *Genesis
-		hash    common.Hash
+		want    common.Hash
 	}{
-		{
-			genesis: DefaultGenesisBlock(),
-			hash:    params.MainnetGenesisHash,
-		},
-		{
-			genesis: DefaultGoerliGenesisBlock(),
-			hash:    params.GoerliGenesisHash,
-		},
-		{
-			genesis: DefaultRopstenGenesisBlock(),
-			hash:    params.RopstenGenesisHash,
-		},
-		{
-			genesis: DefaultRinkebyGenesisBlock(),
-			hash:    params.RinkebyGenesisHash,
-		},
-		{
-			genesis: DefaultBaikalGenesisBlock(),
-			hash:    params.BaikalGenesisHash,
-		},
+		{DefaultGenesisBlock(), params.MainnetGenesisHash},
+		{DefaultGoerliGenesisBlock(), params.GoerliGenesisHash},
+		{DefaultRopstenGenesisBlock(), params.RopstenGenesisHash},
+		{DefaultRinkebyGenesisBlock(), params.RinkebyGenesisHash},
+		{DefaultSepoliaGenesisBlock(), params.SepoliaGenesisHash},
+	} {
+		// Test via MustCommit
+		if have := c.genesis.MustCommit(rawdb.NewMemoryDatabase()).Hash(); have != c.want {
+			t.Errorf("case: %d a), want: %s, got: %s", i, c.want.Hex(), have.Hex())
+		}
+		// Test via ToBlock
+		if have := c.genesis.ToBlock().Hash(); have != c.want {
+			t.Errorf("case: %d a), want: %s, got: %s", i, c.want.Hex(), have.Hex())
+		}
 	}
-	for i, c := range cases {
-		b := c.genesis.MustCommit(rawdb.NewMemoryDatabase())
-		if got := b.Hash(); got != c.hash {
-			t.Errorf("case: %d, want: %s, got: %s", i, c.hash.Hex(), got.Hex())
+}
+
+func TestGenesis_Commit(t *testing.T) {
+	genesis := &Genesis{
+		BaseFee: big.NewInt(params.InitialBaseFee),
+		Config:  params.TestChainConfig,
+		// difficulty is nil
+	}
+
+	db := rawdb.NewMemoryDatabase()
+	genesisBlock := genesis.MustCommit(db)
+	if genesis.Difficulty != nil {
+		t.Fatalf("assumption wrong")
+	}
+
+	// This value should have been set as default in the ToBlock method.
+	if genesisBlock.Difficulty().Cmp(params.GenesisDifficulty) != 0 {
+		t.Errorf("assumption wrong: want: %d, got: %v", params.GenesisDifficulty, genesisBlock.Difficulty())
+	}
+
+	// Expect the stored total difficulty to be the difficulty of the genesis block.
+	stored := rawdb.ReadTd(db, genesisBlock.Hash(), genesisBlock.NumberU64())
+
+	if stored.Cmp(genesisBlock.Difficulty()) != 0 {
+		t.Errorf("inequal difficulty; stored: %v, genesisBlock: %v", stored, genesisBlock.Difficulty())
+	}
+}
+
+func TestReadWriteGenesisAlloc(t *testing.T) {
+	var (
+		db    = rawdb.NewMemoryDatabase()
+		alloc = &GenesisAlloc{
+			{1}: {Balance: big.NewInt(1), Storage: map[common.Hash]common.Hash{{1}: {1}}},
+			{2}: {Balance: big.NewInt(2), Storage: map[common.Hash]common.Hash{{2}: {2}}},
+		}
+		hash, _ = alloc.deriveHash()
+	)
+	alloc.flush(db)
+
+	var reload GenesisAlloc
+	err := reload.UnmarshalJSON(rawdb.ReadGenesisStateSpec(db, hash))
+	if err != nil {
+		t.Fatalf("Failed to load genesis state %v", err)
+	}
+	if len(reload) != len(*alloc) {
+		t.Fatal("Unexpected genesis allocation")
+	}
+	for addr, account := range reload {
+		want, ok := (*alloc)[addr]
+		if !ok {
+			t.Fatal("Account is not found")
+		}
+		if !reflect.DeepEqual(want, account) {
+			t.Fatal("Unexpected account")
 		}
 	}
 }

@@ -1,18 +1,18 @@
-// Copyright 2014 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2014 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package types
 
@@ -23,11 +23,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/math"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/params"
+	"github.com/ethereum/go-tempereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -109,8 +109,8 @@ func TestEIP1559BlockEncoding(t *testing.T) {
 		Nonce:      0,
 		To:         &to,
 		Gas:        123457,
-		FeeCap:     new(big.Int).Set(block.BaseFee()),
-		Tip:        big.NewInt(0),
+		GasFeeCap:  new(big.Int).Set(block.BaseFee()),
+		GasTipCap:  big.NewInt(0),
 		AccessList: accesses,
 		Data:       []byte{},
 	}
@@ -280,4 +280,65 @@ func makeBenchBlock() *Block {
 		}
 	}
 	return NewBlock(header, txs, uncles, receipts, newHasher())
+}
+
+func TestRlpDecodeParentHash(t *testing.T) {
+	// A minimum one
+	want := common.HexToHash("0x112233445566778899001122334455667788990011223344556677889900aabb")
+	if rlpData, err := rlp.EncodeToBytes(&Header{ParentHash: want}); err != nil {
+		t.Fatal(err)
+	} else {
+		if have := HeaderParentHashFromRLP(rlpData); have != want {
+			t.Fatalf("have %x, want %x", have, want)
+		}
+	}
+	// And a maximum one
+	// | Difficulty  | dynamic| *big.Int       | 0x5ad3c2c71bbff854908 (current mainnet TD: 76 bits) |
+	// | Number      | dynamic| *big.Int       | 64 bits               |
+	// | Extra       | dynamic| []byte         | 65+32 byte (clique)   |
+	// | BaseFee     | dynamic| *big.Int       | 64 bits               |
+	mainnetTd := new(big.Int)
+	mainnetTd.SetString("5ad3c2c71bbff854908", 16)
+	if rlpData, err := rlp.EncodeToBytes(&Header{
+		ParentHash: want,
+		Difficulty: mainnetTd,
+		Number:     new(big.Int).SetUint64(math.MaxUint64),
+		Extra:      make([]byte, 65+32),
+		BaseFee:    new(big.Int).SetUint64(math.MaxUint64),
+	}); err != nil {
+		t.Fatal(err)
+	} else {
+		if have := HeaderParentHashFromRLP(rlpData); have != want {
+			t.Fatalf("have %x, want %x", have, want)
+		}
+	}
+	// Also test a very very large header.
+	{
+		// The rlp-encoding of the header belowCauses _total_ length of 65540,
+		// which is the first to blow the fast-path.
+		h := &Header{
+			ParentHash: want,
+			Extra:      make([]byte, 65041),
+		}
+		if rlpData, err := rlp.EncodeToBytes(h); err != nil {
+			t.Fatal(err)
+		} else {
+			if have := HeaderParentHashFromRLP(rlpData); have != want {
+				t.Fatalf("have %x, want %x", have, want)
+			}
+		}
+	}
+	{
+		// Test some invalid erroneous stuff
+		for i, rlpData := range [][]byte{
+			nil,
+			common.FromHex("0x"),
+			common.FromHex("0x01"),
+			common.FromHex("0x3031323334"),
+		} {
+			if have, want := HeaderParentHashFromRLP(rlpData), (common.Hash{}); have != want {
+				t.Fatalf("invalid %d: have %x, want %x", i, have, want)
+			}
+		}
+	}
 }

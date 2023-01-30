@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
+	"github.com/ethereum/go-tempereum/common"
 )
 
 func (g *G1) one() *PointG1 {

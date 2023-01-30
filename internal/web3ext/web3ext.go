@@ -30,6 +30,9 @@ var Modules = map[string]string{
 	"txpool":   TxpoolJs,
 	"les":      LESJs,
 	"vflux":    VfluxJs,
+
+	// Bor related apis
+	"bor": BorJs,
 }
 
 const CliqueJs = `

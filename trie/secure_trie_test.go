@@ -1,42 +1,43 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package trie
 
 import (
 	"bytes"
+	"fmt"
 	"runtime"
 	"sync"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/ethdb/memorydb"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/ethdb/memorydb"
 )
 
-func newEmptySecure() *SecureTrie {
-	trie, _ := NewSecure(common.Hash{}, NewDatabase(memorydb.New()))
+func newEmptySecure() *StateTrie {
+	trie, _ := NewStateTrie(common.Hash{}, common.Hash{}, NewDatabase(memorydb.New()))
 	return trie
 }
 
-// makeTestSecureTrie creates a large enough secure trie for testing.
-func makeTestSecureTrie() (*Database, *SecureTrie, map[string][]byte) {
+// makeTestStateTrie creates a large enough secure trie for testing.
+func makeTestStateTrie() (*Database, *StateTrie, map[string][]byte) {
 	// Create an empty trie
 	triedb := NewDatabase(memorydb.New())
-	trie, _ := NewSecure(common.Hash{}, triedb)
+	trie, _ := NewStateTrie(common.Hash{}, common.Hash{}, triedb)
 
 	// Fill it with some arbitrary data
 	content := make(map[string][]byte)
@@ -57,9 +58,15 @@ func makeTestSecureTrie() (*Database, *SecureTrie, map[string][]byte) {
 			trie.Update(key, val)
 		}
 	}
-	trie.Commit(nil)
-
-	// Return the generated trie
+	root, nodes, err := trie.Commit(false)
+	if err != nil {
+		panic(fmt.Errorf("failed to commit trie %v", err))
+	}
+	if err := triedb.Update(NewWithNodeSet(nodes)); err != nil {
+		panic(fmt.Errorf("failed to commit db %v", err))
+	}
+	// Re-create the trie based on the new state
+	trie, _ = NewSecure(common.Hash{}, root, triedb)
 	return triedb, trie, content
 }
 
@@ -105,17 +112,16 @@ func TestSecureGetKey(t *testing.T) {
 	}
 }
 
-func TestSecureTrieConcurrency(t *testing.T) {
+func TestStateTrieConcurrency(t *testing.T) {
 	// Create an initial trie and copy if for concurrent access
-	_, trie, _ := makeTestSecureTrie()
+	_, trie, _ := makeTestStateTrie()
 
 	threads := runtime.NumCPU()
-	tries := make([]*SecureTrie, threads)
+	tries := make([]*StateTrie, threads)
 	for i := 0; i < threads; i++ {
-		cpy := *trie
-		tries[i] = &cpy
+		tries[i] = trie.Copy()
 	}
-	// Start a batch of goroutines interactng with the trie
+	// Start a batch of goroutines interacting with the trie
 	pend := new(sync.WaitGroup)
 	pend.Add(threads)
 	for i := 0; i < threads; i++ {
@@ -136,7 +142,7 @@ func TestSecureTrieConcurrency(t *testing.T) {
 					tries[index].Update(key, val)
 				}
 			}
-			tries[index].Commit(nil)
+			tries[index].Commit(false)
 		}(i)
 	}
 	// Wait for all threads to finish

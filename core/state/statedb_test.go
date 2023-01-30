@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package state
 
@@ -29,9 +29,9 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 // Tests that updating a state trie does not leak any database writes prior to
@@ -126,7 +126,7 @@ func TestIntermediateLeaks(t *testing.T) {
 			t.Errorf("entry missing from the transition database: %x -> %x", key, fvalue)
 		}
 		if !bytes.Equal(fvalue, tvalue) {
-			t.Errorf("the value associate key %x is mismatch,: %x in transition database ,%x in final database", key, tvalue, fvalue)
+			t.Errorf("value mismatch at key %x: %x in transition database, %x in final database", key, tvalue, fvalue)
 		}
 	}
 	it.Release()
@@ -139,14 +139,14 @@ func TestIntermediateLeaks(t *testing.T) {
 			t.Errorf("extra entry in the transition database: %x -> %x", key, it.Value())
 		}
 		if !bytes.Equal(fvalue, tvalue) {
-			t.Errorf("the value associate key %x is mismatch,: %x in transition database ,%x in final database", key, tvalue, fvalue)
+			t.Errorf("value mismatch at key %x: %x in transition database, %x in final database", key, tvalue, fvalue)
 		}
 	}
 }
 
 // TestCopy tests that copying a StateDB object indeed makes the original and
 // the copy independent of each other. This test is a regression test against
-// https://github.com/ethereum/go-ctereum/pull/15549.
+// https://github.com/ethereum/go-tempereum/pull/15549.
 func TestCopy(t *testing.T) {
 	// Create a random state test to copy and modify "independently"
 	orig, _ := New(common.Hash{}, NewDatabase(rawdb.NewMemoryDatabase()), nil)
@@ -463,9 +463,9 @@ func (test *snapshotTest) checkEqual(state, checkstate *StateDB) error {
 		return fmt.Errorf("got GetRefund() == %d, want GetRefund() == %d",
 			state.GetRefund(), checkstate.GetRefund())
 	}
-	if !reflect.DeepEqual(state.GetLogs(common.Hash{}), checkstate.GetLogs(common.Hash{})) {
+	if !reflect.DeepEqual(state.GetLogs(common.Hash{}, common.Hash{}), checkstate.GetLogs(common.Hash{}, common.Hash{})) {
 		return fmt.Errorf("got GetLogs(common.Hash{}) == %v, want GetLogs(common.Hash{}) == %v",
-			state.GetLogs(common.Hash{}), checkstate.GetLogs(common.Hash{}))
+			state.GetLogs(common.Hash{}, common.Hash{}), checkstate.GetLogs(common.Hash{}, common.Hash{}))
 	}
 	return nil
 }
@@ -489,7 +489,7 @@ func TestTouchDelete(t *testing.T) {
 }
 
 // TestCopyOfCopy tests that modified objects are carried over to the copy, and the copy of the copy.
-// See https://github.com/ethereum/go-ctereum/pull/15225#issuecomment-380191512
+// See https://github.com/ethereum/go-tempereum/pull/15225#issuecomment-380191512
 func TestCopyOfCopy(t *testing.T) {
 	state, _ := New(common.Hash{}, NewDatabase(rawdb.NewMemoryDatabase()), nil)
 	addr := common.HexToAddress("aaaa")
@@ -506,7 +506,7 @@ func TestCopyOfCopy(t *testing.T) {
 // Tests a regression where committing a copy lost some internal meta information,
 // leading to corrupted subsequent copies.
 //
-// See https://github.com/ethereum/go-ctereum/issues/20106.
+// See https://github.com/ethereum/go-tempereum/issues/20106.
 func TestCopyCommitCopy(t *testing.T) {
 	state, _ := New(common.Hash{}, NewDatabase(rawdb.NewMemoryDatabase()), nil)
 
@@ -578,7 +578,7 @@ func TestCopyCommitCopy(t *testing.T) {
 // Tests a regression where committing a copy lost some internal meta information,
 // leading to corrupted subsequent copies.
 //
-// See https://github.com/ethereum/go-ctereum/issues/20106.
+// See https://github.com/ethereum/go-tempereum/issues/20106.
 func TestCopyCopyCommitCopy(t *testing.T) {
 	state, _ := New(common.Hash{}, NewDatabase(rawdb.NewMemoryDatabase()), nil)
 
@@ -699,7 +699,6 @@ func TestDeleteCreateRevert(t *testing.T) {
 // the Commit operation fails with an error
 // If we are missing trie nodes, we should not continue writing to the trie
 func TestMissingTrieNodes(t *testing.T) {
-
 	// Create an initial state with a few accounts
 	memDb := rawdb.NewMemoryDatabase()
 	db := NewDatabase(memDb)
@@ -772,7 +771,7 @@ func TestStateDBAccessList(t *testing.T) {
 				t.Fatalf("expected %x to be in access list", address)
 			}
 		}
-		// Check that only the expected addresses are present in the acesslist
+		// Check that only the expected addresses are present in the access list
 		for address := range state.accessList.addresses {
 			if _, exist := addressMap[address]; !exist {
 				t.Fatalf("extra address %x in access list", address)
@@ -913,5 +912,45 @@ func TestStateDBAccessList(t *testing.T) {
 	}
 	if got, exp := len(state.accessList.slots), 1; got != exp {
 		t.Fatalf("expected empty, got %d", got)
+	}
+}
+
+// Tests that account and storage tries are flushed in the correct order and that
+// no data loss occurs.
+func TestFlushOrderDataLoss(t *testing.T) {
+	// Create a state trie with many accounts and slots
+	var (
+		memdb    = rawdb.NewMemoryDatabase()
+		statedb  = NewDatabase(memdb)
+		state, _ = New(common.Hash{}, statedb, nil)
+	)
+	for a := byte(0); a < 10; a++ {
+		state.CreateAccount(common.Address{a})
+		for s := byte(0); s < 10; s++ {
+			state.SetState(common.Address{a}, common.Hash{a, s}, common.Hash{a, s})
+		}
+	}
+	root, err := state.Commit(false)
+	if err != nil {
+		t.Fatalf("failed to commit state trie: %v", err)
+	}
+	statedb.TrieDB().Reference(root, common.Hash{})
+	if err := statedb.TrieDB().Cap(1024); err != nil {
+		t.Fatalf("failed to cap trie dirty cache: %v", err)
+	}
+	if err := statedb.TrieDB().Commit(root, false, nil); err != nil {
+		t.Fatalf("failed to commit state trie: %v", err)
+	}
+	// Reopen the state trie from flushed disk and verify it
+	state, err = New(root, NewDatabase(memdb), nil)
+	if err != nil {
+		t.Fatalf("failed to reopen state trie: %v", err)
+	}
+	for a := byte(0); a < 10; a++ {
+		for s := byte(0); s < 10; s++ {
+			if have := state.GetState(common.Address{a}, common.Hash{a, s}); have != (common.Hash{a, s}) {
+				t.Errorf("account %d: slot %d: state mismatch: have %x, want %x", a, s, have, common.Hash{a, s})
+			}
+		}
 	}
 }

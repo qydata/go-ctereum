@@ -1,25 +1,25 @@
-// Copyright 2015 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2015 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package rlp
 
 import (
 	"bytes"
+	"errors"
 	"io"
-	"reflect"
 	"testing"
 	"testing/quick"
 )
@@ -54,7 +54,7 @@ func TestCountValues(t *testing.T) {
 		if count != test.count {
 			t.Errorf("test %d: count mismatch, got %d want %d\ninput: %s", i, count, test.count, test.input)
 		}
-		if !reflect.DeepEqual(err, test.err) {
+		if !errors.Is(err, test.err) {
 			t.Errorf("test %d: err mismatch, got %q want %q\ninput: %s", i, err, test.err, test.input)
 		}
 	}
@@ -262,6 +262,12 @@ func TestAppendUint64(t *testing.T) {
 		x := AppendUint64(test.slice, test.input)
 		if !bytes.Equal(x, unhex(test.output)) {
 			t.Errorf("AppendUint64(%v, %d): got %x, want %s", test.slice, test.input, x, test.output)
+		}
+
+		// Check that IntSize returns the appended size.
+		length := len(x) - len(test.slice)
+		if s := IntSize(test.input); s != length {
+			t.Errorf("IntSize(%d): got %d, want %d", test.input, s, length)
 		}
 	}
 }

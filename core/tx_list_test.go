@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package core
 
@@ -21,8 +21,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/crypto"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/crypto"
 )
 
 // Tests that transactions can be added to strict lists and list contents and
@@ -51,7 +51,7 @@ func TestStrictTxListAdd(t *testing.T) {
 	}
 }
 
-func BenchmarkTxListAdd(t *testing.B) {
+func BenchmarkTxListAdd(b *testing.B) {
 	// Generate a list of transactions to insert
 	key, _ := crypto.GenerateKey()
 
@@ -60,11 +60,13 @@ func BenchmarkTxListAdd(t *testing.B) {
 		txs[i] = transaction(uint64(i), 0, key)
 	}
 	// Insert the transactions in a random order
-	list := newTxList(true)
 	priceLimit := big.NewInt(int64(DefaultTxPoolConfig.PriceLimit))
-	t.ResetTimer()
-	for _, v := range rand.Perm(len(txs)) {
-		list.Add(txs[v], DefaultTxPoolConfig.PriceBump)
-		list.Filter(priceLimit, DefaultTxPoolConfig.PriceBump)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		list := newTxList(true)
+		for _, v := range rand.Perm(len(txs)) {
+			list.Add(txs[v], DefaultTxPoolConfig.PriceBump)
+			list.Filter(priceLimit, DefaultTxPoolConfig.PriceBump)
+		}
 	}
 }

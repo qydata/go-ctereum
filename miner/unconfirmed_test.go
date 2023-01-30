@@ -1,25 +1,25 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package miner
 
 import (
 	"testing"
 
-	"github.com/ethereum/go-ctereum/core/types"
+	"github.com/ethereum/go-tempereum/core/types"
 )
 
 // noopChainRetriever is an implementation of headerRetriever that always
@@ -74,7 +74,7 @@ func TestUnconfirmedShifts(t *testing.T) {
 	if n := pool.blocks.Len(); n != int(limit)/2 {
 		t.Errorf("unconfirmed count mismatch: have %d, want %d", n, limit/2)
 	}
-	// Try to shift all the remaining blocks out and verify emptyness
+	// Try to shift all the remaining blocks out and verify emptiness
 	pool.Shift(start + 2*uint64(limit))
 	if n := pool.blocks.Len(); n != 0 {
 		t.Errorf("unconfirmed count mismatch: have %d, want %d", n, 0)

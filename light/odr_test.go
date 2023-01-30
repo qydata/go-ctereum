@@ -1,18 +1,18 @@
-// Copyright 2016 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2016 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package light
 
@@ -24,25 +24,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/common/math"
-	"github.com/ethereum/go-ctereum/consensus/ethash"
-	"github.com/ethereum/go-ctereum/core"
-	"github.com/ethereum/go-ctereum/core/rawdb"
-	"github.com/ethereum/go-ctereum/core/state"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/core/vm"
-	"github.com/ethereum/go-ctereum/crypto"
-	"github.com/ethereum/go-ctereum/ethdb"
-	"github.com/ethereum/go-ctereum/params"
-	"github.com/ethereum/go-ctereum/rlp"
-	"github.com/ethereum/go-ctereum/trie"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/common/math"
+	"github.com/ethereum/go-tempereum/consensus/ethash"
+	"github.com/ethereum/go-tempereum/core"
+	"github.com/ethereum/go-tempereum/core/rawdb"
+	"github.com/ethereum/go-tempereum/core/state"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/core/vm"
+	"github.com/ethereum/go-tempereum/crypto"
+	"github.com/ethereum/go-tempereum/ethdb"
+	"github.com/ethereum/go-tempereum/params"
+	"github.com/ethereum/go-tempereum/rlp"
+	"github.com/ethereum/go-tempereum/trie"
 )
 
 var (
 	testBankKey, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 	testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
-	testBankFunds   = big.NewInt(100000000)
+	testBankFunds   = big.NewInt(1_000_000_000_000_000_000)
 
 	acc1Key, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
 	acc2Key, _ = crypto.HexToECDSA("49a7b37aa6f6645917e7b807e9d1c00d4fa71f18343b0d4122a4d2df64dd6fee")
@@ -82,7 +82,7 @@ func (odr *testOdr) Retrieve(ctx context.Context, req OdrRequest) error {
 			req.Receipts = rawdb.ReadRawReceipts(odr.sdb, req.Hash, *number)
 		}
 	case *TrieRequest:
-		t, _ := trie.New(req.Id.Root, trie.NewDatabase(odr.sdb))
+		t, _ := trie.New(common.BytesToHash(req.Id.AccKey), req.Id.Root, trie.NewDatabase(odr.sdb))
 		nodes := NewNodeSet()
 		t.Prove(req.Key, 0, nodes)
 		req.Proof = nodes
@@ -194,10 +194,10 @@ func odrContractCall(ctx context.Context, db ethdb.Database, bc *core.BlockChain
 
 		// Perform read-only call.
 		st.SetBalance(testBankAddress, math.MaxBig256)
-		msg := callmsg{types.NewMessage(testBankAddress, &testContractAddr, 0, new(big.Int), 1000000, new(big.Int), nil, nil, data, nil, false)}
+		msg := callmsg{types.NewMessage(testBankAddress, &testContractAddr, 0, new(big.Int), 1000000, big.NewInt(params.InitialBaseFee), big.NewInt(params.InitialBaseFee), new(big.Int), data, nil, true)}
 		txContext := core.NewEVMTxContext(msg)
 		context := core.NewEVMBlockContext(header, chain, nil)
-		vmenv := vm.NewEVM(context, txContext, st, config, vm.Config{})
+		vmenv := vm.NewEVM(context, txContext, st, config, vm.Config{NoBaseFee: true})
 		gp := new(core.GasPool).AddGas(math.MaxUint64)
 		result, _ := core.ApplyMessage(vmenv, msg, gp)
 		res = append(res, result.Return()...)
@@ -213,17 +213,17 @@ func testChainGen(i int, block *core.BlockGen) {
 	switch i {
 	case 0:
 		// In block 1, the test bank sends account #1 some ether.
-		tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), acc1Addr, big.NewInt(10000), params.TxGas, nil, nil), signer, testBankKey)
+		tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), acc1Addr, big.NewInt(10_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, testBankKey)
 		block.AddTx(tx)
 	case 1:
 		// In block 2, the test bank sends some more ether to account #1.
 		// acc1Addr passes it on to account #2.
 		// acc1Addr creates a test contract.
-		tx1, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), acc1Addr, big.NewInt(1000), params.TxGas, nil, nil), signer, testBankKey)
+		tx1, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), acc1Addr, big.NewInt(1_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, testBankKey)
 		nonce := block.TxNonce(acc1Addr)
-		tx2, _ := types.SignTx(types.NewTransaction(nonce, acc2Addr, big.NewInt(1000), params.TxGas, nil, nil), signer, acc1Key)
+		tx2, _ := types.SignTx(types.NewTransaction(nonce, acc2Addr, big.NewInt(1_000_000_000_000_000), params.TxGas, block.BaseFee(), nil), signer, acc1Key)
 		nonce++
-		tx3, _ := types.SignTx(types.NewContractCreation(nonce, big.NewInt(0), 1000000, big.NewInt(0), testContractCode), signer, acc1Key)
+		tx3, _ := types.SignTx(types.NewContractCreation(nonce, big.NewInt(0), 1000000, block.BaseFee(), testContractCode), signer, acc1Key)
 		testContractAddr = crypto.CreateAddress(acc1Addr, nonce)
 		block.AddTx(tx1)
 		block.AddTx(tx2)
@@ -233,7 +233,7 @@ func testChainGen(i int, block *core.BlockGen) {
 		block.SetCoinbase(acc2Addr)
 		block.SetExtra([]byte("yeehaw"))
 		data := common.Hex2Bytes("C16431B900000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001")
-		tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), testContractAddr, big.NewInt(0), 100000, nil, data), signer, testBankKey)
+		tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), testContractAddr, big.NewInt(0), 100000, block.BaseFee(), data), signer, testBankKey)
 		block.AddTx(tx)
 	case 3:
 		// Block 4 includes blocks 2 and 3 as uncle headers (with modified extra data).
@@ -244,16 +244,19 @@ func testChainGen(i int, block *core.BlockGen) {
 		b3.Extra = []byte("foo")
 		block.AddUncle(b3)
 		data := common.Hex2Bytes("C16431B900000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002")
-		tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), testContractAddr, big.NewInt(0), 100000, nil, data), signer, testBankKey)
+		tx, _ := types.SignTx(types.NewTransaction(block.TxNonce(testBankAddress), testContractAddr, big.NewInt(0), 100000, block.BaseFee(), data), signer, testBankKey)
 		block.AddTx(tx)
 	}
 }
 
 func testChainOdr(t *testing.T, protocol int, fn odrTestFn) {
 	var (
-		sdb     = rawdb.NewMemoryDatabase()
-		ldb     = rawdb.NewMemoryDatabase()
-		gspec   = core.Genesis{Alloc: core.GenesisAlloc{testBankAddress: {Balance: testBankFunds}}}
+		sdb   = rawdb.NewMemoryDatabase()
+		ldb   = rawdb.NewMemoryDatabase()
+		gspec = core.Genesis{
+			Alloc:   core.GenesisAlloc{testBankAddress: {Balance: testBankFunds}},
+			BaseFee: big.NewInt(params.InitialBaseFee),
+		}
 		genesis = gspec.MustCommit(sdb)
 	)
 	gspec.MustCommit(ldb)

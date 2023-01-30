@@ -1,18 +1,18 @@
-// Copyright 2021 The go-ctereum Authors
-// This file is part of the go-ctereum library.
+// Copyright 2021 The go-tempereum Authors
+// This file is part of the go-tempereum library.
 //
-// The go-ctereum library is free software: you can redistribute it and/or modify
+// The go-tempereum library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// The go-ctereum library is distributed in the hope that it will be useful,
+// The go-tempereum library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
+// along with the go-tempereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package misc
 
@@ -20,34 +20,33 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ctereum/common"
-	"github.com/ethereum/go-ctereum/core/types"
-	"github.com/ethereum/go-ctereum/params"
+	"github.com/ethereum/go-tempereum/common"
+	"github.com/ethereum/go-tempereum/core/types"
+	"github.com/ethereum/go-tempereum/params"
 )
 
 // copyConfig does a _shallow_ copy of a given config. Safe to set new values, but
 // do not use e.g. SetInt() on the numbers. For testing only
 func copyConfig(original *params.ChainConfig) *params.ChainConfig {
 	return &params.ChainConfig{
-		ChainID:             original.ChainID,
-		HomesteadBlock:      original.HomesteadBlock,
-		DAOForkBlock:        original.DAOForkBlock,
-		DAOForkSupport:      original.DAOForkSupport,
-		EIP150Block:         original.EIP150Block,
-		EIP150Hash:          original.EIP150Hash,
-		EIP155Block:         original.EIP155Block,
-		EIP158Block:         original.EIP158Block,
-		ByzantiumBlock:      original.ByzantiumBlock,
-		ConstantinopleBlock: original.ConstantinopleBlock,
-		PetersburgBlock:     original.PetersburgBlock,
-		IstanbulBlock:       original.IstanbulBlock,
-		MuirGlacierBlock:    original.MuirGlacierBlock,
-		BerlinBlock:         original.BerlinBlock,
-		LondonBlock:         original.LondonBlock,
-		EWASMBlock:          original.EWASMBlock,
-		CatalystBlock:       original.CatalystBlock,
-		Ethash:              original.Ethash,
-		Clique:              original.Clique,
+		ChainID:                 original.ChainID,
+		HomesteadBlock:          original.HomesteadBlock,
+		DAOForkBlock:            original.DAOForkBlock,
+		DAOForkSupport:          original.DAOForkSupport,
+		EIP150Block:             original.EIP150Block,
+		EIP150Hash:              original.EIP150Hash,
+		EIP155Block:             original.EIP155Block,
+		EIP158Block:             original.EIP158Block,
+		ByzantiumBlock:          original.ByzantiumBlock,
+		ConstantinopleBlock:     original.ConstantinopleBlock,
+		PetersburgBlock:         original.PetersburgBlock,
+		IstanbulBlock:           original.IstanbulBlock,
+		MuirGlacierBlock:        original.MuirGlacierBlock,
+		BerlinBlock:             original.BerlinBlock,
+		LondonBlock:             original.LondonBlock,
+		TerminalTotalDifficulty: original.TerminalTotalDifficulty,
+		Ethash:                  original.Ethash,
+		Clique:                  original.Clique,
 	}
 }
 
