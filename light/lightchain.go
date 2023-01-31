@@ -21,6 +21,7 @@ package light
 import (
 	"context"
 	"errors"
+	ethereum "github.com/qydata/go-ctereum"
 	"math/big"
 	"sync"
 	"sync/atomic"
@@ -81,7 +82,7 @@ type LightChain struct {
 // NewLightChain returns a fully initialised light chain using information
 // available in the database. It initialises the default Ethereum header
 // validator.
-func NewLightChain(odr OdrBackend, config *params.ChainConfig, engine consensus.Engine, checkpoint *params.TrustedCheckpoint) (*LightChain, error) {
+func NewLightChain(odr OdrBackend, config *params.ChainConfig, engine consensus.Engine, checkpoint *params.TrustedCheckpoint, checker ethereum.ChainValidator) (*LightChain, error) {
 	bodyCache, _ := lru.New(bodyCacheLimit)
 	bodyRLPCache, _ := lru.New(bodyCacheLimit)
 	blockCache, _ := lru.New(blockCacheLimit)
@@ -96,7 +97,7 @@ func NewLightChain(odr OdrBackend, config *params.ChainConfig, engine consensus.
 		blockCache:    blockCache,
 		engine:        engine,
 	}
-	bc.forker = core.NewForkChoice(bc, nil)
+	bc.forker = core.NewForkChoice(bc, nil, checker)
 	var err error
 	bc.hc, err = core.NewHeaderChain(odr.Database(), config, bc.engine, bc.getProcInterrupt)
 	if err != nil {

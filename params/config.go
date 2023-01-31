@@ -305,6 +305,43 @@ var (
 		Threshold: 2,
 	}
 
+	BorUnittestChainConfig = &ChainConfig{
+		ChainID:             big.NewInt(80001),
+		HomesteadBlock:      big.NewInt(0),
+		DAOForkBlock:        nil,
+		DAOForkSupport:      true,
+		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		EIP150Block:         big.NewInt(0),
+		EIP155Block:         big.NewInt(0),
+		EIP158Block:         big.NewInt(0),
+		ByzantiumBlock:      big.NewInt(0),
+		ConstantinopleBlock: big.NewInt(0),
+		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(0),
+		MuirGlacierBlock:    big.NewInt(0),
+		BerlinBlock:         big.NewInt(0),
+		LondonBlock:         big.NewInt(0),
+		Bor: &BorConfig{
+			Period: map[string]uint64{
+				"0": 1,
+			},
+			ProducerDelay: map[string]uint64{
+				"0": 3,
+			},
+			Sprint: map[string]uint64{
+				"0": 32,
+			},
+			BackupMultiplier: map[string]uint64{
+				"0": 2,
+			},
+			ValidatorContract:     "0x0000000000000000000000000000000000001000",
+			StateReceiverContract: "0x0000000000000000000000000000000000001001",
+			BurntContract: map[string]string{
+				"0": "0x00000000000000000000000000000000000000000",
+			},
+		},
+	}
+
 	BorMainnetChainConfig = &ChainConfig{
 		ChainID:             big.NewInt(137),
 		HomesteadBlock:      big.NewInt(0),

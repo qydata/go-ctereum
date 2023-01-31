@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"github.com/qydata/go-ctereum/common/tracing"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"math/big"
 	"sync"
 	"sync/atomic"
@@ -721,33 +723,79 @@ func (w *worker) resultLoop() {
 				continue
 			}
 			// Different block could share same sealhash, deep copy here to prevent write-write conflict.
+			//var (
+			//	receipts = make([]*types.Receipt, len(task.receipts))
+			//	logs     []*types.Log
+			//)
+			//for i, taskReceipt := range task.receipts {
+			//	receipt := new(types.Receipt)
+			//	receipts[i] = receipt
+			//	*receipt = *taskReceipt
+			//
+			//	// add block location fields
+			//	receipt.BlockHash = hash
+			//	receipt.BlockNumber = block.Number()
+			//	receipt.TransactionIndex = uint(i)
+			//
+			//	// Update the block hash in all logs since it is now available and not when the
+			//	// receipt/log of individual transactions were created.
+			//	receipt.Logs = make([]*types.Log, len(taskReceipt.Logs))
+			//	for i, taskLog := range taskReceipt.Logs {
+			//		log := new(types.Log)
+			//		receipt.Logs[i] = log
+			//		*log = *taskLog
+			//		log.BlockHash = hash
+			//	}
+			//	logs = append(logs, receipt.Logs...)
+			//}
+
 			var (
 				receipts = make([]*types.Receipt, len(task.receipts))
 				logs     []*types.Log
+				err      error
 			)
-			for i, taskReceipt := range task.receipts {
-				receipt := new(types.Receipt)
-				receipts[i] = receipt
-				*receipt = *taskReceipt
 
-				// add block location fields
-				receipt.BlockHash = hash
-				receipt.BlockNumber = block.Number()
-				receipt.TransactionIndex = uint(i)
+			tracing.Exec(task.ctx, "", "resultLoop", func(ctx context.Context, span trace.Span) {
+				for i, taskReceipt := range task.receipts {
+					receipt := new(types.Receipt)
+					receipts[i] = receipt
+					*receipt = *taskReceipt
 
-				// Update the block hash in all logs since it is now available and not when the
-				// receipt/log of individual transactions were created.
-				receipt.Logs = make([]*types.Log, len(taskReceipt.Logs))
-				for i, taskLog := range taskReceipt.Logs {
-					log := new(types.Log)
-					receipt.Logs[i] = log
-					*log = *taskLog
-					log.BlockHash = hash
+					// add block location fields
+					receipt.BlockHash = hash
+					receipt.BlockNumber = block.Number()
+					receipt.TransactionIndex = uint(i)
+
+					// Update the block hash in all logs since it is now available and not when the
+					// receipt/log of individual transactions were created.
+					receipt.Logs = make([]*types.Log, len(taskReceipt.Logs))
+					for i, taskLog := range taskReceipt.Logs {
+						log := new(types.Log)
+						receipt.Logs[i] = log
+						*log = *taskLog
+						log.BlockHash = hash
+					}
+					logs = append(logs, receipt.Logs...)
 				}
-				logs = append(logs, receipt.Logs...)
-			}
+
+				// Commit block and state to database.
+				tracing.ElapsedTime(ctx, span, "WriteBlockAndSetHead time taken", func(_ context.Context, _ trace.Span) {
+					_, err = w.chain.WriteBlockAndSetHead(block, receipts, logs, task.state, true)
+				})
+
+				tracing.SetAttributes(
+					span,
+					attribute.String("hash", hash.String()),
+					attribute.Int("number", int(block.Number().Uint64())),
+					attribute.Int("txns", block.Transactions().Len()),
+					attribute.Int("gas used", int(block.GasUsed())),
+					attribute.Int("elapsed", int(time.Since(task.createdAt).Milliseconds())),
+					attribute.Bool("error", err != nil),
+				)
+			})
+
 			// Commit block and state to database.
-			_, err := w.chain.WriteBlockAndSetHead(block, receipts, logs, task.state, true)
+			//_, err := w.chain.WriteBlockAndSetHead(block, receipts, logs, task.state, true)
 			if err != nil {
 				log.Error("Failed writing block to chain", "err", err)
 				continue
@@ -1165,7 +1213,7 @@ func (w *worker) commit(ctx context.Context, env *environment, interval func(), 
 		// If we're post merge, just ignore
 		if !w.isTTDReached(block.Header()) {
 			select {
-			case w.taskCh <- &task{receipts: env.receipts, state: env.state, block: block, createdAt: time.Now()}:
+			case w.taskCh <- &task{ctx: ctx, receipts: env.receipts, state: env.state, block: block, createdAt: time.Now()}:
 				w.unconfirmed.Shift(block.NumberU64() - 1)
 				log.Info("Commit new sealing work", "number", block.Number(), "sealhash", w.engine.SealHash(block.Header()),
 					"uncles", len(env.uncles), "txs", env.tcount,
