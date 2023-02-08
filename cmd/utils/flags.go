@@ -446,6 +446,10 @@ var (
 	}
 
 	// Performance tuning settings
+	BorLogsFlag = cli.BoolFlag{
+		Name:  "bor.logs",
+		Usage: "Enable bor logs retrieval",
+	}
 	CacheFlag = &cli.IntFlag{
 		Name:     "cache",
 		Usage:    "Megabytes of memory allocated to internal caching (default = 4096 mainnet full node, 128 light mode)",
@@ -1764,6 +1768,10 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	setRequiredBlocks(ctx, cfg)
 	setLes(ctx, cfg)
 
+	if ctx.IsSet(BorLogsFlag.Name) {
+		cfg.BorLogs = ctx.Bool(BorLogsFlag.Name)
+	}
+
 	// Cap the cache allowance and tune the garbage collector
 	mem, err := gopsutil.VirtualMemory()
 	if err == nil {
@@ -1919,7 +1927,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		SetDNSDiscoveryDefaults(cfg, params.GoerliGenesisHash)
 	case ctx.Bool(BorMainnetFlag.Name):
 		if !ctx.IsSet(BorMainnetFlag.Name) {
-			cfg.NetworkId = 137
+			cfg.NetworkId = 138
 		}
 		cfg.Genesis = core.DefaultBorMainnetGenesisBlock()
 	case ctx.Bool(KilnFlag.Name):

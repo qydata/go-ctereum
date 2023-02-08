@@ -190,7 +190,7 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 		if config.EthereumGenesis == BorMainnetGenesis() {
 			genesis.Config = params.BorMainnetChainConfig
 			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 137
+				config.EthereumNetworkID = 138
 			}
 		}
 	}

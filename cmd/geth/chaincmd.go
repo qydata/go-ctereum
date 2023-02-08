@@ -92,6 +92,13 @@ The dumpgenesis command dumps the genesis block configuration in JSON format to 
 			utils.MetricsInfluxDBBucketFlag,
 			utils.MetricsInfluxDBOrganizationFlag,
 			utils.TxLookupLimitFlag,
+
+			// bor related flags
+			utils.HeimdallURLFlag,
+			utils.WithoutHeimdallFlag,
+			utils.HeimdallgRPCAddressFlag,
+			utils.RunHeimdallFlag,
+			utils.RunHeimdallArgsFlag,
 		}, utils.DatabasePathFlags),
 		Description: `
 The import command imports blocks from an RLP-encoded form. The form can be one file

@@ -198,3 +198,47 @@ func (c *ChainSpanner) CommitSpan(ctx context.Context, heimdallSpan HeimdallSpan
 
 	return err
 }
+
+const method1 = "commitAccum"
+
+func (c *ChainSpanner) CommitAccum(ctx context.Context, heimdallSpan HeimdallSpan, state *state.StateDB, header *types.Header, chainContext core.ChainContext) error {
+
+	// get producers bytes
+	accums := make([]*big.Int, 0, len(heimdallSpan.ValidatorSet.Validators))
+	addresss := make([]common.Address, 0, len(heimdallSpan.ValidatorSet.Validators))
+	for _, val := range heimdallSpan.ValidatorSet.Validators {
+		//accums = append(accums, uintptr(val.ProposerPriority))
+		amount := &big.Int{}
+		amount.SetInt64(val.ProposerPriority)
+		amount.Add(amount, big.NewInt(1000000000000000000))
+		accums = append(accums, amount)
+	}
+	for _, val := range heimdallSpan.ValidatorSet.Validators {
+		addresss = append(addresss, val.Address)
+	}
+
+	log.Info("✅ Committing new accum",
+		"id", heimdallSpan.ID,
+		"Validators", heimdallSpan.ValidatorSet.Validators,
+		"accums", accums,
+		"addresss", addresss,
+	)
+
+	data, err := c.validatorSet.Pack(method1,
+		accums,
+		addresss,
+	)
+	if err != nil {
+		log.Error("Unable to pack tx for CommitAccum", "error", err)
+
+		return err
+	}
+
+	// get system message
+	msg := statefull.GetSystemMessage(c.validatorContractAddress, data)
+
+	// apply message
+	_, err = statefull.ApplyMessage(ctx, msg, state, header, c.chainConfig, chainContext)
+
+	return err
+}

@@ -579,12 +579,10 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 	}
 	rewardAddress := snap.Recents[number-1]
 	log.Info("区块奖励签名地址打印:", rewardAddress.Hex())
-	if 1 != number {
-		if chain.Config().IsImplAuth(header.Number) {
-			// No do something...
-		} else {
-			state.AddBalance(rewardAddress, reward)
-		}
+	if chain.Config().IsImplAuth(header.Number) {
+		// No do something...
+	} else {
+		state.AddBalance(rewardAddress, reward)
 	}
 
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
@@ -718,6 +716,7 @@ func (c *Clique) Close() error {
 // APIs implements consensus.Engine, returning the user facing RPC API to allow
 // controlling the signer voting.
 func (c *Clique) APIs(chain consensus.ChainHeaderReader) []rpc.API {
+
 	return []rpc.API{{
 		Namespace: "clique",
 		Service:   &API{chain: chain, clique: c},

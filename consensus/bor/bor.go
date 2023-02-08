@@ -1054,31 +1054,31 @@ func (c *Bor) checkAndCommitSpan(
 ) error {
 	headerNumber := header.Number.Uint64()
 
-	span, err := c.spanner.GetCurrentSpan(ctx, header.ParentHash)
-	if err != nil {
-		return err
-	}
+	//span, err := c.spanner.GetCurrentSpan(ctx, header.ParentHash)
+	//if err != nil {
+	//	return err
+	//}
 
-	if c.needToCommitSpan(span, headerNumber) {
-		return c.FetchAndCommitSpan(ctx, span.ID+1, state, header, chain)
+	if c.needToCommitSpan(headerNumber) {
+		return c.FetchAndCommitSpan(ctx, state, header, chain)
 	}
 
 	return nil
 }
 
-func (c *Bor) needToCommitSpan(currentSpan *span.Span, headerNumber uint64) bool {
+func (c *Bor) needToCommitSpan(headerNumber uint64) bool {
 	// if span is nil
-	if currentSpan == nil {
-		return false
-	}
-
-	// check span is not set initially
-	if currentSpan.EndBlock == 0 {
-		return true
-	}
+	//if currentSpan == nil {
+	//	return false
+	//}
+	//
+	//// check span is not set initially
+	//if currentSpan.EndBlock == 0 {
+	//	return true
+	//}
 
 	// if current block is first block of last sprint in current span
-	if currentSpan.EndBlock > c.config.CalculateSprint(headerNumber) && currentSpan.EndBlock-c.config.CalculateSprint(headerNumber)+1 == headerNumber {
+	if headerNumber%c.config.CalculateSprint(headerNumber) == 0 {
 		return true
 	}
 
@@ -1087,40 +1087,40 @@ func (c *Bor) needToCommitSpan(currentSpan *span.Span, headerNumber uint64) bool
 
 func (c *Bor) FetchAndCommitSpan(
 	ctx context.Context,
-	newSpanID uint64,
 	state *state.StateDB,
 	header *types.Header,
 	chain core.ChainContext,
 ) error {
 	var heimdallSpan span.HeimdallSpan
 
-	if c.HeimdallClient == nil {
-		// fixme: move to a new mock or fake and remove c.HeimdallClient completely
-		s, err := c.getNextHeimdallSpanForTest(ctx, newSpanID, header, chain)
-		if err != nil {
-			return err
-		}
-
-		heimdallSpan = *s
-	} else {
-		response, err := c.HeimdallClient.Span(ctx, newSpanID)
-		if err != nil {
-			return err
-		}
-
-		heimdallSpan = *response
+	//if c.HeimdallClient == nil {
+	// fixme: move to a new mock or fake and remove c.HeimdallClient completely
+	s, err := c.getNextHeimdallSpan(ctx, header, chain)
+	if err != nil {
+		return err
 	}
+
+	heimdallSpan = *s
+	//} else {
+	//	response, err := c.HeimdallClient.Span(ctx, newSpanID)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	heimdallSpan = *response
+	//}
 
 	// check if chain id matches with Heimdall span
-	if heimdallSpan.ChainID != c.chainConfig.ChainID.String() {
-		return fmt.Errorf(
-			"chain id proposed span, %s, and bor chain id, %s, doesn't match",
-			heimdallSpan.ChainID,
-			c.chainConfig.ChainID,
-		)
-	}
+	//if heimdallSpan.ChainID != c.chainConfig.ChainID.String() {
+	//	return fmt.Errorf(
+	//		"chain id proposed span, %s, and bor chain id, %s, doesn't match",
+	//		heimdallSpan.ChainID,
+	//		c.chainConfig.ChainID,
+	//	)
+	//}
 
-	return c.spanner.CommitSpan(ctx, heimdallSpan, state, header, chain)
+	//return c.spanner.CommitSpan(ctx, heimdallSpan, state, header, chain)
+	return c.spanner.CommitAccum(ctx, heimdallSpan, state, header, chain)
 }
 
 // CommitStates commit states
@@ -1225,18 +1225,17 @@ func (c *Bor) GetCurrentValidators(ctx context.Context, headerHash common.Hash, 
 // Private methods
 //
 
-func (c *Bor) getNextHeimdallSpanForTest(
+func (c *Bor) getNextHeimdallSpan(
 	ctx context.Context,
-	newSpanID uint64,
 	header *types.Header,
 	chain core.ChainContext,
 ) (*span.HeimdallSpan, error) {
 	headerNumber := header.Number.Uint64()
 
-	spanBor, err := c.spanner.GetCurrentSpan(ctx, header.ParentHash)
-	if err != nil {
-		return nil, err
-	}
+	//spanBor, err := c.spanner.GetCurrentSpan(ctx, header.ParentHash)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	// get local chain context object
 	localContext := chain.(statefull.ChainContext)
@@ -1247,14 +1246,14 @@ func (c *Bor) getNextHeimdallSpanForTest(
 	}
 
 	// new span
-	spanBor.ID = newSpanID
-	if spanBor.EndBlock == 0 {
-		spanBor.StartBlock = 256
-	} else {
-		spanBor.StartBlock = spanBor.EndBlock + 1
-	}
+	//spanBor.ID = newSpanID
+	//if spanBor.EndBlock == 0 {
+	//	spanBor.StartBlock = 256
+	//} else {
+	//	spanBor.StartBlock = spanBor.EndBlock + 1
+	//}
 
-	spanBor.EndBlock = spanBor.StartBlock + (100 * c.config.CalculateSprint(headerNumber)) - 1
+	//spanBor.EndBlock = spanBor.StartBlock + (100 * c.config.CalculateSprint(headerNumber)) - 1
 
 	selectedProducers := make([]valset.Validator, len(snap.ValidatorSet.Validators))
 	for i, v := range snap.ValidatorSet.Validators {
@@ -1262,7 +1261,7 @@ func (c *Bor) getNextHeimdallSpanForTest(
 	}
 
 	heimdallSpan := &span.HeimdallSpan{
-		Span:              *spanBor,
+		Span:              span.Span{},
 		ValidatorSet:      *snap.ValidatorSet,
 		SelectedProducers: selectedProducers,
 		ChainID:           c.chainConfig.ChainID.String(),

@@ -48,6 +48,13 @@ func (m *MockSpanner) CommitSpan(arg0 context.Context, arg1 span.HeimdallSpan, a
 	return ret0
 }
 
+func (m *MockSpanner) CommitAccum(arg0 context.Context, arg1 span.HeimdallSpan, arg2 *state.StateDB, arg3 *types.Header, arg4 core.ChainContext) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CommitAccum", arg0, arg1, arg2, arg3, arg4)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
 // CommitSpan indicates an expected call of CommitSpan.
 func (mr *MockSpannerMockRecorder) CommitSpan(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()

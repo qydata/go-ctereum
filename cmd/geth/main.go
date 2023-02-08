@@ -249,6 +249,9 @@ func init() {
 		consoleFlags,
 		debug.Flags,
 		metricsFlags,
+
+		// add bor flags
+		utils.BorFlags,
 	)
 
 	app.Before = func(ctx *cli.Context) error {
