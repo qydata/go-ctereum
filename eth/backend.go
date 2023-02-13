@@ -20,8 +20,7 @@ package eth
 import (
 	"errors"
 	"fmt"
-	"github.com/qydata/go-ctereum/consensus/bor"
-	"github.com/qydata/go-ctereum/eth/downloader/whitelist"
+	"github.com/qydata/go-ctereum/eth/gasprice"
 	"math/big"
 	"runtime"
 	"strings"
@@ -42,7 +41,6 @@ import (
 	"github.com/qydata/go-ctereum/core/vm"
 	"github.com/qydata/go-ctereum/eth/downloader"
 	"github.com/qydata/go-ctereum/eth/ethconfig"
-	"github.com/qydata/go-ctereum/eth/gasprice"
 	"github.com/qydata/go-ctereum/eth/protocols/eth"
 	"github.com/qydata/go-ctereum/eth/protocols/snap"
 	"github.com/qydata/go-ctereum/ethdb"
@@ -82,7 +80,6 @@ type Ethereum struct {
 	eventMux       *event.TypeMux
 	engine         consensus.Engine
 	accountManager *accounts.Manager
-	authorized     bool // If consensus engine is authorized with keystore
 
 	bloomRequests     chan chan *bloombits.Retrieval // Channel receiving bloom data retrieval requests
 	bloomIndexer      *core.ChainIndexer             // Bloom indexer operating during block imports
@@ -154,14 +151,13 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 		log.Error("Failed to recover state", "error", err)
 	}
 	merger := consensus.NewMerger(chainDb)
+
 	eth := &Ethereum{
-		config:         config,
-		merger:         merger,
-		chainDb:        chainDb,
-		eventMux:       stack.EventMux(),
-		accountManager: stack.AccountManager(),
-		authorized:     false,
-		//engine:            ethconfig.CreateConsensusEngine(stack, chainConfig, &ethashConfig, config.Miner.Notify, config.Miner.Noverify, chainDb),
+		config:            config,
+		merger:            merger,
+		chainDb:           chainDb,
+		eventMux:          stack.EventMux(),
+		accountManager:    stack.AccountManager(),
 		engine:            nil,
 		closeBloomHandler: make(chan struct{}),
 		networkID:         config.NetworkId,
@@ -173,7 +169,6 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 		shutdownTracker:   shutdowncheck.NewShutdownTracker(chainDb),
 	}
 
-	// START: Bor changes
 	eth.APIBackend = &EthAPIBackend{stack.Config().ExtRPCEnabled(), stack.Config().AllowUnprotectedTxs, eth, nil}
 	if eth.APIBackend.allowUnprotectedTxs {
 		log.Info("Unprotected transactions allowed")
@@ -182,13 +177,11 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 	if gpoParams.Default == nil {
 		gpoParams.Default = config.Miner.GasPrice
 	}
-
 	eth.APIBackend.gpo = gasprice.NewOracle(eth.APIBackend, gpoParams)
 
 	// create eth api and set engine
-	ethAPI := ethapi.NewPublicBlockChainAPI(eth.APIBackend)
-	eth.engine = ethconfig.CreateConsensusEngine(stack, chainConfig, config, config.Miner.Notify, config.Miner.Noverify, chainDb, ethAPI)
-	// END: Bor changes
+	ethAPI := ethapi.NewBlockChainAPI(eth.APIBackend)
+	eth.engine = ethconfig.CreateConsensusEngine(stack, chainConfig, &ethashConfig, config.Miner.Notify, config.Miner.Noverify, chainDb, ethAPI)
 
 	bcVersion := rawdb.ReadDatabaseVersion(chainDb)
 	var dbVer = "<nil>"
@@ -223,10 +216,7 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 			Preimages:           config.Preimages,
 		}
 	)
-
-	checker := whitelist.NewService(10)
-
-	eth.blockchain, err = core.NewBlockChain(chainDb, cacheConfig, chainConfig, eth.engine, vmConfig, eth.shouldPreserve, &config.TxLookupLimit, checker)
+	eth.blockchain, err = core.NewBlockChain(chainDb, cacheConfig, chainConfig, eth.engine, vmConfig, eth.shouldPreserve, &config.TxLookupLimit)
 	if err != nil {
 		return nil, err
 	}
@@ -460,38 +450,21 @@ func (s *Ethereum) StartMining(threads int) error {
 			log.Error("Cannot start mining without etherbase", "err", err)
 			return fmt.Errorf("etherbase missing: %v", err)
 		}
-
-		// If personal endpoints are disabled, the server creating
-		// this Ethereum instance has already Authorized consensus.
-		if !s.authorized {
-			var cli *clique.Clique
-			if c, ok := s.engine.(*clique.Clique); ok {
+		var cli *clique.Clique
+		if c, ok := s.engine.(*clique.Clique); ok {
+			cli = c
+		} else if cl, ok := s.engine.(*beacon.Beacon); ok {
+			if c, ok := cl.InnerEngine().(*clique.Clique); ok {
 				cli = c
-			} else if cl, ok := s.engine.(*beacon.Beacon); ok {
-				if c, ok := cl.InnerEngine().(*clique.Clique); ok {
-					cli = c
-				}
 			}
-			if cli != nil {
-				wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
-				if wallet == nil || err != nil {
-					log.Error("Etherbase account unavailable locally", "err", err)
-					return fmt.Errorf("signer missing: %v", err)
-				}
-				cli.Authorize(eb, wallet.SignData)
+		}
+		if cli != nil {
+			wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
+			if wallet == nil || err != nil {
+				log.Error("Etherbase account unavailable locally", "err", err)
+				return fmt.Errorf("signer missing: %v", err)
 			}
-
-			// Authorize the bor consensus (if chosen) to sign using wallet signer
-			if bor, ok := s.engine.(*bor.Bor); ok {
-				wallet, err := s.accountManager.Find(accounts.Account{Address: eb})
-				if wallet == nil || err != nil {
-					log.Error("Etherbase account unavailable locally", "err", err)
-
-					return fmt.Errorf("signer missing: %v", err)
-				}
-
-				bor.Authorize(eb, wallet.SignData)
-			}
+			cli.Authorize(eb, wallet.SignData)
 		}
 		// If mining is started, we can disable the transaction rejection mechanism
 		// introduced to speed sync times.
@@ -535,14 +508,6 @@ func (s *Ethereum) Merger() *consensus.Merger          { return s.merger }
 func (s *Ethereum) SyncMode() downloader.SyncMode {
 	mode, _ := s.handler.chainSync.modeAndLocalHead()
 	return mode
-}
-
-// SetAuthorized sets the authorized bool variable
-// denoting that consensus has been authorized while creation
-func (s *Ethereum) SetAuthorized(authorized bool) {
-	s.lock.Lock()
-	s.authorized = authorized
-	s.lock.Unlock()
 }
 
 // Protocols returns all the currently configured

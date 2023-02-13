@@ -26,6 +26,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/qydata/go-ctereum/common"
 	"github.com/qydata/go-ctereum/consensus"
 	"github.com/qydata/go-ctereum/core/rawdb"
@@ -34,7 +35,6 @@ import (
 	"github.com/qydata/go-ctereum/log"
 	"github.com/qydata/go-ctereum/params"
 	"github.com/qydata/go-ctereum/rlp"
-	lru "github.com/hashicorp/golang-lru"
 )
 
 const (

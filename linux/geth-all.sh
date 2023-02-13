@@ -1,1 +1,0 @@
-./geth-clean-data.sh &&  ./geth-genesis.sh && ./geth.sh

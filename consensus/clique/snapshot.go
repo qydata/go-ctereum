@@ -19,6 +19,7 @@ package clique
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/qydata/go-ctereum/consensus/clique/valset"
 	"sort"
 	"time"
 
@@ -51,12 +52,13 @@ type Snapshot struct {
 	config   *params.CliqueConfig // Consensus engine parameters to fine tune behavior
 	sigcache *lru.ARCCache        // Cache of recent block signatures to speed up ecrecover
 
-	Number  uint64                      `json:"number"`  // Block number where the snapshot was created
-	Hash    common.Hash                 `json:"hash"`    // Block hash where the snapshot was created
-	Signers map[common.Address]struct{} `json:"signers"` // Set of authorized signers at this moment
-	Recents map[uint64]common.Address   `json:"recents"` // Set of recent signers for spam protections
-	Votes   []*Vote                     `json:"votes"`   // List of votes cast in chronological order
-	Tally   map[common.Address]Tally    `json:"tally"`   // Current vote tally to avoid recalculating
+	Number        uint64                      `json:"number"`  // Block number where the snapshot was created
+	Hash          common.Hash                 `json:"hash"`    // Block hash where the snapshot was created
+	Signers       map[common.Address]struct{} `json:"signers"` // Set of authorized signers at this moment
+	SignerActives map[common.Address]bool     `json:"signeractives"`
+	Recents       map[uint64]common.Address   `json:"recents"` // Set of recent signers for spam protections
+	Votes         []*Vote                     `json:"votes"`   // List of votes cast in chronological order
+	Tally         map[common.Address]Tally    `json:"tally"`   // Current vote tally to avoid recalculating
 }
 
 // signersAscending implements the sort interface to allow sorting a list of addresses
@@ -71,13 +73,14 @@ func (s signersAscending) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 // the genesis block.
 func newSnapshot(config *params.CliqueConfig, sigcache *lru.ARCCache, number uint64, hash common.Hash, signers []common.Address) *Snapshot {
 	snap := &Snapshot{
-		config:   config,
-		sigcache: sigcache,
-		Number:   number,
-		Hash:     hash,
-		Signers:  make(map[common.Address]struct{}),
-		Recents:  make(map[uint64]common.Address),
-		Tally:    make(map[common.Address]Tally),
+		config:        config,
+		sigcache:      sigcache,
+		Number:        number,
+		Hash:          hash,
+		Signers:       make(map[common.Address]struct{}),
+		Recents:       make(map[uint64]common.Address),
+		Tally:         make(map[common.Address]Tally),
+		SignerActives: make(map[common.Address]bool),
 	}
 	for _, signer := range signers {
 		snap.Signers[signer] = struct{}{}
@@ -113,14 +116,15 @@ func (s *Snapshot) store(db ethdb.Database) error {
 // copy creates a deep copy of the snapshot, though not the individual votes.
 func (s *Snapshot) copy() *Snapshot {
 	cpy := &Snapshot{
-		config:   s.config,
-		sigcache: s.sigcache,
-		Number:   s.Number,
-		Hash:     s.Hash,
-		Signers:  make(map[common.Address]struct{}),
-		Recents:  make(map[uint64]common.Address),
-		Votes:    make([]*Vote, len(s.Votes)),
-		Tally:    make(map[common.Address]Tally),
+		config:        s.config,
+		sigcache:      s.sigcache,
+		Number:        s.Number,
+		Hash:          s.Hash,
+		Signers:       make(map[common.Address]struct{}),
+		Recents:       make(map[uint64]common.Address),
+		Votes:         make([]*Vote, len(s.Votes)),
+		Tally:         make(map[common.Address]Tally),
+		SignerActives: s.SignerActives,
 	}
 	for signer := range s.Signers {
 		cpy.Signers[signer] = struct{}{}
@@ -149,6 +153,7 @@ func (s *Snapshot) cast(address common.Address, authorize bool) bool {
 	if !s.validVote(address, authorize) {
 		return false
 	}
+	log.Info("s.Tally", "s.Tally", s.Tally, "Tally{Authorize: authorize, Votes: 1}", Tally{Authorize: authorize, Votes: 1}, "address", address)
 	// Cast the vote into an existing or new tally
 	if old, ok := s.Tally[address]; ok {
 		old.Votes++
@@ -258,6 +263,7 @@ func (s *Snapshot) apply(headers []*types.Header) (*Snapshot, error) {
 				Authorize: authorize,
 			})
 		}
+
 		// If the vote passed, update the list of signers
 		if tally := snap.Tally[header.Coinbase]; tally.Votes > len(snap.Signers)/2 {
 			if tally.Authorize {
@@ -291,6 +297,7 @@ func (s *Snapshot) apply(headers []*types.Header) (*Snapshot, error) {
 			}
 			delete(snap.Tally, header.Coinbase)
 		}
+
 		// If we're taking too much time (ecrecover), notify the user once a while
 		if time.Since(logged) > 8*time.Second {
 			log.Info("Reconstructing voting history", "processed", i, "total", len(headers), "elapsed", common.PrettyDuration(time.Since(start)))
@@ -308,12 +315,52 @@ func (s *Snapshot) apply(headers []*types.Header) (*Snapshot, error) {
 
 // signers retrieves the list of authorized signers in ascending order.
 func (s *Snapshot) signers() []common.Address {
+
 	sigs := make([]common.Address, 0, len(s.Signers))
 	for sig := range s.Signers {
 		sigs = append(sigs, sig)
 	}
 	sort.Sort(signersAscending(sigs))
 	return sigs
+
+}
+
+func (s *Snapshot) updateSigners(newValidators []*valset.Validator, c *Clique) error {
+	// 查询合约的数据
+
+	log.Info("getValidators", "newValidators", newValidators)
+
+	// 汽车原则, 先下再上
+	// 初始化map
+	var tempValidator map[common.Address]*valset.Validator
+	tempValidator = make(map[common.Address]*valset.Validator)
+	for _, validator := range newValidators {
+		if c.config.StakeAmount == validator.ProposerPriority {
+			tempValidator[validator.Address] = validator
+		}
+	}
+
+	// 下
+	for sig := range s.Signers {
+		if _, ok := tempValidator[sig]; !ok {
+			log.Info("updateSigners Down", "sig", sig)
+			//delete(s.Signers, sig)
+			c.proposals[sig] = false
+			s.SignerActives[sig] = false
+			return nil
+		}
+	}
+	// 上
+	for validator := range tempValidator {
+
+		if _, ok := s.Signers[validator]; !ok {
+			log.Info("updateSigners Top", "validator", validator)
+			//s.Signers[validator] = struct{}{}
+			c.proposals[validator] = true
+			return nil
+		}
+	}
+	return nil
 }
 
 // inturn returns if a signer at a given block height is in-turn or not.

@@ -186,13 +186,6 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 				config.EthereumNetworkID = 5
 			}
 		}
-		// If we have the Bor Mainnet, hard code the chain configs too
-		if config.EthereumGenesis == BorMainnetGenesis() {
-			genesis.Config = params.BorMainnetChainConfig
-			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 138
-			}
-		}
 	}
 	// Register the Ethereum protocol if requested
 	if config.EthereumEnabled {

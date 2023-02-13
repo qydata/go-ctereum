@@ -148,8 +148,6 @@ type Downloader struct {
 	quitCh   chan struct{} // Quit channel to signal termination
 	quitLock sync.Mutex    // Lock to prevent double closes
 
-	ethereum.ChainValidator
-
 	// Testing hooks
 	syncInitHook     func(uint64, uint64)  // Method to call upon initiating a new sync run
 	bodyFetchHook    func([]*types.Header) // Method to call upon starting a block body fetch

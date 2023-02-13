@@ -18,11 +18,8 @@
 package ethconfig
 
 import (
-	"github.com/qydata/go-ctereum/consensus/bor"
-	"github.com/qydata/go-ctereum/consensus/bor/contract"
-	"github.com/qydata/go-ctereum/consensus/bor/heimdall"
-	"github.com/qydata/go-ctereum/consensus/bor/heimdall/span"
-	"github.com/qydata/go-ctereum/consensus/bor/heimdallgrpc"
+	"github.com/qydata/go-ctereum/consensus/clique/contract"
+	"github.com/qydata/go-ctereum/consensus/clique/span"
 	"github.com/qydata/go-ctereum/internal/ethapi"
 	"math/big"
 	"os"
@@ -91,7 +88,7 @@ var Defaults = Config{
 	SnapshotCache:           102,
 	FilterLogCacheSize:      32,
 	Miner: miner.Config{
-		GasCeil:  100000000,
+		GasCeil:  30000000,
 		GasPrice: big.NewInt(params.GWei),
 		Recommit: 3 * time.Second,
 	},
@@ -99,7 +96,8 @@ var Defaults = Config{
 	RPCGasCap:     50000000,
 	RPCEVMTimeout: 5 * time.Second,
 	GPO:           FullNodeGPO,
-	RPCTxFeeCap:   1000, // 1000 ether
+	//RPCTxFeeCap:   1, // 1 ether
+	RPCTxFeeCap: 0, // unlimit
 }
 
 func init() {
@@ -215,27 +213,6 @@ type Config struct {
 	// CheckpointOracle is the configuration for checkpoint oracle.
 	CheckpointOracle *params.CheckpointOracleConfig `toml:",omitempty"`
 
-	// URL to connect to Heimdall node
-	HeimdallURL string
-
-	// No heimdall service
-	WithoutHeimdall bool
-
-	// Address to connect to Heimdall gRPC server
-	HeimdallgRPCAddress string
-
-	// Run heimdall service as a child process
-	RunHeimdall bool
-
-	// Arguments to pass to heimdall service
-	RunHeimdallArgs string
-
-	// Bor logs flag
-	BorLogs bool
-
-	// Arrow Glacier block override (TODO: remove after the fork)
-	OverrideArrowGlacier *big.Int `toml:",omitempty"`
-
 	// OverrideTerminalTotalDifficulty (TODO: remove after the fork)
 	OverrideTerminalTotalDifficulty *big.Int `toml:",omitempty"`
 
@@ -244,34 +221,13 @@ type Config struct {
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.
-func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, ethConfig *Config, notify []string, noverify bool, db ethdb.Database, blockchainAPI *ethapi.BlockChainAPI) consensus.Engine {
-	config := &ethConfig.Ethash
-
+func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, config *ethash.Config, notify []string, noverify bool, db ethdb.Database, blockchainAPI *ethapi.BlockChainAPI) consensus.Engine {
 	// If proof-of-authority is requested, set it up
 	var engine consensus.Engine
 	if chainConfig.Clique != nil {
-		engine = clique.New(chainConfig.Clique, db)
-	}
 
-	// If Matic bor consensus is requested, set it up
-	// In order to pass the ethereum transaction tests, we need to set the burn contract which is in the bor config
-	// Then, bor != nil will also be enabled for ethash and clique. Only enable Bor for real if there is a validator contract present.
-	if chainConfig.Bor != nil && chainConfig.Bor.ValidatorContract != "" {
-		genesisContractsClient := contract.NewGenesisContractsClient(chainConfig, chainConfig.Bor.ValidatorContract, chainConfig.Bor.StateReceiverContract, blockchainAPI)
-		spanner := span.NewChainSpanner(blockchainAPI, contract.ValidatorSet(), chainConfig, common.HexToAddress(chainConfig.Bor.ValidatorContract))
-
-		if ethConfig.WithoutHeimdall {
-			return bor.New(chainConfig, db, blockchainAPI, spanner, nil, genesisContractsClient)
-		} else {
-			var heimdallClient bor.IHeimdallClient
-			if ethConfig.HeimdallgRPCAddress != "" {
-				heimdallClient = heimdallgrpc.NewHeimdallGRPCClient(ethConfig.HeimdallgRPCAddress)
-			} else {
-				heimdallClient = heimdall.NewHeimdallClient(ethConfig.HeimdallURL)
-			}
-
-			return bor.New(chainConfig, db, blockchainAPI, spanner, heimdallClient, genesisContractsClient)
-		}
+		spanner := span.NewChainSpanner(blockchainAPI, contract.Validator(), chainConfig, common.HexToAddress(chainConfig.Clique.ValidatorContract))
+		engine = clique.New(chainConfig.Clique, db, spanner)
 	} else {
 		switch config.PowMode {
 		case ethash.ModeFake:

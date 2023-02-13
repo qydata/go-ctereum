@@ -20,7 +20,6 @@ package utils
 import (
 	"crypto/ecdsa"
 	"fmt"
-	"github.com/qydata/go-ctereum/consensus/clique"
 	"math"
 	"math/big"
 	"os"
@@ -143,10 +142,6 @@ var (
 		Name:     "goerli",
 		Usage:    "Görli network: pre-configured proof-of-authority test network",
 		Category: flags.EthCategory,
-	}
-	BorMainnetFlag = &cli.BoolFlag{
-		Name:  "bor-mainnet",
-		Usage: "Bor mainnet",
 	}
 	SepoliaFlag = &cli.BoolFlag{
 		Name:     "sepolia",
@@ -446,10 +441,6 @@ var (
 	}
 
 	// Performance tuning settings
-	BorLogsFlag = cli.BoolFlag{
-		Name:  "bor.logs",
-		Usage: "Enable bor logs retrieval",
-	}
 	CacheFlag = &cli.IntFlag{
 		Name:     "cache",
 		Usage:    "Megabytes of memory allocated to internal caching (default = 4096 mainnet full node, 128 light mode)",
@@ -994,7 +985,6 @@ var (
 		RopstenFlag,
 		RinkebyFlag,
 		GoerliFlag,
-		BorMainnetFlag,
 		SepoliaFlag,
 		KilnFlag,
 	}
@@ -1026,10 +1016,6 @@ func MakeDataDir(ctx *cli.Context) string {
 		}
 		if ctx.Bool(GoerliFlag.Name) {
 			return filepath.Join(path, "goerli")
-		}
-		if ctx.Bool(BorMainnetFlag.Name) {
-			homeDir, _ := os.UserHomeDir()
-			return filepath.Join(homeDir, "/.bor/data")
 		}
 		if ctx.Bool(SepoliaFlag.Name) {
 			return filepath.Join(path, "sepolia")
@@ -1091,8 +1077,6 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.RinkebyBootnodes
 	case ctx.Bool(GoerliFlag.Name):
 		urls = params.GoerliBootnodes
-	case ctx.Bool(BorMainnetFlag.Name):
-		urls = params.BorMainnetBootnodes
 	case ctx.Bool(KilnFlag.Name):
 		urls = params.KilnBootnodes
 	}
@@ -1549,9 +1533,6 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "rinkeby")
 	case ctx.Bool(GoerliFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "goerli")
-	case ctx.Bool(BorMainnetFlag.Name) && cfg.DataDir == node.DefaultDataDir():
-		homeDir, _ := os.UserHomeDir()
-		cfg.DataDir = filepath.Join(homeDir, "/.bor/data")
 	case ctx.Bool(SepoliaFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "sepolia")
 	case ctx.Bool(KilnFlag.Name) && cfg.DataDir == node.DefaultDataDir():
@@ -1746,7 +1727,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, BorMainnetFlag, SepoliaFlag, KilnFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1767,10 +1748,6 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	setMiner(ctx, &cfg.Miner)
 	setRequiredBlocks(ctx, cfg)
 	setLes(ctx, cfg)
-
-	if ctx.IsSet(BorLogsFlag.Name) {
-		cfg.BorLogs = ctx.Bool(BorLogsFlag.Name)
-	}
 
 	// Cap the cache allowance and tune the garbage collector
 	mem, err := gopsutil.VirtualMemory()
@@ -1925,11 +1902,6 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		}
 		cfg.Genesis = core.DefaultGoerliGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.GoerliGenesisHash)
-	case ctx.Bool(BorMainnetFlag.Name):
-		if !ctx.IsSet(BorMainnetFlag.Name) {
-			cfg.NetworkId = 138
-		}
-		cfg.Genesis = core.DefaultBorMainnetGenesisBlock()
 	case ctx.Bool(KilnFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1337802
@@ -2185,8 +2157,6 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultRinkebyGenesisBlock()
 	case ctx.Bool(GoerliFlag.Name):
 		genesis = core.DefaultGoerliGenesisBlock()
-	case ctx.Bool(BorMainnetFlag.Name):
-		genesis = core.DefaultBorMainnetGenesisBlock()
 	case ctx.Bool(KilnFlag.Name):
 		genesis = core.DefaultKilnGenesisBlock()
 	case ctx.Bool(DeveloperFlag.Name):
@@ -2197,12 +2167,7 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 
 // MakeChain creates a chain manager from set command line flags.
 func MakeChain(ctx *cli.Context, stack *node.Node) (chain *core.BlockChain, chainDb ethdb.Database) {
-	// expecting the last argument to be the genesis file
-	genesis, err := getGenesis(ctx.Args().Get(ctx.NArg() - 1))
-	if err != nil {
-		Fatalf("Valid genesis file is required as argument: {}", err)
-	}
-
+	var err error
 	chainDb = MakeChainDatabase(ctx, stack, false) // TODO(rjl493456442) support read-only database
 	config, _, err := core.SetupGenesisBlock(chainDb, MakeGenesis(ctx))
 	if err != nil {
@@ -2210,45 +2175,14 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (chain *core.BlockChain, chai
 	}
 
 	var engine consensus.Engine
-	//ethashConf := ethconfig.Defaults.Ethash
-	//if ctx.Bool(FakePoWFlag.Name) {
-	//	ethashConf.PowMode = ethash.ModeFake
-	//}
-	//engine = ethconfig.CreateConsensusEngine(stack, config, &ethashConf, nil, false, chainDb, ethAPI)
-
-	var ethereum *eth.Ethereum
-	if config.Clique != nil {
-		engine = clique.New(config.Clique, chainDb)
-	} else if config.Bor != nil {
-		ethereum = CreateBorEthereum(&eth.Config{
-			Genesis:             genesis,
-			HeimdallURL:         ctx.String(HeimdallURLFlag.Name),
-			WithoutHeimdall:     ctx.Bool(WithoutHeimdallFlag.Name),
-			HeimdallgRPCAddress: ctx.String(HeimdallgRPCAddressFlag.Name),
-			RunHeimdall:         ctx.Bool(RunHeimdallFlag.Name),
-			RunHeimdallArgs:     ctx.String(RunHeimdallArgsFlag.Name),
-		})
-		engine = ethereum.Engine()
-	} else {
-		engine = ethash.NewFaker()
-		if !ctx.Bool(FakePoWFlag.Name) {
-			engine = ethash.New(ethash.Config{
-				CacheDir:         stack.ResolvePath(ethconfig.Defaults.Ethash.CacheDir),
-				CachesInMem:      ethconfig.Defaults.Ethash.CachesInMem,
-				CachesOnDisk:     ethconfig.Defaults.Ethash.CachesOnDisk,
-				CachesLockMmap:   ethconfig.Defaults.Ethash.CachesLockMmap,
-				DatasetDir:       stack.ResolvePath(ethconfig.Defaults.Ethash.DatasetDir),
-				DatasetsInMem:    ethconfig.Defaults.Ethash.DatasetsInMem,
-				DatasetsOnDisk:   ethconfig.Defaults.Ethash.DatasetsOnDisk,
-				DatasetsLockMmap: ethconfig.Defaults.Ethash.DatasetsLockMmap,
-			}, nil, false)
-		}
+	ethashConf := ethconfig.Defaults.Ethash
+	if ctx.Bool(FakePoWFlag.Name) {
+		ethashConf.PowMode = ethash.ModeFake
 	}
-
+	engine = ethconfig.CreateConsensusEngine(stack, config, &ethashConf, nil, false, chainDb, nil)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
 		Fatalf("--%s must be either 'full' or 'archive'", GCModeFlag.Name)
 	}
-
 	cache := &core.CacheConfig{
 		TrieCleanLimit:      ethconfig.Defaults.TrieCleanCache,
 		TrieCleanNoPrefetch: ctx.Bool(CacheNoPrefetchFlag.Name),
@@ -2275,7 +2209,7 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (chain *core.BlockChain, chai
 
 	// TODO(rjl493456442) disable snapshot generation/wiping if the chain is read only.
 	// Disable transaction indexing/unindexing by default.
-	chain, err = core.NewBlockChain(chainDb, cache, config, engine, vmcfg, nil, nil, nil)
+	chain, err = core.NewBlockChain(chainDb, cache, config, engine, vmcfg, nil, nil)
 	if err != nil {
 		Fatalf("Can't create BlockChain: %v", err)
 	}

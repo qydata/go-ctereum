@@ -21,7 +21,6 @@ package light
 import (
 	"context"
 	"errors"
-	ethereum "github.com/qydata/go-ctereum"
 	"math/big"
 	"sync"
 	"sync/atomic"
@@ -74,15 +73,12 @@ type LightChain struct {
 	running          int32 // whether LightChain is running or stopped
 	procInterrupt    int32 // interrupts chain insert
 	disableCheckFreq int32 // disables header verification
-
-	// Bor
-	chain2HeadFeed event.Feed
 }
 
 // NewLightChain returns a fully initialised light chain using information
 // available in the database. It initialises the default Ethereum header
 // validator.
-func NewLightChain(odr OdrBackend, config *params.ChainConfig, engine consensus.Engine, checkpoint *params.TrustedCheckpoint, checker ethereum.ChainValidator) (*LightChain, error) {
+func NewLightChain(odr OdrBackend, config *params.ChainConfig, engine consensus.Engine, checkpoint *params.TrustedCheckpoint) (*LightChain, error) {
 	bodyCache, _ := lru.New(bodyCacheLimit)
 	bodyRLPCache, _ := lru.New(bodyCacheLimit)
 	blockCache, _ := lru.New(blockCacheLimit)
@@ -97,7 +93,7 @@ func NewLightChain(odr OdrBackend, config *params.ChainConfig, engine consensus.
 		blockCache:    blockCache,
 		engine:        engine,
 	}
-	bc.forker = core.NewForkChoice(bc, nil, checker)
+	bc.forker = core.NewForkChoice(bc, nil)
 	var err error
 	bc.hc, err = core.NewHeaderChain(odr.Database(), config, bc.engine, bc.getProcInterrupt)
 	if err != nil {
@@ -596,15 +592,4 @@ func (lc *LightChain) DisableCheckFreq() {
 // EnableCheckFreq enables header validation.
 func (lc *LightChain) EnableCheckFreq() {
 	atomic.StoreInt32(&lc.disableCheckFreq, 0)
-}
-
-// SubscribeStateSyncEvent implements the interface of filters.Backend
-// LightChain does not send core.NewStateChangeSyncEvent, so return an empty subscription.
-func (lc *LightChain) SubscribeStateSyncEvent(ch chan<- core.StateSyncEvent) event.Subscription {
-	return lc.scope.Track(new(event.Feed).Subscribe(ch))
-}
-
-// SubscribeChain2HeadEvent registers a subscription of Reorg/head/fork events.
-func (lc *LightChain) SubscribeChain2HeadEvent(ch chan<- core.Chain2HeadEvent) event.Subscription {
-	return lc.scope.Track(lc.chain2HeadFeed.Subscribe(ch))
 }

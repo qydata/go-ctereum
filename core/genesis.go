@@ -238,10 +238,10 @@ func (e *GenesisMismatchError) Error() string {
 // SetupGenesisBlock writes or updates the genesis block in db.
 // The block that will be used is:
 //
-//	                     genesis == nil       genesis != nil
-//	                  +------------------------------------------
-//	db has no genesis |  main-net default  |  genesis
-//	db has genesis    |  from DB           |  genesis (if compatible)
+//                          genesis == nil       genesis != nil
+//                       +------------------------------------------
+//     db has no genesis |  main-net default  |  genesis
+//     db has genesis    |  from DB           |  genesis (if compatible)
 //
 // The stored chain configuration will be updated if it is compatible (i.e. does not
 // specify a fork block below the local head block). In case of a conflict, the
@@ -359,8 +359,6 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return params.RinkebyChainConfig
 	case ghash == params.GoerliGenesisHash:
 		return params.GoerliChainConfig
-	case ghash == params.BorMainnetGenesisHash:
-		return params.BorMainnetChainConfig
 	case ghash == params.KilnGenesisHash:
 		return DefaultKilnGenesisBlock().Config
 	default:
@@ -459,15 +457,17 @@ func DefaultGenesisBlock() *Genesis {
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(1),
 		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Alloc:      decodePrealloc(mainnetAllocData),
-		Coinbase:   common.HexToAddress("0xcebcbf16494edbad87d7feab0260ade82c571e5d"),
-		//Config:     params.MainnetChainConfig,
-		//Nonce:      66,
-		//ExtraData:  hexutil.MustDecode("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa"),
-		//GasLimit:   5000,
-		//Difficulty: big.NewInt(17179869184),
 		//Alloc:      decodePrealloc(mainnetAllocData),
+		Alloc:      readPrealloc("allocs/ct_mainnet.json"),
+		Coinbase:   common.HexToAddress("0xcebcbf16494edbad87d7feab0260ade82c571e5d"),
+
 	}
+	//g := new(Genesis)
+	//reader := strings.NewReader(CtAllocData)
+	//if err := json.NewDecoder(reader).Decode(g); err != nil {
+	//	panic(err)
+	//}
+	//return g
 }
 
 // DefaultRopstenGenesisBlock returns the Ropsten network genesis block.
@@ -504,20 +504,6 @@ func DefaultGoerliGenesisBlock() *Genesis {
 		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Coinbase:   common.HexToAddress("0xc7818de72d9c888ea0d0a56eb907f9c4dbf027d0"),
 		Alloc:      decodePrealloc(goerliAllocData),
-	}
-}
-
-// DefaultBorMainnet returns the Bor Mainnet network gensis block.
-func DefaultBorMainnetGenesisBlock() *Genesis {
-	return &Genesis{
-		Config:     params.BorMainnetChainConfig,
-		Nonce:      0,
-		Timestamp:  1590824836,
-		GasLimit:   10000000,
-		Difficulty: big.NewInt(1),
-		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
-		Alloc:      readPrealloc("allocs/bor_mainnet.json"),
 	}
 }
 

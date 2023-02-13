@@ -30,9 +30,6 @@ var Modules = map[string]string{
 	"txpool":   TxpoolJs,
 	"les":      LESJs,
 	"vflux":    VfluxJs,
-
-	// Bor related apis
-	"bor": BorJs,
 }
 
 const CliqueJs = `
@@ -60,17 +57,7 @@ web3._extend({
 			name: 'getSignersAtHash',
 			call: 'clique_getSignersAtHash',
 			params: 1
-		}),
-		new web3._extend.Method({
-			name: 'propose',
-			call: 'clique_propose',
-			params: 2
-		}),
-		new web3._extend.Method({
-			name: 'discard',
-			call: 'clique_discard',
-			params: 1
-		}),
+		}), 
 		new web3._extend.Method({
 			name: 'status',
 			call: 'clique_status',

@@ -644,12 +644,6 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 		if tx.Cost().Cmp(fee) < 0 {
 			return ErrFundsLessThan
 		}
-	} else {
-		if tx.GasTipCap().Int64() > 0 {
-			if !pool.chainconfig.IsFixedGasPrice(tx.GasTipCap()) {
-				return ErrFundsGasPriceMoreThan
-			}
-		}
 	}
 
 	// Ensure the transaction has more gas than the basic tx fee.

@@ -26,8 +26,8 @@ RUN apk add --no-cache ca-certificates
 COPY --from=builder /go-ctereum/build/bin/geth /usr/local/bin/
 
 EXPOSE 8545 8546 30303 30303/udp
-#ENTRYPOINT ["geth", "--goerli"]
-ENTRYPOINT ["geth"]
+ENTRYPOINT ["geth", "--goerli"]
+#ENTRYPOINT ["geth"]
 
 # Add some metadata labels to help programatic image consumption
 ARG COMMIT=""

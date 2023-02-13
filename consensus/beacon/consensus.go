@@ -17,7 +17,6 @@
 package beacon
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"math/big"
@@ -338,11 +337,11 @@ func (beacon *Beacon) Finalize(chain consensus.ChainHeaderReader, header *types.
 
 // FinalizeAndAssemble implements consensus.Engine, setting the final state and
 // assembling the block.
-func (beacon *Beacon) FinalizeAndAssemble(ctx context.Context, chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
+func (beacon *Beacon) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
 	// FinalizeAndAssemble is different with Prepare, it can be used in both block
 	// generation and verification. So determine the consensus rules by header type.
 	if !beacon.IsPoSHeader(header) {
-		return beacon.ethone.FinalizeAndAssemble(ctx, chain, header, state, txs, uncles, receipts)
+		return beacon.ethone.FinalizeAndAssemble(chain, header, state, txs, uncles, receipts)
 	}
 	// Finalize and assemble the block
 	beacon.Finalize(chain, header, state, txs, uncles)
@@ -354,9 +353,9 @@ func (beacon *Beacon) FinalizeAndAssemble(ctx context.Context, chain consensus.C
 //
 // Note, the method returns immediately and will send the result async. More
 // than one result may also be returned depending on the consensus algorithm.
-func (beacon *Beacon) Seal(ctx context.Context, chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
+func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	if !beacon.IsPoSHeader(block.Header()) {
-		return beacon.ethone.Seal(ctx, chain, block, results, stop)
+		return beacon.ethone.Seal(chain, block, results, stop)
 	}
 	// The seal verification is done by the external consensus engine,
 	// return directly without pushing any block back. In another word

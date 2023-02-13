@@ -19,7 +19,6 @@ package core
 import (
 	crand "crypto/rand"
 	"errors"
-	ethereum "github.com/qydata/go-ctereum"
 	"math/big"
 	mrand "math/rand"
 
@@ -55,22 +54,18 @@ type ForkChoice struct {
 	// local td is equal to the extern one. It can be nil for light
 	// client
 	preserve func(header *types.Header) bool
-
-	validator ethereum.ChainValidator
 }
 
-// func NewForkChoice(chainReader ChainReader, preserve func(header *types.Header) bool) *ForkChoice {
-func NewForkChoice(chainReader ChainReader, preserve func(header *types.Header) bool, validator ethereum.ChainValidator) *ForkChoice {
+func NewForkChoice(chainReader ChainReader, preserve func(header *types.Header) bool) *ForkChoice {
 	// Seed a fast but crypto originating random generator
 	seed, err := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
 	if err != nil {
 		log.Crit("Failed to initialize random seed", "err", err)
 	}
 	return &ForkChoice{
-		chain:     chainReader,
-		rand:      mrand.New(mrand.NewSource(seed.Int64())),
-		preserve:  preserve,
-		validator: validator,
+		chain:    chainReader,
+		rand:     mrand.New(mrand.NewSource(seed.Int64())),
+		preserve: preserve,
 	}
 }
 
