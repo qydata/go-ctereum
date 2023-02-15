@@ -17,18 +17,7 @@ func Validator() abi.ABI {
 const (
 	validatorABI = `[
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "minNumValidators",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "maxNumValidators",
-          "type": "uint256"
-        }
-      ],
+      "inputs": [],
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
@@ -49,6 +38,44 @@ const (
         }
       ],
       "name": "CommitAccum",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minNumValidators",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxNumValidators",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetNumValidators",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newSender",
+          "type": "address"
+        }
+      ],
+      "name": "SetSender",
       "type": "event"
     },
     {
@@ -142,31 +169,12 @@ const (
           "type": "address"
         }
       ],
-      "name": "_addressToIsValidator",
+      "name": "_addressToSender",
       "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
         {
           "internalType": "address",
           "name": "",
           "type": "address"
-        }
-      ],
-      "name": "_addressToStakedAmount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -186,25 +194,6 @@ const (
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "_validators",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -260,6 +249,42 @@ const (
           "internalType": "uint256[]",
           "name": "",
           "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "minNumValidators",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxNumValidators",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "users",
+          "type": "address[]"
+        }
+      ],
+      "name": "init",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initFlag",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -329,7 +354,31 @@ const (
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "newSender",
+          "type": "address"
+        }
+      ],
+      "name": "setSender",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
       "name": "stake",
       "outputs": [],
       "stateMutability": "payable",
@@ -349,7 +398,13 @@ const (
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
       "name": "unstake",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -367,10 +422,6 @@ const (
       ],
       "stateMutability": "view",
       "type": "function"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive"
     }
   ]`
 )

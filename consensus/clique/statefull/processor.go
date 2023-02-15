@@ -70,7 +70,9 @@ func ApplyMessage(
 	initialGas := msg.Gas()
 
 	// Create a new context to be used in the EVM environment
-	blockContext := core.NewEVMBlockContext(header, chainContext, &header.Coinbase)
+	//blockContext := core.NewEVMBlockContext(header, chainContext, &header.Coinbase)
+	// 这里通过共识获取手续费接收方
+	blockContext := core.NewEVMBlockContext(header, chainContext, nil)
 
 	// Create a new environment which holds all relevant information
 	// about the transaction and calling mechanisms.

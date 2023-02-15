@@ -2,13 +2,9 @@ package valset
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"math/big"
-	"sort"
-	"strings"
-
 	"github.com/qydata/go-ctereum/common"
+	"math/big"
 )
 
 // Validator represets Volatile state for each Validator
@@ -16,15 +12,6 @@ type Validator struct {
 	Address          common.Address `json:"signer"`
 	VotingPower      int64          `json:"power"`
 	ProposerPriority int64          `json:"accum"`
-}
-
-// NewValidator creates new validator
-func NewValidator(address common.Address, votingPower int64) *Validator {
-	return &Validator{
-		Address:          address,
-		VotingPower:      votingPower,
-		ProposerPriority: 0,
-	}
 }
 
 // Copy creates a new copy of the validator so we can mutate ProposerPriority.
@@ -79,16 +66,6 @@ func (v *Validator) String() string {
 		v.ProposerPriority)
 }
 
-// ValidatorListString returns a prettified validator list for logging purposes.
-func ValidatorListString(vals []*Validator) string {
-	chunks := make([]string, len(vals))
-	for i, val := range vals {
-		chunks[i] = fmt.Sprintf("%s:%d", val.Address, val.VotingPower)
-	}
-
-	return strings.Join(chunks, ",")
-}
-
 // HeaderBytes return header bytes
 func (v *Validator) HeaderBytes() []byte {
 	result := make([]byte, 40)
@@ -115,27 +92,6 @@ func (v *Validator) MinimalVal() MinimalVal {
 	}
 }
 
-// ParseValidators returns validator set bytes
-func ParseValidators(validatorsBytes []byte) ([]*Validator, error) {
-	if len(validatorsBytes)%40 != 0 {
-		return nil, errors.New("Invalid validators bytes")
-	}
-
-	result := make([]*Validator, len(validatorsBytes)/40)
-
-	for i := 0; i < len(validatorsBytes); i += 40 {
-		address := make([]byte, 20)
-		power := make([]byte, 20)
-
-		copy(address, validatorsBytes[i:i+20])
-		copy(power, validatorsBytes[i+20:i+40])
-
-		result[i/40] = NewValidator(common.BytesToAddress(address), big.NewInt(0).SetBytes(power).Int64())
-	}
-
-	return result, nil
-}
-
 // ---
 
 // MinimalVal is the minimal validator representation
@@ -143,22 +99,4 @@ func ParseValidators(validatorsBytes []byte) ([]*Validator, error) {
 type MinimalVal struct {
 	VotingPower uint64         `json:"power"` // TODO add 10^-18 here so that we dont overflow easily
 	Signer      common.Address `json:"signer"`
-}
-
-// SortMinimalValByAddress sorts validators
-func SortMinimalValByAddress(a []MinimalVal) []MinimalVal {
-	sort.Slice(a, func(i, j int) bool {
-		return bytes.Compare(a[i].Signer.Bytes(), a[j].Signer.Bytes()) < 0
-	})
-
-	return a
-}
-
-// ValidatorsToMinimalValidators converts array of validators to minimal validators
-func ValidatorsToMinimalValidators(vals []Validator) (minVals []MinimalVal) {
-	for _, val := range vals {
-		minVals = append(minVals, val.MinimalVal())
-	}
-
-	return
 }

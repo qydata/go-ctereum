@@ -153,7 +153,7 @@ func (s *Snapshot) cast(address common.Address, authorize bool) bool {
 	if !s.validVote(address, authorize) {
 		return false
 	}
-	log.Info("s.Tally", "s.Tally", s.Tally, "Tally{Authorize: authorize, Votes: 1}", Tally{Authorize: authorize, Votes: 1}, "address", address)
+
 	// Cast the vote into an existing or new tally
 	if old, ok := s.Tally[address]; ok {
 		old.Votes++
@@ -334,9 +334,9 @@ func (s *Snapshot) updateSigners(newValidators []*valset.Validator, c *Clique) e
 	// 初始化map
 	var tempValidator map[common.Address]*valset.Validator
 	tempValidator = make(map[common.Address]*valset.Validator)
-	for _, validator := range newValidators {
-		if c.config.StakeAmount == validator.ProposerPriority {
-			tempValidator[validator.Address] = validator
+	for _, validator1 := range newValidators {
+		if c.config.StakeAmount == validator1.ProposerPriority {
+			tempValidator[validator1.Address] = validator1
 		}
 	}
 
@@ -350,6 +350,7 @@ func (s *Snapshot) updateSigners(newValidators []*valset.Validator, c *Clique) e
 			return nil
 		}
 	}
+
 	// 上
 	for validator := range tempValidator {
 
@@ -359,6 +360,7 @@ func (s *Snapshot) updateSigners(newValidators []*valset.Validator, c *Clique) e
 			c.proposals[validator] = true
 			return nil
 		}
+
 	}
 	return nil
 }
