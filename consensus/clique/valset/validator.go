@@ -83,20 +83,3 @@ func (v *Validator) PowerBytes() []byte {
 
 	return result
 }
-
-// MinimalVal returns block number of last validator update
-func (v *Validator) MinimalVal() MinimalVal {
-	return MinimalVal{
-		VotingPower: uint64(v.VotingPower),
-		Signer:      v.Address,
-	}
-}
-
-// ---
-
-// MinimalVal is the minimal validator representation
-// Used to send validator information to bor validator contract
-type MinimalVal struct {
-	VotingPower uint64         `json:"power"` // TODO add 10^-18 here so that we dont overflow easily
-	Signer      common.Address `json:"signer"`
-}

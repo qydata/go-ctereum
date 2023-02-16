@@ -7,15 +7,20 @@ import (
 )
 
 var (
-	vABI, _ = abi.JSON(strings.NewReader(validatorABI))
+	sABI, _ = abi.JSON(strings.NewReader(stakingABI))
+	aABI, _ = abi.JSON(strings.NewReader(authControllerABI))
 )
 
-func Validator() abi.ABI {
-	return vABI
+func Staking() abi.ABI {
+	return sABI
+}
+
+func AuthController() abi.ABI {
+	return aABI
 }
 
 const (
-	validatorABI = `[
+	stakingABI = `[
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -418,6 +423,483 @@ const (
           "internalType": "address[]",
           "name": "",
           "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]`
+	authControllerABI = `[
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "AddedToWhiteList",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "caddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isAuth",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct AuthController.AuthData",
+          "name": "",
+          "type": "tuple"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "caddress",
+          "type": "address"
+        }
+      ],
+      "name": "Authentication",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "RemovedFromWhiteList",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "AUTH_TYPEHASH",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_addresses",
+          "type": "address[]"
+        }
+      ],
+      "name": "addToWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "caddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isAuth",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct AuthController.AuthData",
+          "name": "auth",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "orderId",
+          "type": "uint256"
+        }
+      ],
+      "name": "authentication",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "caddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authExpiry",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isAuth",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "authLevel",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "expandData",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct AuthController.AuthData[]",
+          "name": "auths",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "orderIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "authenticationBetch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "auths",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "authsSingle",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isAuth",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWhitelist",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "list",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "orders",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "parentauths",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "caddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "authTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "authExpiry",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isAuth",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "authLevel",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "expandData",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "parentauthsa",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_addresses",
+          "type": "address[]"
+        }
+      ],
+      "name": "removeFromWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "whitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",

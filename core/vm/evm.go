@@ -18,6 +18,9 @@ package vm
 
 import (
 	"github.com/qydata/go-ctereum/accounts/abi"
+	"github.com/qydata/go-ctereum/common/hexutil"
+	"github.com/qydata/go-ctereum/common/math"
+	"github.com/qydata/go-ctereum/log"
 	"math/big"
 	"strings"
 	"sync/atomic"
@@ -176,25 +179,23 @@ type AuthControllerAuthData struct {
 }
 
 func isAuth(addr common.Address, evm *EVM) (bool, error) {
-	methodId := evm.chainConfig.ImplContractAddressQuery()
-	contractAuthAddr := common.HexToAddress(evm.chainConfig.ImplContractAddress())
-	authControllerABI := evm.chainConfig.ImplContractAddressABI()
+	methodId := "authsSingle"
+	contractAuthAddr := evm.chainConfig.AuthContract
+	authControllerABI := evm.chainConfig.AuthContractABI()
 	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
 	data, _ := parsed.Pack(methodId, addr)
-	gas := evm.chainConfig.IsImplContractAddressGas()
+	gas := (hexutil.Uint64)(uint64(math.MaxUint64 / 2))
+
 	contract := NewContract(AccountRef(contractAuthAddr), AccountRef(contractAuthAddr), new(big.Int), uint64(gas))
 	contract.SetCallCode(&contractAuthAddr, evm.StateDB.GetCodeHash(contractAuthAddr), evm.StateDB.GetCode(contractAuthAddr))
 	isAuthResult, _ := evm.interpreter.Run(contract, data, true)
-	//isAuthResult, leftOverGas, err1 := evm.StaticCall(AccountRef(contractAuthAddr), contractAuthAddr, data, uint64(5000000000000000))
-	//fmt.Println("leftOverGas", leftOverGas)
-	//fmt.Println("err1", err1)
-	//fmt.Println("isAuthResultO", common.Bytes2Hex(isAuthResult))
 	if isAuthResult == nil {
 		return false, nil
 	}
 
 	ret, err := parsed.Unpack(methodId, isAuthResult)
 	//fmt.Println("isAuthResult", ret)
+	log.Info("isAuth", "authsSingle", ret, "addr", addr)
 	if err != nil {
 		return false, err
 	}

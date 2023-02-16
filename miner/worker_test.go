@@ -18,7 +18,6 @@ package miner
 
 import (
 	"errors"
-	"github.com/qydata/go-ctereum/consensus/bor"
 	"math/big"
 	"math/rand"
 	"sync/atomic"
@@ -125,12 +124,6 @@ func newTestWorkerBackend(t *testing.T, chainConfig *params.ChainConfig, engine 
 	}
 
 	switch e := engine.(type) {
-	case *bor.Bor:
-		gspec.ExtraData = make([]byte, 32+common.AddressLength+crypto.SignatureLength)
-		copy(gspec.ExtraData[32:32+common.AddressLength], TestBankAddress.Bytes())
-		e.Authorize(TestBankAddress, func(account accounts.Account, s string, data []byte) ([]byte, error) {
-			return crypto.Sign(crypto.Keccak256(data), testBankKey)
-		})
 	case *clique.Clique:
 		gspec.ExtraData = make([]byte, 32+common.AddressLength+crypto.SignatureLength)
 		copy(gspec.ExtraData[32:32+common.AddressLength], testBankAddress.Bytes())

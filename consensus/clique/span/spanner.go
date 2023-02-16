@@ -22,15 +22,15 @@ import (
 
 type ChainSpanner struct {
 	ethAPI                   api.Caller
-	validator                abi.ABI
+	staking                  abi.ABI
 	chainConfig              *params.ChainConfig
 	validatorContractAddress common.Address
 }
 
-func NewChainSpanner(ethAPI api.Caller, validator abi.ABI, chainConfig *params.ChainConfig, validatorContractAddress common.Address) *ChainSpanner {
+func NewChainSpanner(ethAPI api.Caller, staking abi.ABI, chainConfig *params.ChainConfig, validatorContractAddress common.Address) *ChainSpanner {
 	return &ChainSpanner{
 		ethAPI:                   ethAPI,
-		validator:                validator,
+		staking:                  staking,
 		chainConfig:              chainConfig,
 		validatorContractAddress: validatorContractAddress,
 	}
@@ -44,7 +44,7 @@ func (c *ChainSpanner) GetCurrentValidators(ctx context.Context, headerHash comm
 	// method
 	const method = "getValidators"
 
-	data, err := c.validator.Pack(method)
+	data, err := c.staking.Pack(method)
 	if err != nil {
 		log.Error("Unable to pack tx for getValidator", "error", err)
 		return nil, err
@@ -79,7 +79,7 @@ func (c *ChainSpanner) GetCurrentValidators(ctx context.Context, headerHash comm
 		ret2,
 	}
 
-	if err := c.validator.UnpackIntoInterface(out, method, result); err != nil {
+	if err := c.staking.UnpackIntoInterface(out, method, result); err != nil {
 		return nil, err
 	}
 
@@ -104,7 +104,7 @@ func (c *ChainSpanner) CommitAccum(ctx context.Context, state *state.StateDB, he
 		"Validators", validators,
 	)
 
-	data, err := c.validator.Pack(method,
+	data, err := c.staking.Pack(method,
 		validators,
 	)
 	if err != nil {

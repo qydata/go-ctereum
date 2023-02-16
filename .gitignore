@@ -52,3 +52,4 @@ keystore
 *.sh
 *.txt
 geth_password.txt
+test.json

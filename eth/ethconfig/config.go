@@ -226,7 +226,7 @@ func CreateConsensusEngine(stack *node.Node, chainConfig *params.ChainConfig, co
 	var engine consensus.Engine
 	if chainConfig.Clique != nil {
 
-		spanner := span.NewChainSpanner(blockchainAPI, contract.Validator(), chainConfig, common.HexToAddress(chainConfig.Clique.ValidatorContract))
+		spanner := span.NewChainSpanner(blockchainAPI, contract.Staking(), chainConfig, common.HexToAddress(chainConfig.Clique.ValidatorContract))
 		engine = clique.New(chainConfig.Clique, db, spanner)
 	} else {
 		switch config.PowMode {
