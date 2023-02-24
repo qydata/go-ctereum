@@ -68,8 +68,6 @@ var (
 	ErrInsufficientFunds = errors.New("insufficient funds for gas * price + value")
 	ErrFundsLessThan     = errors.New("ErrFunds must less than 0.105 ETH")
 
-	ErrFundsGasPriceMoreThan = errors.New("ErrFunds must more than 4800 GWEI")
-
 	// ErrGasUintOverflow is returned when calculating gas usage.
 	ErrGasUintOverflow = errors.New("gas uint64 overflow")
 

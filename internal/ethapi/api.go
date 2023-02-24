@@ -15,7 +15,7 @@
 // along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package ethapi
-
+c
 import (
 	"context"
 	"errors"
@@ -60,21 +60,30 @@ func NewEthereumAPI(b Backend) *EthereumAPI {
 
 // GasPrice returns a suggestion for a gas price for legacy transactions.
 func (s *EthereumAPI) GasPrice(ctx context.Context) (*hexutil.Big, error) {
-	//tipcap, err := s.b.SuggestGasTipCap(ctx)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if head := s.b.CurrentHeader(); head.BaseFee != nil {
-	//	tipcap.Add(tipcap, head.BaseFee)
-	//}
+	tipcap, err := s.b.SuggestGasTipCap(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if head := s.b.CurrentHeader(); head.BaseFee != nil {
+		tipcap.Add(tipcap, head.BaseFee)
+	}
 	//return (*hexutil.Big)(tipcap), err
 	//这里设置为建议的手续费  0.105 ETH
 	if s.b.ChainConfig().IsImplAuth(s.b.CurrentBlock().Number()) {
 		price := big.NewInt(s.b.ChainConfig().ImplGasPrice())
-		return (*hexutil.Big)(price), nil
+		if tipcap.Cmp(price) != -1 {
+			return (*hexutil.Big)(tipcap), nil
+		} else {
+			return (*hexutil.Big)(price), nil
+		}
+
 	} else {
 		price := big.NewInt(5000100000000)
-		return (*hexutil.Big)(price), nil
+		if tipcap.Cmp(price) != -1 {
+			return (*hexutil.Big)(tipcap), nil
+		} else {
+			return (*hexutil.Big)(price), nil
+		}
 	}
 }
 
@@ -497,7 +506,7 @@ func (s *PersonalAccountAPI) SignTransaction(ctx context.Context, args Transacti
 	}
 	// Before actually signing the transaction, ensure the transaction fee is reasonable.
 	tx := args.toTransaction()
-	if err := checkTxFee(tx.GasPrice(), tx.Gas(), s.b.RPCTxFeeCap()); err != nil {
+	if err := checkTxFee(tx.GasPrice(), tx.Gas(), s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
 		return nil, err
 	}
 	signed, err := s.signTransaction(ctx, &args, passwd)
@@ -1661,7 +1670,7 @@ func (s *TransactionAPI) sign(addr common.Address, tx *types.Transaction) (*type
 func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (common.Hash, error) {
 	// If the transaction fee cap is already specified, ensure the
 	// fee of the given transaction is _reasonable_.
-	if err := checkTxFee(tx.GasPrice(), tx.Gas(), b.RPCTxFeeCap()); err != nil {
+	if err := checkTxFee(tx.GasPrice(), tx.Gas(), b.RPCTxFeeCap(), b.ChainConfig(), b.CurrentBlock()); err != nil {
 		return common.Hash{}, err
 	}
 	if !b.UnprotectedAllowed() && !tx.Protected() {
@@ -1795,7 +1804,7 @@ func (s *TransactionAPI) SignTransaction(ctx context.Context, args TransactionAr
 	}
 	// Before actually sign the transaction, ensure the transaction fee is reasonable.
 	tx := args.toTransaction()
-	if err := checkTxFee(tx.GasPrice(), tx.Gas(), s.b.RPCTxFeeCap()); err != nil {
+	if err := checkTxFee(tx.GasPrice(), tx.Gas(), s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
 		return nil, err
 	}
 	signed, err := s.sign(args.from(), tx)
@@ -1853,7 +1862,7 @@ func (s *TransactionAPI) Resend(ctx context.Context, sendArgs TransactionArgs, g
 	if gasLimit != nil {
 		gas = uint64(*gasLimit)
 	}
-	if err := checkTxFee(price, gas, s.b.RPCTxFeeCap()); err != nil {
+	if err := checkTxFee(price, gas, s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
 		return common.Hash{}, err
 	}
 	// Iterate the pending list for replacement
@@ -2015,8 +2024,17 @@ func (s *NetAPI) Version() string {
 
 // checkTxFee is an internal function used to check whether the fee of
 // the given transaction is _reasonable_(under the cap).
-func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
+func checkTxFee(gasPrice *big.Int, gas uint64, cap float64, config *params.ChainConfig, block *types.Block) error {
 	// Short circuit if there is no cap for transaction fee at all.
+
+	if config.IsImplAuth(block.Number()) {
+		if gasPrice.Int64() > 0 {
+			if !config.IsGasPriceReqired(gasPrice) {
+				log.Info("IsGasPriceReqired:", "GasPrice", gasPrice)
+				return fmt.Errorf("gasPrice %v exceeds the configured cap %v", gasPrice, config.ImplGasPrice())
+			}
+		}
+	}
 	if cap == 0 {
 		return nil
 	}
@@ -2025,6 +2043,7 @@ func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 	if feeFloat > cap {
 		return fmt.Errorf("tx fee (%.2f ether) exceeds the configured cap (%.2f ether)", feeFloat, cap)
 	}
+
 	return nil
 }
 

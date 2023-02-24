@@ -178,7 +178,7 @@ type AuthControllerAuthData struct {
 	ExpandData string
 }
 
-func isAuth(addr common.Address, evm *EVM) (bool, error) {
+func (evm *EVM) IsAuth(addr common.Address) ([]byte, bool) {
 	methodId := "authsSingle"
 	contractAuthAddr := evm.chainConfig.AuthContract
 	authControllerABI := evm.chainConfig.AuthContractABI()
@@ -190,19 +190,19 @@ func isAuth(addr common.Address, evm *EVM) (bool, error) {
 	contract.SetCallCode(&contractAuthAddr, evm.StateDB.GetCodeHash(contractAuthAddr), evm.StateDB.GetCode(contractAuthAddr))
 	isAuthResult, _ := evm.interpreter.Run(contract, data, true)
 	if isAuthResult == nil {
-		return false, nil
+		return isAuthResult, false
 	}
 
 	ret, err := parsed.Unpack(methodId, isAuthResult)
 	//fmt.Println("isAuthResult", ret)
-	log.Info("isAuth", "authsSingle", ret, "addr", addr)
+
 	if err != nil {
-		return false, err
+		return isAuthResult, false
 	}
 	isAuth := *abi.ConvertType(ret[0],
 		new(bool)).(*bool)
-
-	return isAuth, nil
+	log.Info("isAuth", "authsSingle", isAuth, "addr", addr)
+	return nil, isAuth
 }
 
 // Call executes the contract associated with the addr with the given input as
@@ -216,13 +216,20 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 		if value.Cmp(big.NewInt(0)) > 0 {
 			//	判断实名
 			//var contractAuthAddr *common.Address
-			isAuth, err := isAuth(addr, evm)
-			if err != nil {
-				return nil, gas, err
-			}
+			ret, isAuth := evm.IsAuth(addr)
+
 			if isAuth == false {
 				//return nil, err
-				return nil, gas, ErrNotAuth
+				if evm.Config.Debug {
+					if evm.depth == 0 {
+						evm.Config.Tracer.CaptureStart(evm, caller.Address(), addr, false, input, gas, value)
+						evm.Config.Tracer.CaptureEnd(ret, gas, 0, ErrNotAuth)
+					} else {
+						evm.Config.Tracer.CaptureEnter(CALL, caller.Address(), addr, input, gas, value)
+						evm.Config.Tracer.CaptureExit(ret, gas, ErrNotAuth)
+					}
+				}
+				return ret, gas, ErrNotAuth
 			}
 
 		}

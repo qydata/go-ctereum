@@ -94,28 +94,3 @@ func ApplyMessage(
 
 	return gasUsed, nil
 }
-
-func ApplyBorMessage(vmenv vm.EVM, msg Callmsg) (*core.ExecutionResult, error) {
-	initialGas := msg.Gas()
-
-	// Apply the transaction to the current state (included in the env)
-	ret, gasLeft, err := vmenv.Call(
-		vm.AccountRef(msg.From()),
-		*msg.To(),
-		msg.Data(),
-		msg.Gas(),
-		msg.Value(),
-	)
-	// Update the state with pending changes
-	if err != nil {
-		vmenv.StateDB.Finalise(true)
-	}
-
-	gasUsed := initialGas - gasLeft
-
-	return &core.ExecutionResult{
-		UsedGas:    gasUsed,
-		Err:        err,
-		ReturnData: ret,
-	}, nil
-}
