@@ -238,19 +238,6 @@ const (
     },
     {
       "inputs": [],
-      "name": "fundAddr",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "getValidators",
       "outputs": [
         {
@@ -283,11 +270,6 @@ const (
           "internalType": "uint256",
           "name": "maxNumValidators",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_fundAddr",
-          "type": "address"
         },
         {
           "internalType": "address[]",
@@ -369,11 +351,6 @@ const (
           "internalType": "uint256",
           "name": "maxNumValidators",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_fundAddr",
-          "type": "address"
         }
       ],
       "name": "setNumValidators",

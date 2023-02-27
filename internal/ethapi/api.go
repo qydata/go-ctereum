@@ -15,7 +15,7 @@
 // along with the go-ctereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package ethapi
-c
+
 import (
 	"context"
 	"errors"

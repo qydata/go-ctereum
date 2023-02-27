@@ -43,7 +43,7 @@ const CtAllocData = `{
       "epoch": 30000,
       "twosigneraddblock": 10,
 	  "twosigneraddsigneraddress" :     "0xE8c6D8db1a97BCbC16DfAdD46E7Ad5594b5117D9",
-	  "validatorcontract": "0000000000000000000000000000000000001000"
+	  "validatorcontract": "0xaAaAaAaaAaAaAaaAaAAAAAAAAaaaAaAaAaaAaaAa"
     }
   },
   "nonce": "0x0",
