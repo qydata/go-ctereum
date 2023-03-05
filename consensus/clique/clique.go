@@ -475,6 +475,7 @@ func (c *Clique) verifySeal(snap *Snapshot, header *types.Header, parents []*typ
 	if number == 0 {
 		return errUnknownBlock
 	}
+
 	// Resolve the authorization key and check against signers
 	signer, err := ecrecover(header, c.signatures)
 	if err != nil {
@@ -512,6 +513,7 @@ func (c *Clique) Prepare(chain consensus.ChainHeaderReader, header *types.Header
 	header.Nonce = types.BlockNonce{}
 
 	number := header.Number.Uint64()
+
 	// Assemble the voting snapshot to check which votes make sense
 	snap, err := c.snapshot(chain, number-1, header.ParentHash, nil)
 	if err != nil {
@@ -602,7 +604,7 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 
 	if 1 != number {
 		if !chain.Config().IsImplAuth(header.Number) {
-			log.Info("区块奖励签名地址打印", "rewardAddress:", rewardAddress.Hex())
+			//log.Info("区块奖励签名地址打印", "rewardAddress:", rewardAddress.Hex())
 			state.AddBalance(rewardAddress, reward)
 		}
 	}
@@ -682,7 +684,17 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 
 	}
 
-	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+	if header.Number.Cmp(big.NewInt(5014137)) == 0 {
+
+		log.Info("balance", "0xEa8943f4c47Ab8602eCCD3ed5087512f75C14E60", state.GetBalance(common.HexToAddress("0xEa8943f4c47Ab8602eCCD3ed5087512f75C14E60")))
+		log.Info("balance", "0xcebcbf16494edbad87d7feab0260ade82c571e5d", state.GetBalance(common.HexToAddress("0xcebcbf16494edbad87d7feab0260ade82c571e5d")))
+		//header.Root = common.HexToHash("0x85df2f4f8c8c6927d05f4d9ecd4b2e74ee090d8f9394d988024e9531034bb957")
+		header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+		log.Info("header.Root1", "header.Root1", header.Root, "header.Number", header.Number.Int64())
+	} else {
+		header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+	}
+
 	// No block rewards in PoA, so the state remains as is and uncles are dropped
 	//header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	//header.UncleHash = types.CalcUncleHash(nil)

@@ -28,9 +28,9 @@ import (
 // Genesis hashes to enforce below configs on.
 var (
 	// prod
-	//MainnetGenesisHash = common.HexToHash("0x2d573e7996698c330d687fa3a2595153c33c05bd584acf07f98689f90e429a3d")
+	MainnetGenesisHash = common.HexToHash("0x2d573e7996698c330d687fa3a2595153c33c05bd584acf07f98689f90e429a3d")
 	// test
-	MainnetGenesisHash = common.HexToHash("0xeb51ba4fe8f0a284a2d8fdad42a65a030f7353f56f8d42c3fdb3ae0cc19b8ab1")
+	//MainnetGenesisHash = common.HexToHash("0xeb51ba4fe8f0a284a2d8fdad42a65a030f7353f56f8d42c3fdb3ae0cc19b8ab1")
 	RopstenGenesisHash = common.HexToHash("0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d")
 	SepoliaGenesisHash = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
 	RinkebyGenesisHash = common.HexToHash("0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177")
@@ -606,7 +606,9 @@ func (c *ChainConfig) IsImplAuth(num *big.Int) bool {
 func (c *ChainConfig) IsGasPriceReqired(gasPrice *big.Int) bool {
 	return isForked(big.NewInt(c.ImplGasPrice()), gasPrice)
 }
-
+func (c *ChainConfig) IsFix(num *big.Int) bool {
+	return isForked(big.NewInt(0).SetInt64(5034751), num)
+}
 func (c *ChainConfig) ImplGasPrice() int64 {
 	return 4800000000000
 }

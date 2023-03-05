@@ -18,7 +18,6 @@ package core
 
 import (
 	"fmt"
-
 	"github.com/qydata/go-ctereum/consensus"
 	"github.com/qydata/go-ctereum/core/state"
 	"github.com/qydata/go-ctereum/core/types"
@@ -96,9 +95,21 @@ func (v *BlockValidator) ValidateState(block *types.Block, statedb *state.StateD
 	}
 	// Validate the state root against the received state root and throw
 	// an error if they don't match.
+
+	//if big.NewInt(0).SetUint64(header.Number.Uint64()) != big.NewInt(5014137) {
+	//	root := statedb.IntermediateRoot(v.config.IsEIP158(header.Number));
+	//	if("0x85df2f4f8c8c6927d05f4d9ecd4b2e74ee090d8f9394d988024e9531034bb957" != root.Hex()) {
+	//		fmt.Println("5014137_HASH:",root.Hex())
+	//		fmt.Println("5014137_HASH:",header.Coinbase.Hex())
+	//		fmt.Println("5014137_HASH:",v.bc.currentBlock)
+	//	}
+	//}
+
 	if root := statedb.IntermediateRoot(v.config.IsEIP158(header.Number)); header.Root != root {
 		return fmt.Errorf("invalid merkle root (remote: %x local: %x)", header.Root, root)
 	}
+	//}
+
 	return nil
 }
 

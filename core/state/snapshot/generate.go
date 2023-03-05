@@ -666,6 +666,7 @@ func (dl *diskLayer) generate(stats *generatorStats) {
 		accMarker []byte
 		abort     chan *generatorStats
 	)
+
 	if len(dl.genMarker) > 0 { // []byte{} is the start, use nil for that
 		accMarker = dl.genMarker[:common.HashLength]
 	}

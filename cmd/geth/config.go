@@ -171,8 +171,8 @@ func makeFullNode(ctx *cli.Context) (*node.Node, ethapi.Backend) {
 		// Hack to speed up check for mainnet because we know
 		// the first non-empty block.
 		ghash := rawdb.ReadCanonicalHash(eth.ChainDb(), 0)
-		if cfg.Eth.NetworkId == 1 && ghash == params.MainnetGenesisHash {
-			firstIdx = 46147
+		if cfg.Eth.NetworkId == 27 && ghash == params.MainnetGenesisHash {
+			firstIdx = 0
 		}
 		isLegacy, _, err := dbHasLegacyReceipts(eth.ChainDb(), firstIdx)
 		if err != nil {

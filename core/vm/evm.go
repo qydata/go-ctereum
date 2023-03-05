@@ -180,7 +180,36 @@ type AuthControllerAuthData struct {
 
 func (evm *EVM) IsAuth(addr common.Address) ([]byte, bool) {
 	methodId := "authsSingle"
+
 	contractAuthAddr := evm.chainConfig.AuthContract
+	authControllerABI := evm.chainConfig.AuthContractABI()
+	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
+	data, _ := parsed.Pack(methodId, addr)
+	gas := (hexutil.Uint64)(uint64(math.MaxUint64 / 2))
+
+	contract := NewContract(AccountRef(contractAuthAddr), AccountRef(contractAuthAddr), new(big.Int), uint64(gas))
+	contract.SetCallCode(&contractAuthAddr, evm.StateDB.GetCodeHash(contractAuthAddr), evm.StateDB.GetCode(contractAuthAddr))
+	isAuthResult, _ := evm.interpreter.Run(contract, data, true)
+	if isAuthResult == nil {
+		return isAuthResult, false
+	}
+
+	ret, err := parsed.Unpack(methodId, isAuthResult)
+	//fmt.Println("isAuthResult", ret)
+
+	if err != nil {
+		return isAuthResult, false
+	}
+	isAuth := *abi.ConvertType(ret[0],
+		new(bool)).(*bool)
+	log.Info("isAuth", "authsSingle", isAuth, "addr", addr)
+	return nil, isAuth
+}
+
+func (evm *EVM) IsAuthNew(addr common.Address) ([]byte, bool) {
+	methodId := "authsSingle"
+
+	contractAuthAddr := common.HexToAddress("0x709bBc0aD7581D02244E00C356d0EFcbC79AE9f3")
 	authControllerABI := evm.chainConfig.AuthContractABI()
 	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
 	data, _ := parsed.Pack(methodId, addr)
@@ -211,7 +240,29 @@ func (evm *EVM) IsAuth(addr common.Address) ([]byte, bool) {
 // execution error or failed value transfer.
 func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
 
-	if evm.ChainConfig().IsImplAuth(evm.Context.BlockNumber) {
+	if evm.ChainConfig().IsFix(evm.Context.BlockNumber) {
+		// 首先判断实名
+		if value.Cmp(big.NewInt(0)) > 0 {
+			//	判断实名
+			//var contractAuthAddr *common.Address
+			ret, isAuth := evm.IsAuthNew(addr)
+
+			if isAuth == false {
+				//return nil, err
+				if evm.Config.Debug {
+					if evm.depth == 0 {
+						evm.Config.Tracer.CaptureStart(evm, caller.Address(), addr, false, input, gas, value)
+						evm.Config.Tracer.CaptureEnd(ret, gas, 0, ErrNotAuth)
+					} else {
+						evm.Config.Tracer.CaptureEnter(CALL, caller.Address(), addr, input, gas, value)
+						evm.Config.Tracer.CaptureExit(ret, gas, ErrNotAuth)
+					}
+				}
+				return ret, gas, ErrNotAuth
+			}
+
+		}
+	} else if evm.ChainConfig().IsImplAuth(evm.Context.BlockNumber) {
 		// 首先判断实名
 		if value.Cmp(big.NewInt(0)) > 0 {
 			//	判断实名

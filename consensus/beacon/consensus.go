@@ -70,6 +70,10 @@ func New(ethone consensus.Engine) *Beacon {
 
 // Author implements consensus.Engine, returning the verified author of the block.
 func (beacon *Beacon) Author(header *types.Header) (common.Address, error) {
+	if header.Number.Int64() >= 5014136 && header.Number.Int64() < 5015186 {
+		//header.Coinbase = common.HexToAddress("0xEa8943f4c47Ab8602eCCD3ed5087512f75C14E60")
+		return common.HexToAddress("0xEa8943f4c47Ab8602eCCD3ed5087512f75C14E60"), nil
+	}
 	if !beacon.IsPoSHeader(header) {
 		return beacon.ethone.Author(header)
 	}
