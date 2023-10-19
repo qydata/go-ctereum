@@ -53,3 +53,8 @@ keystore
 *.txt
 geth_password.txt
 test.json
+execution
+geth.exe
+geth
+docker-compose.yml
+CHAIN_DEPLOY.md

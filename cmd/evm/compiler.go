@@ -19,6 +19,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/urfave/cli/v2"
 	"os"
 
 	"github.com/qydata/go-ctereum/cmd/evm/internal/compiler"

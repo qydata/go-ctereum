@@ -29,7 +29,6 @@ import (
 	"github.com/qydata/go-ctereum/core/rawdb"
 	"github.com/qydata/go-ctereum/core/state"
 	"github.com/qydata/go-ctereum/core/vm"
-	"github.com/qydata/go-ctereum/crypto"
 	"github.com/qydata/go-ctereum/params"
 )
 
@@ -152,10 +151,5 @@ func (t *VMTest) newEVM(statedb *state.StateDB, vmconfig vm.Config) *vm.EVM {
 		GasLimit:    t.json.Env.GasLimit,
 		Difficulty:  t.json.Env.Difficulty,
 	}
-	vmconfig.NoRecursion = true
 	return vm.NewEVM(context, txContext, statedb, params.MainnetChainConfig, vmconfig)
-}
-
-func vmTestBlockHash(n uint64) common.Hash {
-	return common.BytesToHash(crypto.Keccak256([]byte(big.NewInt(int64(n)).String())))
 }
