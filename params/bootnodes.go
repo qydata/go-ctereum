@@ -22,14 +22,7 @@ import "github.com/qydata/go-ctereum/common"
 // the main Ethereum network.
 var MainnetBootnodes = []string{
 	// Ethereum Foundation Go Bootnodes
-	//"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@121.40.143.162:30300", // bootnode-aws-ap-southeast-1-001
-	//"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@172.31.100.129:30300", // bootnode-aws-ap-southeast-1-001
-	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@127.0.0.1:30301", // bootnode-aws-ap-southeast-1-001
-	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@121.40.143.162:30300",
-	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@172.31.100.129:30300",
-	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@118.31.15.145:30300",
-	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@172.16.169.162:30300",
-	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@118.31.15.145:30300",
+	"enode://1ecea9891dd889f9ffdaa391f46b4f43857a6b7e3eddedc834a9feb88ca27bc3e6c51c404b7d0e03dda8e92042b89f796b2bba67cbdd020dac037b4ec49b5c60@118.178.186.114:30300",
 }
 
 // RopstenBootnodes are the enode URLs of the P2P bootstrap nodes running on the
@@ -67,7 +60,7 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 	var net string
 	switch genesis {
 	case MainnetGenesisHash:
-		net = "ctblock"
+		net = ""
 	case RopstenGenesisHash:
 		net = "ropsten"
 	case RinkebyGenesisHash:
