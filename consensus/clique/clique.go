@@ -680,11 +680,12 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 			for signer, activity := range signStatus {
 				if activity == 0 {
 					//TODO 这个判断用于测试, 防止存在多数不参与挖矿的验证账户
-					//if snap.SignerActives[signer] == true {
 					var signers = []common.Address{signer}
-					c.spanner.CommitAccum(context.Background(), state, header, cx, signers)
+					err := c.spanner.CommitAccum(context.Background(), state, header, cx, signers)
+					if err != nil {
+						log.Info("CommitAccum", "Err:", err)
+					}
 					break
-					//}
 				}
 			}
 		}
@@ -692,12 +693,7 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 	}
 
 	if header.Number.Cmp(big.NewInt(5014137)) == 0 {
-
-		log.Info("balance", "0xEa8943f4c47Ab8602eCCD3ed5087512f75C14E60", state.GetBalance(common.HexToAddress("0xEa8943f4c47Ab8602eCCD3ed5087512f75C14E60")))
-		log.Info("balance", "0xcebcbf16494edbad87d7feab0260ade82c571e5d", state.GetBalance(common.HexToAddress("0xcebcbf16494edbad87d7feab0260ade82c571e5d")))
-		//header.Root = common.HexToHash("0x85df2f4f8c8c6927d05f4d9ecd4b2e74ee090d8f9394d988024e9531034bb957")
 		header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
-		log.Info("header.Root1", "header.Root1", header.Root, "header.Number", header.Number.Int64())
 	} else {
 		header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
 	}

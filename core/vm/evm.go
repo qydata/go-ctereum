@@ -178,10 +178,9 @@ type AuthControllerAuthData struct {
 	ExpandData string
 }
 
-func (evm *EVM) IsAuth(addr common.Address) ([]byte, bool) {
+func (evm *EVM) IsAuth(addr common.Address, contractAuthAddr common.Address) ([]byte, bool) {
 	methodId := "authsSingle"
 
-	contractAuthAddr := evm.chainConfig.AuthContract
 	authControllerABI := evm.chainConfig.AuthContractABI()
 	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
 	data, _ := parsed.Pack(methodId, addr)
@@ -202,63 +201,7 @@ func (evm *EVM) IsAuth(addr common.Address) ([]byte, bool) {
 	}
 	isAuth := *abi.ConvertType(ret[0],
 		new(bool)).(*bool)
-	log.Info("isAuth", "authsSingle", isAuth, "addr", addr)
-	return nil, isAuth
-}
-
-func (evm *EVM) IsAuthNew(addr common.Address) ([]byte, bool) {
-	methodId := "authsSingle"
-
-	contractAuthAddr := common.HexToAddress("0x709bBc0aD7581D02244E00C356d0EFcbC79AE9f3")
-	authControllerABI := evm.chainConfig.AuthContractABI()
-	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
-	data, _ := parsed.Pack(methodId, addr)
-	gas := (hexutil.Uint64)(uint64(math.MaxUint64 / 2))
-
-	contract := NewContract(AccountRef(contractAuthAddr), AccountRef(contractAuthAddr), new(big.Int), uint64(gas))
-	contract.SetCallCode(&contractAuthAddr, evm.StateDB.GetCodeHash(contractAuthAddr), evm.StateDB.GetCode(contractAuthAddr))
-	isAuthResult, _ := evm.interpreter.Run(contract, data, true)
-	if isAuthResult == nil {
-		return isAuthResult, false
-	}
-
-	ret, err := parsed.Unpack(methodId, isAuthResult)
-	//fmt.Println("isAuthResult", ret)
-
-	if err != nil {
-		return isAuthResult, false
-	}
-	isAuth := *abi.ConvertType(ret[0],
-		new(bool)).(*bool)
-	log.Info("isAuth", "authsSingle", isAuth, "addr", addr)
-	return nil, isAuth
-}
-
-func (evm *EVM) IsAuthNewV2(addr common.Address) ([]byte, bool) {
-	methodId := "authsSingle"
-
-	contractAuthAddr := common.HexToAddress("0x192c9d450c3EC56b7b98caA7b9F813b4a91Dfc7a")
-	authControllerABI := evm.chainConfig.AuthContractABI()
-	parsed, _ := abi.JSON(strings.NewReader(authControllerABI))
-	data, _ := parsed.Pack(methodId, addr)
-	gas := (hexutil.Uint64)(uint64(math.MaxUint64 / 2))
-
-	contract := NewContract(AccountRef(contractAuthAddr), AccountRef(contractAuthAddr), new(big.Int), uint64(gas))
-	contract.SetCallCode(&contractAuthAddr, evm.StateDB.GetCodeHash(contractAuthAddr), evm.StateDB.GetCode(contractAuthAddr))
-	isAuthResult, _ := evm.interpreter.Run(contract, data, true)
-	if isAuthResult == nil {
-		return isAuthResult, false
-	}
-
-	ret, err := parsed.Unpack(methodId, isAuthResult)
-	//fmt.Println("isAuthResult", ret)
-
-	if err != nil {
-		return isAuthResult, false
-	}
-	isAuth := *abi.ConvertType(ret[0],
-		new(bool)).(*bool)
-	log.Info("isAuth", "authsSingle", isAuth, "addr", addr)
+	log.Info("isAuth", methodId, isAuth, "addr", addr)
 	return nil, isAuth
 }
 
@@ -269,16 +212,16 @@ func (evm *EVM) IsAuthNewV2(addr common.Address) ([]byte, bool) {
 func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
 
 	if value.Cmp(big.NewInt(0)) > 0 {
-		var isAuth bool
-		var ret []byte
+		var contractAuthAddr common.Address
 
 		if evm.ChainConfig().IsAuthV2(evm.Context.BlockNumber) {
-			ret, isAuth = evm.IsAuthNewV2(addr)
+			contractAuthAddr = common.HexToAddress("0x192c9d450c3EC56b7b98caA7b9F813b4a91Dfc7a")
 		} else if evm.ChainConfig().IsFix(evm.Context.BlockNumber) {
-			ret, isAuth = evm.IsAuthNew(addr)
+			contractAuthAddr = common.HexToAddress("0x709bBc0aD7581D02244E00C356d0EFcbC79AE9f3")
 		} else if evm.ChainConfig().IsImplAuth(evm.Context.BlockNumber) {
-			ret, isAuth = evm.IsAuth(addr)
+			contractAuthAddr = evm.chainConfig.AuthContract
 		}
+		ret, isAuth := evm.IsAuth(addr, contractAuthAddr)
 		if !isAuth {
 			//return nil, err
 			if evm.Config.Debug {
