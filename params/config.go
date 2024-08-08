@@ -609,6 +609,9 @@ func (c *ChainConfig) IsGasPriceReqired(gasPrice *big.Int) bool {
 func (c *ChainConfig) IsFix(num *big.Int) bool {
 	return isForked(big.NewInt(0).SetInt64(5034751), num)
 }
+func (c *ChainConfig) IsAuthV2(num *big.Int) bool {
+	return isForked(big.NewInt(0).SetInt64(14078376), num)
+}
 func (c *ChainConfig) ImplGasPrice() int64 {
 	return 4800000000000
 }
