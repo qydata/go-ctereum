@@ -27,6 +27,10 @@ type ChainSpanner struct {
 	validatorContractAddress common.Address
 }
 
+const stakeV1Block = 14109510
+
+var stakeV1Addr = common.HexToAddress("0xa4Af7270279921310292FcDB230a8c8F20d88bD9")
+
 func NewChainSpanner(ethAPI api.Caller, staking abi.ABI, chainConfig *params.ChainConfig, validatorContractAddress common.Address) *ChainSpanner {
 	return &ChainSpanner{
 		ethAPI:                   ethAPI,
@@ -52,12 +56,16 @@ func (c *ChainSpanner) GetCurrentValidators(ctx context.Context, headerHash comm
 
 	// call
 	msgData := (hexutil.Bytes)(data)
-	toAddress := c.validatorContractAddress
+	var toAddress common.Address
+	if blockNumber > stakeV1Block {
+		toAddress = stakeV1Addr
+	} else {
+		toAddress = c.validatorContractAddress
+	}
 	gas := (hexutil.Uint64)(uint64(math.MaxUint64 / 2))
 
 	// block
 	blockNr := rpc.BlockNumberOrHashWithHash(headerHash, false)
-	//blockNr := rpc.BlockNumberOrHashWithNumber(rpc.BlockNumber(blockNumber))
 	result, err := c.ethAPI.Call(ctx, ethapi.TransactionArgs{
 		Gas:  &gas,
 		To:   &toAddress,
@@ -97,7 +105,7 @@ func (c *ChainSpanner) GetCurrentValidators(ctx context.Context, headerHash comm
 
 const method = "commitAccum"
 
-func (c *ChainSpanner) CommitAccum(ctx context.Context, state *state.StateDB, header *types.Header, chainContext core.ChainContext, validators []common.Address) error {
+func (c *ChainSpanner) CommitAccum(ctx context.Context, state *state.StateDB, header *types.Header, chainContext core.ChainContext, validators []common.Address, blockNumber uint64) error {
 
 	// get producers bytes
 	log.Info("✅ Committing new accum",
@@ -112,9 +120,14 @@ func (c *ChainSpanner) CommitAccum(ctx context.Context, state *state.StateDB, he
 
 		return err
 	}
-
+	var toAddress common.Address
+	if blockNumber > (stakeV1Block + 1) {
+		toAddress = stakeV1Addr
+	} else {
+		toAddress = c.validatorContractAddress
+	}
 	// get system message
-	msg := statefull.GetSystemMessage(c.validatorContractAddress, data)
+	msg := statefull.GetSystemMessage(toAddress, data)
 
 	// apply message
 	_, err = statefull.ApplyMessage(ctx, msg, state, header, c.chainConfig, chainContext)

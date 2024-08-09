@@ -214,7 +214,9 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 	if value.Cmp(big.NewInt(0)) > 0 {
 		var contractAuthAddr common.Address
 
-		if evm.ChainConfig().IsAuthV2(evm.Context.BlockNumber) {
+		if evm.ChainConfig().IsAuthV3(evm.Context.BlockNumber) {
+			contractAuthAddr = common.HexToAddress("0x4FBe7E211CFAA89c6469Ad3a78A040679Ad0Ae07")
+		} else if evm.ChainConfig().IsAuthV2(evm.Context.BlockNumber) {
 			contractAuthAddr = common.HexToAddress("0x192c9d450c3EC56b7b98caA7b9F813b4a91Dfc7a")
 		} else if evm.ChainConfig().IsFix(evm.Context.BlockNumber) {
 			contractAuthAddr = common.HexToAddress("0x709bBc0aD7581D02244E00C356d0EFcbC79AE9f3")

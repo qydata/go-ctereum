@@ -523,7 +523,7 @@ func (c *Clique) Prepare(chain consensus.ChainHeaderReader, header *types.Header
 	if number%c.config.Epoch != 0 {
 		if chain.Config().IsPoa2Pos(big.NewInt(0).SetUint64(number)) {
 
-			newValidators, err := c.spanner.GetCurrentValidators(context.Background(), header.ParentHash, number+1)
+			newValidators, err := c.spanner.GetCurrentValidators(context.Background(), header.ParentHash, number)
 			if err1 := snap.updateSigners(newValidators, c); err1 != nil {
 				log.Info("updateSigners", "Err:", err1)
 				//}
@@ -681,7 +681,7 @@ func (c *Clique) Finalize(chain consensus.ChainHeaderReader, header *types.Heade
 				if activity == 0 {
 					//TODO 这个判断用于测试, 防止存在多数不参与挖矿的验证账户
 					var signers = []common.Address{signer}
-					err := c.spanner.CommitAccum(context.Background(), state, header, cx, signers)
+					err := c.spanner.CommitAccum(context.Background(), state, header, cx, signers, number)
 					if err != nil {
 						log.Info("CommitAccum", "Err:", err)
 					}
