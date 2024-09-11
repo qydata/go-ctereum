@@ -75,6 +75,9 @@ var (
 		AuthBlock:           big.NewInt(5033582),
 		AuthContract:        common.HexToAddress("0x3449c5b666b7f45aF85c99D12e42eD428648a3AD"),
 
+		BerlinBlock: big.NewInt(14686800),
+		LondonBlock: big.NewInt(14686801),
+
 		Clique: &CliqueConfig{
 			Period:            5,
 			Epoch:             30000,
@@ -605,6 +608,9 @@ func (c *ChainConfig) IsImplAuth(num *big.Int) bool {
 
 func (c *ChainConfig) IsGasPriceReqired(gasPrice *big.Int) bool {
 	return isForked(big.NewInt(c.ImplGasPrice()), gasPrice)
+}
+func (c *ChainConfig) IsGasFeeCapReqired(gasFeeCap *big.Int) bool {
+	return isForked(big.NewInt(4500000000000), gasFeeCap)
 }
 func (c *ChainConfig) IsFix(num *big.Int) bool {
 	return isForked(big.NewInt(0).SetInt64(5034751), num)
