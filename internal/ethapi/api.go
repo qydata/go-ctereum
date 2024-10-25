@@ -2051,7 +2051,7 @@ func checkTxFee(gasPrice *big.Int, to *common.Address, gasTipCap *big.Int, gasFe
 					return fmt.Errorf("gasPrice %v exceeds the configured cap %v", gasPrice, config.ImplGasPrice())
 				}
 			}
-		} else {
+
 			if config.IsCheckTipCap(block.Number()) {
 				if gasTipCap != nil {
 					// 这里如果是实名合约, 则不检查手续费, 理论上可以指定任意的手续费
@@ -2064,15 +2064,6 @@ func checkTxFee(gasPrice *big.Int, to *common.Address, gasTipCap *big.Int, gasFe
 								log.Info("IsGasTipCapReqired:", "gasTipCap", gasTipCap)
 								return fmt.Errorf("gasTipCap %v exceeds the configured cap %v", gasTipCap, 4500000000000)
 							}
-						}
-					}
-				}
-			} else {
-				if gasFeeCap != nil {
-					if gasFeeCap.Int64() > 0 {
-						if !config.IsGasTipCapReqired(gasFeeCap) {
-							log.Info("IsGasFeeCapReqired:", "gasFeeCap", gasFeeCap)
-							return fmt.Errorf("gasFeeCap %v exceeds the configured cap %v", gasFeeCap, 4500000000000)
 						}
 					}
 				}
