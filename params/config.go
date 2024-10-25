@@ -609,7 +609,7 @@ func (c *ChainConfig) IsImplAuth(num *big.Int) bool {
 func (c *ChainConfig) IsGasPriceReqired(gasPrice *big.Int) bool {
 	return isForked(big.NewInt(c.ImplGasPrice()), gasPrice)
 }
-func (c *ChainConfig) IsGasFeeCapReqired(gasFeeCap *big.Int) bool {
+func (c *ChainConfig) IsGasTipCapReqired(gasFeeCap *big.Int) bool {
 	return isForked(big.NewInt(4500000000000), gasFeeCap)
 }
 func (c *ChainConfig) IsFix(num *big.Int) bool {
@@ -623,6 +623,9 @@ func (c *ChainConfig) IsAuthV3(num *big.Int) bool {
 }
 func (c *ChainConfig) IsAuthV4(num *big.Int) bool {
 	return isForked(big.NewInt(0).SetInt64(14526500), num)
+}
+func (c *ChainConfig) IsCheckTipCap(num *big.Int) bool {
+	return isForked(big.NewInt(0).SetInt64(15413700), num)
 }
 
 func (c *ChainConfig) ImplGasPrice() int64 {

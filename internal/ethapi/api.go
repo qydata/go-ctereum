@@ -506,7 +506,7 @@ func (s *PersonalAccountAPI) SignTransaction(ctx context.Context, args Transacti
 	}
 	// Before actually signing the transaction, ensure the transaction fee is reasonable.
 	tx := args.toTransaction()
-	if err := checkTxFee(tx.GasPrice(), tx.GasFeeCap(), tx.Gas(), s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
+	if err := checkTxFee(tx.GasPrice(), tx.To(), tx.GasTipCap(), tx.GasFeeCap(), tx.Gas(), s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
 		return nil, err
 	}
 	signed, err := s.signTransaction(ctx, &args, passwd)
@@ -1670,7 +1670,7 @@ func (s *TransactionAPI) sign(addr common.Address, tx *types.Transaction) (*type
 func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (common.Hash, error) {
 	// If the transaction fee cap is already specified, ensure the
 	// fee of the given transaction is _reasonable_.
-	if err := checkTxFee(tx.GasPrice(), tx.GasFeeCap(), tx.Gas(), b.RPCTxFeeCap(), b.ChainConfig(), b.CurrentBlock()); err != nil {
+	if err := checkTxFee(tx.GasPrice(), tx.To(), tx.GasTipCap(), tx.GasFeeCap(), tx.Gas(), b.RPCTxFeeCap(), b.ChainConfig(), b.CurrentBlock()); err != nil {
 		return common.Hash{}, err
 	}
 	if !b.UnprotectedAllowed() && !tx.Protected() {
@@ -1804,7 +1804,7 @@ func (s *TransactionAPI) SignTransaction(ctx context.Context, args TransactionAr
 	}
 	// Before actually sign the transaction, ensure the transaction fee is reasonable.
 	tx := args.toTransaction()
-	if err := checkTxFee(tx.GasPrice(), tx.GasFeeCap(), tx.Gas(), s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
+	if err := checkTxFee(tx.GasPrice(), tx.To(), tx.GasTipCap(), tx.GasFeeCap(), tx.Gas(), s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
 		return nil, err
 	}
 	signed, err := s.sign(args.from(), tx)
@@ -1862,7 +1862,7 @@ func (s *TransactionAPI) Resend(ctx context.Context, sendArgs TransactionArgs, g
 	if gasLimit != nil {
 		gas = uint64(*gasLimit)
 	}
-	if err := checkTxFee(price, matchTx.GasFeeCap(), gas, s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
+	if err := checkTxFee(price, matchTx.To(), matchTx.GasTipCap(), matchTx.GasFeeCap(), gas, s.b.RPCTxFeeCap(), s.b.ChainConfig(), s.b.CurrentBlock()); err != nil {
 		return common.Hash{}, err
 	}
 	// Iterate the pending list for replacement
@@ -2022,9 +2022,25 @@ func (s *NetAPI) Version() string {
 	return fmt.Sprintf("%d", s.networkVersion)
 }
 
+// 判断地址是否在数组中
+func isAddressInArray(address *common.Address) bool {
+	addressArray := []common.Address{
+		common.HexToAddress("0x8549E5003BdAdEFA095C8759E2B981D0Cb2e472B"),
+		common.HexToAddress("0x709bBc0aD7581D02244E00C356d0EFcbC79AE9f3"),
+	}
+
+	// 遍历地址数组并比较
+	for _, addr := range addressArray {
+		if addr == *address { // 解引用指针
+			return true
+		}
+	}
+	return false
+}
+
 // checkTxFee is an internal function used to check whether the fee of
 // the given transaction is _reasonable_(under the cap).
-func checkTxFee(gasPrice *big.Int, gasFeeCap *big.Int, gas uint64, cap float64, config *params.ChainConfig, block *types.Block) error {
+func checkTxFee(gasPrice *big.Int, to *common.Address, gasTipCap *big.Int, gasFeeCap *big.Int, gas uint64, cap float64, config *params.ChainConfig, block *types.Block) error {
 	// Short circuit if there is no cap for transaction fee at all.
 
 	if config.IsImplAuth(block.Number()) {
@@ -2035,15 +2051,34 @@ func checkTxFee(gasPrice *big.Int, gasFeeCap *big.Int, gas uint64, cap float64, 
 					return fmt.Errorf("gasPrice %v exceeds the configured cap %v", gasPrice, config.ImplGasPrice())
 				}
 			}
-		} else if gasFeeCap != nil {
-			if gasFeeCap.Int64() > 0 {
-				if !config.IsGasFeeCapReqired(gasFeeCap) {
-					log.Info("IsGasFeeCapReqired:", "gasFeeCap", gasFeeCap)
-					return fmt.Errorf("gasFeeCap %v exceeds the configured cap %v", gasFeeCap, 4500000000000)
+		} else {
+			if config.IsCheckTipCap(block.Number()) {
+				if gasTipCap != nil {
+					// 这里如果是实名合约, 则不检查手续费, 理论上可以指定任意的手续费
+					if isAddressInArray(to) {
+						fmt.Println("地址存在于指定数组中")
+					} else {
+						fmt.Println("地址不在指定数组中")
+						if gasTipCap.Int64() > 0 {
+							if !config.IsGasTipCapReqired(gasTipCap) {
+								log.Info("IsGasTipCapReqired:", "gasTipCap", gasTipCap)
+								return fmt.Errorf("gasTipCap %v exceeds the configured cap %v", gasTipCap, 4500000000000)
+							}
+						}
+					}
+				}
+			} else {
+				if gasFeeCap != nil {
+					if gasFeeCap.Int64() > 0 {
+						if !config.IsGasTipCapReqired(gasFeeCap) {
+							log.Info("IsGasFeeCapReqired:", "gasFeeCap", gasFeeCap)
+							return fmt.Errorf("gasFeeCap %v exceeds the configured cap %v", gasFeeCap, 4500000000000)
+						}
+					}
 				}
 			}
-		}
 
+		}
 	}
 	if cap == 0 {
 		return nil

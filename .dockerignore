@@ -5,3 +5,5 @@ build/_bin
 tests/testdata
 docker.md
 备注.md
+execution
+keystore

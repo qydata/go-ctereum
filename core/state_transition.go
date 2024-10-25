@@ -314,17 +314,6 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		return nil, fmt.Errorf("%w: have %d, want %d", ErrIntrinsicGas, st.gas, gas)
 	}
 
-	// 判断手续费
-	//if st.evm.ChainConfig().IsImplAuth(st.evm.Context.BlockNumber) {
-	//	if msg.GasPrice().Int64() > 0 {
-	//		if !st.evm.ChainConfig().IsGasPriceReqired(msg.GasPrice()) {
-	//			log.Info("IsGasPriceReqired:", "GasPrice", msg.GasPrice().Int64())
-	//			//return nil, fmt.Errorf("%w: have %d, want %d", ErrFundsGasPriceMoreThan, msg.GasPrice(), st.evm.ChainConfig().ImplGasPrice())
-	//			return nil, fmt.Errorf("%w: have %d, want %d", ErrFundsGasPriceMoreThan, msg.GasPrice(), st.evm.ChainConfig().ImplGasPrice())
-	//		}
-	//	}
-	//}
-
 	st.gas -= gas
 
 	// Check clause 6
