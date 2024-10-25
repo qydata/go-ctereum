@@ -640,7 +640,7 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	if !pool.chainconfig.IsImplAuth(pool.chain.CurrentBlock().Number()) {
 		// 这里判断可能会跳过, 这里判断改为在调用evm exec 前判断
 		//0.105 ETH
-		fee, _ := new(big.Int).SetString("105000000000000000", 10)
+		fee, _ := new(big.Int).SetString("94000000000000000", 10)
 		if tx.Cost().Cmp(fee) < 0 {
 			return ErrFundsLessThan
 		}
