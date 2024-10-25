@@ -2024,6 +2024,12 @@ func (s *NetAPI) Version() string {
 
 // 判断地址是否在数组中
 func isAddressInArray(address *common.Address) bool {
+	// 检查是否为0x0地址
+	// 检查是否为nil或者0x0地址
+	if address == nil || *address == (common.Address{}) {
+		return false
+	}
+
 	addressArray := []common.Address{
 		common.HexToAddress("0x8549E5003BdAdEFA095C8759E2B981D0Cb2e472B"),
 		common.HexToAddress("0x709bBc0aD7581D02244E00C356d0EFcbC79AE9f3"),
