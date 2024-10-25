@@ -20,7 +20,6 @@ import (
 	"github.com/qydata/go-ctereum/accounts/abi"
 	"github.com/qydata/go-ctereum/common/hexutil"
 	"github.com/qydata/go-ctereum/common/math"
-	"github.com/qydata/go-ctereum/log"
 	"math/big"
 	"strings"
 	"sync/atomic"
@@ -201,7 +200,7 @@ func (evm *EVM) IsAuth(addr common.Address, contractAuthAddr common.Address) ([]
 	}
 	isAuth := *abi.ConvertType(ret[0],
 		new(bool)).(*bool)
-	log.Info("isAuth", methodId, isAuth, "addr", addr)
+	//log.Info("isAuth", methodId, isAuth, "addr", addr)
 	return nil, isAuth
 }
 

@@ -2077,7 +2077,6 @@ func checkTxFee(gasPrice *big.Int, to *common.Address, gasTipCap *big.Int, gasFe
 					}
 				}
 			}
-
 		}
 	}
 	if cap == 0 {
